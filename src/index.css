@@ -1430,6 +1430,76 @@ body {
   flex-shrink: 0;
 }
 
+/* Parables thematic index */
+.fp-parables {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 14px 4px;
+  overflow-y: auto;
+}
+.fp-parable-theme-head {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.fp-parable {
+  padding: 5px 0 7px;
+}
+.fp-parable + .fp-parable {
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.fp-parable-name {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cream);
+}
+.fp-parable-lesson {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--cream-dim);
+  margin-top: 2px;
+}
+.fp-parable-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+}
+.fp-parable-ref {
+  font-size: 10px;
+  color: var(--muted);
+}
+.fp-parable-gospels {
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  white-space: nowrap;
+}
+.fp-parable-occasion {
+  margin-top: 5px;
+  padding: 2px 8px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--accent);
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.22);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fp-parable-occasion:hover {
+  background: rgba(201,168,76,0.18);
+}
+
 .fp-attr-credit {
   padding: 2px 16px 10px 40px;
   font-family: var(--font-serif);

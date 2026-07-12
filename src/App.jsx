@@ -257,6 +257,10 @@ export default function App() {
             onBookSelect={handleBookSelect}
             onViewModeChange={setViewMode}
             onShowProvincesChange={setShowProvinces}
+            onLocate={cityId => {
+              setHoveredCityId(cityId)
+              panToCityRef.current?.(cityId)
+            }}
           />
           <MapView
             activeJourneys={activeJourneys}

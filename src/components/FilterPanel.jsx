@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
 
 export default function FilterPanel({
@@ -10,8 +10,21 @@ export default function FilterPanel({
   onBookSelect,
   onViewModeChange,
   onShowProvincesChange,
+  onLocate,
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  // Parables grouped by theme, in first-appearance order
+  const parableThemes = useMemo(() => {
+    const groups = new Map()
+    for (const p of journeyData.parables ?? []) {
+      if (!groups.has(p.theme)) groups.set(p.theme, [])
+      groups.get(p.theme).push(p)
+    }
+    return [...groups.entries()]
+  }, [])
+
+  const cityName = id => journeyData.cities.find(c => c.id === id)?.name ?? id
 
   const allActive  = journeyData.journeys.every(j => activeJourneys.has(j.id))
   const noneActive = journeyData.journeys.every(j => !activeJourneys.has(j.id))
@@ -50,6 +63,10 @@ export default function FilterPanel({
             className={`fp-tab ${viewMode === 'books' ? 'fp-tab--active' : ''}`}
             onClick={() => onViewModeChange('books')}
           >Events</button>
+          <button
+            className={`fp-tab ${viewMode === 'parables' ? 'fp-tab--active' : ''}`}
+            onClick={() => onViewModeChange('parables')}
+          >Parables</button>
         </div>
 
         {/* ── Journey mode ── */}
@@ -137,6 +154,40 @@ export default function FilterPanel({
               <span className="fp-muted fp-em">Italic = fewer Gospels / disputed</span>
             </div>
           </>
+        )}
+
+        {/* ── Parables mode (thematic index — decoupled from the map) ── */}
+        {viewMode === 'parables' && (
+          <div className="fp-parables">
+            {parableThemes.map(([theme, list]) => (
+              <div key={theme} className="fp-parable-theme">
+                <div className="fp-parable-theme-head">{theme}</div>
+                {list.map(p => (
+                  <div key={p.id} className="fp-parable">
+                    <div className="fp-parable-name">{p.name}</div>
+                    {p.lesson && <div className="fp-parable-lesson">{p.lesson}</div>}
+                    <div className="fp-parable-meta">
+                      <span className="fp-parable-ref">{p.ref.split(';')[0]}</span>
+                      <span className="fp-parable-gospels">{p.gospels}</span>
+                    </div>
+                    {p.occasion && (
+                      <button
+                        type="button"
+                        className="fp-parable-occasion"
+                        onClick={() => onLocate?.(p.occasion.cityId)}
+                        title={p.occasion.note}
+                      >
+                        ◎ {cityName(p.occasion.cityId)}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+            <div className="fp-attr-legend">
+              <span className="fp-muted">Parables have no fixed location — grouped by theme, linked to the teaching setting where known (◎).</span>
+            </div>
+          </div>
         )}
 
         {/* ── Map layer toggles ── */}
