@@ -26,6 +26,24 @@ export default function FilterPanel({
 
   const cityName = id => journeyData.cities.find(c => c.id === id)?.name ?? id
 
+  // Located content grouped by category for the Events browser (marquee "event"
+  // items are already the chips above, so they're excluded here)
+  const eventCategories = useMemo(() => {
+    const meta = [
+      ['miracle',   'Miracles',   '#c9a84c'],
+      ['teaching',  'Teachings',  '#4A7C6F'],
+      ['encounter', 'Encounters', '#7B6FA0'],
+    ]
+    const groups = {}
+    for (const e of journeyData.churchEvents ?? []) {
+      if (!groups[e.category]) groups[e.category] = []
+      groups[e.category].push(e)
+    }
+    return meta
+      .filter(([cat]) => groups[cat])
+      .map(([cat, label, color]) => [label, color, groups[cat].sort((a, b) => a.year - b.year)])
+  }, [])
+
   const allActive  = journeyData.journeys.every(j => activeJourneys.has(j.id))
   const noneActive = journeyData.journeys.every(j => !activeJourneys.has(j.id))
 
@@ -153,6 +171,28 @@ export default function FilterPanel({
               <span className="fp-muted">Regular = in all four Gospels</span>
               <span className="fp-muted fp-em">Italic = fewer Gospels / disputed</span>
             </div>
+
+            {eventCategories.map(([label, color, list]) => (
+              <div key={label} className="fp-evt-cat">
+                <div className="fp-evt-cat-head">
+                  <span className="fp-evt-dot" style={{ background: color }} />
+                  {label}
+                  <span className="fp-evt-count">{list.length}</span>
+                </div>
+                {list.map(e => (
+                  <button
+                    key={e.id}
+                    type="button"
+                    className="fp-evt-row"
+                    onClick={() => onLocate?.(e.cityId)}
+                    title={`${e.label} — ${e.ref}`}
+                  >
+                    <span className="fp-evt-name">{e.label}</span>
+                    <span className="fp-evt-loc">{cityName(e.cityId)}</span>
+                  </button>
+                ))}
+              </div>
+            ))}
           </>
         )}
 
