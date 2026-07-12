@@ -1430,6 +1430,16 @@ body {
   flex-shrink: 0;
 }
 
+.fp-attr-credit {
+  padding: 2px 16px 10px 40px;
+  font-family: var(--font-serif);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
+}
+.fp-attr-credit a { color: var(--accent-dim); text-decoration: none; }
+.fp-attr-credit a:hover { color: var(--accent); text-decoration: underline; }
+
 /* province toggle */
 .fp-layer-divider {
   border-top: 1px solid var(--border);

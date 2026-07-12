@@ -75,7 +75,7 @@ export default function FilterPanel({
                   <label
                     key={journey.id}
                     className={`fp-journey-row ${active ? '' : 'fp-journey-row--dim'}`}
-                    style={{ '--jc': journey.color, background: `${journey.color}${active ? '1a' : '0d'}` }}
+                    style={{ '--jc': journey.color, background: active ? 'var(--surface-2)' : 'transparent' }}
                   >
                     <input
                       type="checkbox"
@@ -151,6 +151,11 @@ export default function FilterPanel({
           <span className="fp-province-swatch" />
           <span className="fp-journey-name">Provincial Boundaries</span>
         </label>
+        <div className="fp-attr-credit">
+          Region boundaries:{' '}
+          <a href="https://www.openbible.info/geo/" target="_blank" rel="noreferrer">OpenBible.info</a>
+          {' '}(CC BY 4.0)
+        </div>
       </aside>
     </>
   )
