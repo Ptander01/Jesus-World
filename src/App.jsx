@@ -7,7 +7,7 @@ import PlayControls from './components/PlayControls'
 import StoryLayer from './components/StoryLayer'
 import SearchBar from './components/SearchBar'
 import ThemeToggle from './components/ThemeToggle'
-import journeyData from './data/pauline-journeys-data.json'
+import journeyData from './data/gospels-data.json'
 import './index.css'
 
 // Verify durationDays and churchEvents are accessible
@@ -19,8 +19,12 @@ journeyData.journeys.forEach(j => {
 console.log(`churchEvents: ${journeyData.churchEvents.length} events across ${[...new Set(journeyData.churchEvents.map(e => e.churchId))].length} churches`)
 console.groupEnd()
 
-const PLAY_START = 44
-const PLAY_END   = 67
+const PLAY_START = 29
+const PLAY_END   = 33.4
+// Seconds of playback per ministry year. Jesus's public ministry spans ~4 years
+// (vs. Paul's 23), so we slow the base rate to keep the story legible — and the
+// Passion Week / Resurrection beats live in fractional years, so a year is a lot.
+const SECONDS_PER_YEAR = 6
 
 export default function App() {
   const [activeJourneys, setActiveJourneys] = useState(new Set())
@@ -80,7 +84,7 @@ export default function App() {
 
     function tick(now) {
       const elapsed      = now - playStartTimeRef.current
-      const yearsElapsed = (elapsed / 1000) * playSpeedRef.current / 1.5
+      const yearsElapsed = (elapsed / 1000) * playSpeedRef.current / SECONDS_PER_YEAR
       const newYear      = Math.min(playStartYearRef.current + yearsElapsed, playEndRef.current)
 
       setTimelineYear(newYear)
@@ -152,7 +156,7 @@ export default function App() {
 
       function tick(now) {
         const elapsed      = now - playStartTimeRef.current
-        const yearsElapsed = (elapsed / 1000) * playSpeedRef.current / 1.5
+        const yearsElapsed = (elapsed / 1000) * playSpeedRef.current / SECONDS_PER_YEAR
         const newYear      = Math.min(playStartYearRef.current + yearsElapsed, playEndRef.current)
 
         setTimelineYear(newYear)
@@ -226,7 +230,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Paul's World</h1>
+        <h1>Jesus's World</h1>
         <SearchBar
           onCitySelect={cityId => {
             setHoveredCityId(cityId)

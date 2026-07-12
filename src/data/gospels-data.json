@@ -1,0 +1,1283 @@
+{
+  "_readme": "Gospels Data — Jesus's life and ministry, compiled for the 'Jesus's World' interactive map (sister app of Paul's World). All dates AD. Coordinates [longitude, latitude]. Chronology follows a common reconstruction: baptism ~AD 29, four Passovers (John 2:13; 5:1; 6:4; 11:55), crucifixion Friday 14 Nisan = 3 April AD 33. Passion Week and Resurrection are encoded at day granularity as fractional years (1 day ~= 0.00274 yr). SEMANTIC REMAP of engine keys: 'journeys' = ministry periods; 'books' = marquee events/discourses (the 4-state chip system); 'churchEvents' = per-site event tracks (miracles/teachings/appearances); 'paulEvents' = per-period narrative beats. Field names (writingLocationId, recipientCityIds, attribution, dateDebated, churchId) are kept as-is so the file is drop-in for the existing engine; see the code checklist for the copy relabel.",
+  "version": "0.1",
+  "dateRange": [29, 33.4],
+  "cities": [
+    {
+      "id": "nazareth",
+      "name": "Nazareth",
+      "fullName": "Nazareth of Galilee",
+      "modernName": "Nazareth, Israel",
+      "province": "galilee",
+      "coords": [35.301, 32.702],
+      "tier": 1,
+      "labelAnchor": "left",
+      "description": "Jesus's hometown, where he grew up; twice rejected here — 'no prophet is accepted in his own country'",
+      "ref": "Luke 4:16-30; Matt 13:54-58"
+    },
+    {
+      "id": "bethlehem",
+      "name": "Bethlehem",
+      "fullName": "Bethlehem of Judea",
+      "modernName": "Bethlehem, West Bank",
+      "province": "judea",
+      "coords": [35.200, 31.705],
+      "tier": 2,
+      "description": "City of David and place of Jesus's birth; the shepherds and the Magi",
+      "ref": "Luke 2:1-20; Matt 2:1-12"
+    },
+    {
+      "id": "bethany-beyond-jordan",
+      "name": "Bethany beyond Jordan",
+      "fullName": "Bethany beyond the Jordan (Bethabara)",
+      "modernName": "Al-Maghtas, Jordan",
+      "province": "perea",
+      "coords": [35.545, 31.837],
+      "tier": 2,
+      "labelAnchor": "right",
+      "description": "The Jordan ford where John baptized; site of Jesus's baptism and of his later withdrawal beyond the Jordan",
+      "ref": "John 1:28; 10:40"
+    },
+    {
+      "id": "judean-wilderness",
+      "name": "Judean Wilderness",
+      "fullName": "Wilderness of Judea",
+      "modernName": "Judean Desert, West Bank",
+      "province": "judea",
+      "coords": [35.437, 31.822],
+      "tier": 3,
+      "description": "The desert where the Spirit led Jesus to be tempted forty days by the devil",
+      "ref": "Matt 4:1-11; Luke 4:1-13"
+    },
+    {
+      "id": "cana",
+      "name": "Cana",
+      "fullName": "Cana of Galilee",
+      "modernName": "Khirbet Qana / Kafr Kanna, Israel",
+      "province": "galilee",
+      "coords": [35.342, 32.747],
+      "tier": 2,
+      "description": "Site of the first sign — water turned to wine — and of the healing of the official's son at a distance",
+      "ref": "John 2:1-11; 4:46-54"
+    },
+    {
+      "id": "capernaum",
+      "name": "Capernaum",
+      "fullName": "Capernaum on the Sea of Galilee",
+      "modernName": "Tell Hum, Israel",
+      "province": "galilee",
+      "coords": [35.575, 32.881],
+      "tier": 1,
+      "labelAnchor": "right",
+      "description": "Jesus's ministry headquarters — 'his own city'; synagogue teaching, many healings, and the calling of Matthew",
+      "ref": "Matt 4:13; 9:1; Mark 2:1-12"
+    },
+    {
+      "id": "jerusalem",
+      "name": "Jerusalem",
+      "fullName": "Jerusalem",
+      "modernName": "Jerusalem",
+      "province": "judea",
+      "coords": [35.234, 31.777],
+      "tier": 1,
+      "labelAnchor": "bottom-right",
+      "description": "The holy city and temple; goal of the feast pilgrimages and stage of the Passion, death, and resurrection",
+      "ref": "Luke 2:41-52; John 2:13; Luke 19:28-24:53"
+    },
+    {
+      "id": "sychar",
+      "name": "Sychar",
+      "fullName": "Sychar in Samaria (near Jacob's Well)",
+      "modernName": "Near Nablus, West Bank",
+      "province": "samaria",
+      "coords": [35.281, 32.207],
+      "tier": 2,
+      "description": "Samaritan town by Jacob's well where Jesus spoke with the woman about living water; many believed",
+      "ref": "John 4:1-42"
+    },
+    {
+      "id": "nain",
+      "name": "Nain",
+      "fullName": "Nain of Galilee",
+      "modernName": "Nein, Israel",
+      "province": "galilee",
+      "coords": [35.371, 32.641],
+      "tier": 2,
+      "description": "Town at whose gate Jesus raised a widow's only son from the funeral bier",
+      "ref": "Luke 7:11-17"
+    },
+    {
+      "id": "chorazin",
+      "name": "Chorazin",
+      "fullName": "Chorazin",
+      "modernName": "Khirbet Karraza, Israel",
+      "province": "galilee",
+      "coords": [35.564, 32.910],
+      "tier": 3,
+      "description": "Galilean town on which Jesus pronounced a woe for refusing to repent despite his mighty works",
+      "ref": "Matt 11:21; Luke 10:13"
+    },
+    {
+      "id": "bethsaida",
+      "name": "Bethsaida",
+      "fullName": "Bethsaida Julias",
+      "modernName": "et-Tell, Golan Heights",
+      "province": "iturea",
+      "coords": [35.630, 32.911],
+      "tier": 2,
+      "description": "Home of Peter, Andrew, and Philip; near here Jesus fed the five thousand and healed a blind man in stages",
+      "ref": "John 1:44; Luke 9:10; Mark 8:22-26"
+    },
+    {
+      "id": "magdala",
+      "name": "Magdala",
+      "fullName": "Magdala (Taricheae)",
+      "modernName": "Migdal, Israel",
+      "province": "galilee",
+      "coords": [35.517, 32.824],
+      "tier": 3,
+      "description": "Fishing town on the west shore, home of Mary Magdalene, from whom seven demons were cast out",
+      "ref": "Luke 8:2; Matt 15:39"
+    },
+    {
+      "id": "gergesa",
+      "name": "Gergesa",
+      "fullName": "Gergesa, country of the Gadarenes",
+      "modernName": "Kursi, Golan Heights",
+      "province": "decapolis",
+      "coords": [35.651, 32.826],
+      "tier": 2,
+      "description": "East-shore region of the Decapolis where Jesus cast a legion of demons into the swine",
+      "ref": "Mark 5:1-20; Luke 8:26-39"
+    },
+    {
+      "id": "tyre",
+      "name": "Tyre",
+      "fullName": "Tyre",
+      "modernName": "Tyre (Sur), Lebanon",
+      "province": "phoenicia",
+      "coords": [35.196, 33.271],
+      "tier": 2,
+      "description": "Phoenician coastal city; Jesus withdrew to its region, where the Syrophoenician woman's faith won her daughter's healing",
+      "ref": "Mark 7:24-30; Matt 15:21-28"
+    },
+    {
+      "id": "sidon",
+      "name": "Sidon",
+      "fullName": "Sidon",
+      "modernName": "Sidon (Saida), Lebanon",
+      "province": "phoenicia",
+      "coords": [35.376, 33.563],
+      "tier": 3,
+      "description": "Northernmost point of Jesus's travels; he passed through Sidon toward the Decapolis",
+      "ref": "Mark 7:31"
+    },
+    {
+      "id": "caesarea-philippi",
+      "name": "Caesarea Philippi",
+      "fullName": "Caesarea Philippi (Paneas)",
+      "modernName": "Banias, Golan Heights",
+      "province": "iturea",
+      "coords": [35.694, 33.248],
+      "tier": 1,
+      "labelAnchor": "right",
+      "description": "At the springs of the Jordan, Peter confessed 'You are the Christ'; here Jesus first foretold the cross",
+      "ref": "Matt 16:13-28; Mark 8:27-38"
+    },
+    {
+      "id": "mount-hermon",
+      "name": "Mount Hermon",
+      "fullName": "Mount Hermon (Mount of Transfiguration)",
+      "modernName": "Jabal al-Shaykh",
+      "province": "iturea",
+      "coords": [35.851, 33.416],
+      "tier": 3,
+      "description": "High mountain near Caesarea Philippi, the likely site of the Transfiguration before Peter, James, and John",
+      "ref": "Matt 17:1-13; Mark 9:2-13"
+    },
+    {
+      "id": "jericho",
+      "name": "Jericho",
+      "fullName": "Jericho",
+      "modernName": "Jericho, West Bank",
+      "province": "judea",
+      "coords": [35.444, 31.871],
+      "tier": 2,
+      "description": "Oasis city on the ascent to Jerusalem; blind Bartimaeus received sight and Zacchaeus welcomed Jesus",
+      "ref": "Luke 18:35-19:10; Mark 10:46-52"
+    },
+    {
+      "id": "ephraim",
+      "name": "Ephraim",
+      "fullName": "Ephraim near the wilderness",
+      "modernName": "et-Taiyiba, West Bank",
+      "province": "judea",
+      "coords": [35.300, 31.955],
+      "tier": 3,
+      "description": "Town near the wilderness where Jesus withdrew with the disciples as the plot against him hardened",
+      "ref": "John 11:54"
+    },
+    {
+      "id": "bethany",
+      "name": "Bethany",
+      "fullName": "Bethany near Jerusalem",
+      "modernName": "al-Eizariya, West Bank",
+      "province": "judea",
+      "coords": [35.263, 31.771],
+      "tier": 1,
+      "labelAnchor": "bottom-right",
+      "description": "Home of Mary, Martha, and Lazarus, whom Jesus raised; his lodging during Passion Week and place of the Ascension",
+      "ref": "John 11:1-44; 12:1-8; Luke 24:50-51"
+    },
+    {
+      "id": "bethphage",
+      "name": "Bethphage",
+      "fullName": "Bethphage on the Mount of Olives",
+      "modernName": "et-Tur (east slope), Jerusalem",
+      "province": "judea",
+      "coords": [35.253, 31.775],
+      "tier": 3,
+      "description": "Village on the Mount of Olives from which Jesus sent for the colt and began the Triumphal Entry",
+      "ref": "Matt 21:1-11; Mark 11:1-11"
+    },
+    {
+      "id": "mount-of-olives",
+      "name": "Mount of Olives",
+      "fullName": "Mount of Olives (with Gethsemane)",
+      "modernName": "Jerusalem",
+      "province": "judea",
+      "coords": [35.245, 31.778],
+      "tier": 2,
+      "labelAnchor": "top-right",
+      "description": "Ridge east of the temple; place of the Olivet Discourse over the city and, at its foot, the garden of Gethsemane",
+      "ref": "Matt 24-25; Luke 21:37"
+    },
+    {
+      "id": "gethsemane",
+      "name": "Gethsemane",
+      "fullName": "Garden of Gethsemane",
+      "modernName": "Kidron valley, Jerusalem",
+      "province": "judea",
+      "coords": [35.240, 31.779],
+      "tier": 3,
+      "description": "Olive garden across the Kidron where Jesus prayed in agony and was betrayed and arrested",
+      "ref": "Matt 26:36-56; John 18:1-12"
+    },
+    {
+      "id": "emmaus",
+      "name": "Emmaus",
+      "fullName": "Emmaus",
+      "modernName": "Imwas / Nicopolis, Israel",
+      "province": "judea",
+      "coords": [34.989, 31.839],
+      "tier": 2,
+      "description": "Village on the road from Jerusalem where the risen Jesus was made known to two disciples in the breaking of bread",
+      "ref": "Luke 24:13-35"
+    },
+    {
+      "id": "tiberias",
+      "name": "Tiberias",
+      "fullName": "Tiberias on the Sea of Galilee",
+      "modernName": "Tiberias, Israel",
+      "province": "galilee",
+      "coords": [35.531, 32.795],
+      "tier": 2,
+      "description": "City giving its name to the lake; by its shore the risen Jesus gave the miraculous catch and restored Peter",
+      "ref": "John 6:23; 21:1-23"
+    },
+    {
+      "id": "galilee-mountain",
+      "name": "Mountain in Galilee",
+      "fullName": "The appointed mountain in Galilee",
+      "modernName": "Galilee highlands, Israel",
+      "province": "galilee",
+      "coords": [35.455, 32.812],
+      "tier": 3,
+      "description": "The mountain in Galilee where the risen Jesus met the eleven and gave the Great Commission",
+      "ref": "Matt 28:16-20"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "period-1",
+      "name": "Preparation & Early Ministry",
+      "shortName": "Early Ministry",
+      "dateRange": [29, 30.3],
+      "color": "#C9A84C",
+      "colorDim": "#7a6430",
+      "companions": ["John the Baptist", "Andrew", "Simon Peter", "Philip", "Nathanael"],
+      "reference": "Matt 3-4; John 1-4; Luke 3-4",
+      "description": "From the Jordan baptism and wilderness temptation to the first sign at Cana, the first Passover cleansing of the temple, and the Samaritan mission — ending with rejection at Nazareth and the move to Capernaum",
+      "waypoints": [
+        {
+          "cityId": "nazareth",
+          "year": 29.0,
+          "durationDays": 14,
+          "note": "Jesus leaves Nazareth, about thirty years old, and comes to the Jordan",
+          "ref": "Luke 3:23; Mark 1:9"
+        },
+        {
+          "cityId": "bethany-beyond-jordan",
+          "year": 29.05,
+          "durationDays": 3,
+          "note": "Baptized by John; the Spirit descends as a dove and the Father's voice is heard",
+          "ref": "Matt 3:13-17; John 1:29-34"
+        },
+        {
+          "cityId": "judean-wilderness",
+          "year": 29.1,
+          "durationDays": 40,
+          "note": "Led by the Spirit into the desert; forty days of fasting and temptation by the devil",
+          "ref": "Matt 4:1-11; Luke 4:1-13"
+        },
+        {
+          "cityId": "bethany-beyond-jordan",
+          "year": 29.22,
+          "durationDays": 3,
+          "note": "The first disciples follow — Andrew, John, Simon Peter, Philip, Nathanael",
+          "ref": "John 1:35-51"
+        },
+        {
+          "cityId": "cana",
+          "year": 29.27,
+          "durationDays": 3,
+          "note": "The wedding: water becomes wine, the first of his signs; his glory revealed",
+          "ref": "John 2:1-11"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 29.3,
+          "durationDays": 5,
+          "note": "Down to Capernaum with his mother, brothers, and disciples for a few days",
+          "ref": "John 2:12"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 30.0,
+          "durationDays": 12,
+          "note": "First Passover: he cleanses the temple; Nicodemus comes by night ('you must be born again')",
+          "ref": "John 2:13-3:21"
+        },
+        {
+          "cityId": "sychar",
+          "year": 30.08,
+          "durationDays": 2,
+          "note": "Passing through Samaria: the woman at the well; many Samaritans believe",
+          "ref": "John 4:1-42"
+        },
+        {
+          "cityId": "cana",
+          "year": 30.15,
+          "durationDays": 2,
+          "note": "Back in Cana he heals the royal official's son at Capernaum, at a distance — the second sign",
+          "ref": "John 4:46-54"
+        },
+        {
+          "cityId": "nazareth",
+          "year": 30.2,
+          "durationDays": 2,
+          "note": "In the synagogue he reads Isaiah; rejected and driven to the brow of the hill",
+          "ref": "Luke 4:16-30"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 30.28,
+          "durationDays": 10,
+          "note": "He leaves Nazareth and settles in Capernaum, making it the base of the Galilean ministry",
+          "ref": "Matt 4:12-16"
+        }
+      ]
+    },
+    {
+      "id": "period-2",
+      "name": "Great Galilean Ministry",
+      "shortName": "Galilean Ministry",
+      "dateRange": [30.3, 32.1],
+      "color": "#4A7C6F",
+      "colorDim": "#2d5048",
+      "companions": ["The Twelve"],
+      "reference": "Matt 5-15; Mark 1-6; Luke 5-9; John 6",
+      "description": "Capernaum as headquarters: the calling of the Twelve, the Sermon on the Mount, circuits of Galilee with healings and parables, the storm stilled and Legion cast out, and the feeding of the five thousand at the Passover of John 6",
+      "waypoints": [
+        {
+          "cityId": "capernaum",
+          "year": 30.35,
+          "durationDays": 40,
+          "note": "Calls Peter, Andrew, James, and John by the sea; drives out an unclean spirit; heals many at evening",
+          "ref": "Mark 1:16-34; Luke 5:1-11"
+        },
+        {
+          "cityId": "chorazin",
+          "year": 30.6,
+          "durationDays": 4,
+          "note": "'Let us go to the next towns' — preaching through the villages of Galilee",
+          "ref": "Mark 1:38-39"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 30.8,
+          "durationDays": 20,
+          "note": "On the mountain he appoints the Twelve and gives the Sermon on the Mount to the crowds",
+          "ref": "Matt 5-7; Mark 3:13-19"
+        },
+        {
+          "cityId": "nain",
+          "year": 31.2,
+          "durationDays": 2,
+          "note": "At the town gate he raises a widow's only son; 'a great prophet has arisen among us'",
+          "ref": "Luke 7:11-17"
+        },
+        {
+          "cityId": "magdala",
+          "year": 31.3,
+          "durationDays": 2,
+          "note": "Mary Magdalene and the women who followed and supported him out of their means",
+          "ref": "Luke 8:1-3"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 31.35,
+          "durationDays": 25,
+          "note": "Teaches the parables from a boat; sends out the Twelve two by two",
+          "ref": "Mark 4:1-34; 6:7-13"
+        },
+        {
+          "cityId": "gergesa",
+          "year": 31.5,
+          "durationDays": 3,
+          "note": "Crossing the sea he stills the storm, then casts the legion of demons into the swine",
+          "ref": "Mark 4:35-5:20",
+          "legMode": "sea"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 31.6,
+          "durationDays": 30,
+          "note": "Back across the lake: Jairus's daughter raised, the woman with the flow of blood healed",
+          "ref": "Mark 5:21-43",
+          "legMode": "sea"
+        },
+        {
+          "cityId": "bethsaida",
+          "year": 32.0,
+          "durationDays": 3,
+          "note": "At Passover he feeds the five thousand near Bethsaida, then walks on the sea",
+          "ref": "John 6:1-21; Mark 6:30-52"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 32.05,
+          "durationDays": 10,
+          "note": "The Bread of Life discourse in the synagogue; many disciples turn back",
+          "ref": "John 6:22-71",
+          "legMode": "sea"
+        }
+      ]
+    },
+    {
+      "id": "period-3",
+      "name": "Withdrawals & Beyond Galilee",
+      "shortName": "Withdrawals",
+      "dateRange": [32.1, 32.5],
+      "color": "#7B6FA0",
+      "colorDim": "#4a4166",
+      "companions": ["The Twelve", "Peter", "James", "John"],
+      "reference": "Matt 15-18; Mark 7-9; Luke 9",
+      "description": "Withdrawals into Gentile regions — Tyre and Sidon, the Decapolis, and the far north at Caesarea Philippi, where Peter confesses the Christ and the Transfiguration reveals his glory before the turn toward Jerusalem",
+      "waypoints": [
+        {
+          "cityId": "tyre",
+          "year": 32.12,
+          "durationDays": 4,
+          "note": "Into the region of Tyre: the Syrophoenician woman's faith wins her daughter's deliverance",
+          "ref": "Mark 7:24-30; Matt 15:21-28"
+        },
+        {
+          "cityId": "sidon",
+          "year": 32.16,
+          "durationDays": 2,
+          "note": "Northward through Sidon, then back toward the Sea of Galilee by way of the Decapolis",
+          "ref": "Mark 7:31"
+        },
+        {
+          "cityId": "gergesa",
+          "year": 32.2,
+          "durationDays": 4,
+          "note": "In the Decapolis he heals a deaf man and feeds the four thousand",
+          "ref": "Mark 7:31-8:9"
+        },
+        {
+          "cityId": "bethsaida",
+          "year": 32.25,
+          "durationDays": 2,
+          "note": "A blind man healed in two stages — first men 'like trees walking,' then clearly",
+          "ref": "Mark 8:22-26"
+        },
+        {
+          "cityId": "caesarea-philippi",
+          "year": 32.3,
+          "durationDays": 4,
+          "note": "'Who do you say that I am?' Peter: 'You are the Christ.' He foretells the cross",
+          "ref": "Matt 16:13-28; Mark 8:27-9:1"
+        },
+        {
+          "cityId": "mount-hermon",
+          "year": 32.35,
+          "durationDays": 2,
+          "note": "Transfigured before Peter, James, and John; Moses and Elijah appear; 'This is my beloved Son'",
+          "ref": "Matt 17:1-13; Mark 9:2-13"
+        },
+        {
+          "cityId": "capernaum",
+          "year": 32.42,
+          "durationDays": 8,
+          "note": "Home to Capernaum: the temple tax from the fish's mouth; 'who is the greatest?' and forgiveness",
+          "ref": "Matt 17:24-18:35"
+        }
+      ]
+    },
+    {
+      "id": "period-4",
+      "name": "Later Judean & Perean Ministry",
+      "shortName": "Judea & Perea",
+      "dateRange": [32.5, 33.24],
+      "color": "#C77B4A",
+      "colorDim": "#7a4a28",
+      "companions": ["The Twelve", "Mary", "Martha", "Lazarus"],
+      "reference": "Luke 10-19; John 7-12",
+      "description": "The road to Jerusalem: the feasts of Tabernacles and Dedication, the man born blind, the Perean ministry and parables, the raising of Lazarus, the withdrawal to Ephraim, and Jericho on the final ascent",
+      "waypoints": [
+        {
+          "cityId": "jerusalem",
+          "year": 32.6,
+          "durationDays": 10,
+          "note": "Feast of Tabernacles: 'if anyone thirsts, let him come to me'; the woman caught in adultery",
+          "ref": "John 7:1-8:59"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 32.9,
+          "durationDays": 6,
+          "note": "Feast of Dedication: heals the man born blind; 'I and the Father are one'",
+          "ref": "John 9:1-10:39"
+        },
+        {
+          "cityId": "bethany-beyond-jordan",
+          "year": 33.0,
+          "durationDays": 25,
+          "note": "Withdraws beyond the Jordan where John first baptized; the Perean parables — lost sheep, prodigal son",
+          "ref": "John 10:40-42; Luke 15"
+        },
+        {
+          "cityId": "bethany",
+          "year": 33.08,
+          "durationDays": 3,
+          "note": "'Lazarus, come out' — raised after four days in the tomb; the Sanhedrin resolves on his death",
+          "ref": "John 11:1-53"
+        },
+        {
+          "cityId": "ephraim",
+          "year": 33.1,
+          "durationDays": 14,
+          "note": "No longer walking openly, he withdraws with the disciples to Ephraim near the wilderness",
+          "ref": "John 11:54"
+        },
+        {
+          "cityId": "jericho",
+          "year": 33.18,
+          "durationDays": 2,
+          "note": "Blind Bartimaeus receives sight; Zacchaeus climbs the sycamore; 'today salvation has come to this house'",
+          "ref": "Luke 18:35-19:27"
+        },
+        {
+          "cityId": "bethany",
+          "year": 33.22,
+          "durationDays": 3,
+          "note": "Six days before the Passover, Mary anoints his feet at Bethany for his burial",
+          "ref": "John 12:1-8"
+        }
+      ]
+    },
+    {
+      "id": "period-5",
+      "name": "Passion Week",
+      "shortName": "Passion Week",
+      "dateRange": [33.24, 33.258],
+      "color": "#B85042",
+      "colorDim": "#7a3530",
+      "companions": ["The Twelve", "The Eleven"],
+      "reference": "Matt 21-27; Mark 11-15; Luke 19-23; John 12-19",
+      "description": "The final week in Jerusalem at day granularity — Triumphal Entry, the temple cleansed, the Olivet Discourse, the Last Supper and Gethsemane, the trials, and the crucifixion on Friday",
+      "waypoints": [
+        {
+          "cityId": "bethphage",
+          "year": 33.240,
+          "durationDays": 1,
+          "note": "Sunday — the Triumphal Entry: he rides the colt into Jerusalem to shouts of 'Hosanna'",
+          "ref": "Matt 21:1-11; John 12:12-19"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 33.243,
+          "durationDays": 1,
+          "note": "Monday — cleanses the temple a second time; curses the barren fig tree",
+          "ref": "Mark 11:12-19"
+        },
+        {
+          "cityId": "mount-of-olives",
+          "year": 33.246,
+          "durationDays": 1,
+          "note": "Tuesday — temple confrontations by day; the Olivet Discourse on the end of the age",
+          "ref": "Matt 24-25; Mark 13"
+        },
+        {
+          "cityId": "bethany",
+          "year": 33.249,
+          "durationDays": 1,
+          "note": "Wednesday — lodging at Bethany; Judas agrees to betray him for thirty pieces of silver",
+          "ref": "Matt 26:6-16"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 33.252,
+          "durationDays": 1,
+          "note": "Thursday — the Last Supper in the upper room; the new covenant in his blood; the washing of feet",
+          "ref": "Luke 22:7-38; John 13-17"
+        },
+        {
+          "cityId": "gethsemane",
+          "year": 33.254,
+          "durationDays": 1,
+          "note": "Thursday night — agony in the garden; 'not my will but yours'; betrayed with a kiss and arrested",
+          "ref": "Matt 26:36-56; John 18:1-12"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 33.256,
+          "durationDays": 1,
+          "note": "Friday — trials before Caiaphas and Pilate; crucified at Golgotha; buried before the Sabbath",
+          "ref": "Mark 14:53-15:47; John 18:28-19:42"
+        }
+      ]
+    },
+    {
+      "id": "period-6",
+      "name": "Resurrection Appearances",
+      "shortName": "Resurrection",
+      "dateRange": [33.258, 33.37],
+      "color": "#5B8DB8",
+      "colorDim": "#3a5c78",
+      "uncertainty": "traditional",
+      "reference": "Matt 28; Mark 16; Luke 24; John 20-21; Acts 1",
+      "companions": ["Mary Magdalene", "The Eleven", "the women", "two disciples"],
+      "description": "From the empty tomb through forty days of appearances — Mary Magdalene, the Emmaus road, the upper room, the shore of Galilee, the mountain of the Great Commission, and the Ascension from Bethany. Rendered dashed, like a journey reconstructed from many witnesses.",
+      "waypoints": [
+        {
+          "cityId": "jerusalem",
+          "year": 33.258,
+          "durationDays": 1,
+          "note": "Sunday at dawn — the empty tomb; he appears first to Mary Magdalene: 'do not cling to me'",
+          "ref": "John 20:1-18; Mark 16:1-8"
+        },
+        {
+          "cityId": "emmaus",
+          "year": 33.259,
+          "durationDays": 1,
+          "note": "That same day he walks unrecognized with two disciples, then is known in the breaking of bread",
+          "ref": "Luke 24:13-35"
+        },
+        {
+          "cityId": "jerusalem",
+          "year": 33.262,
+          "durationDays": 8,
+          "note": "In the upper room, 'Peace be with you'; a week later Thomas: 'My Lord and my God'",
+          "ref": "John 20:19-29; Luke 24:36-49"
+        },
+        {
+          "cityId": "tiberias",
+          "year": 33.30,
+          "durationDays": 3,
+          "note": "By the Sea of Galilee: the miraculous catch of fish; Peter restored — 'Feed my sheep'",
+          "ref": "John 21:1-23"
+        },
+        {
+          "cityId": "galilee-mountain",
+          "year": 33.33,
+          "durationDays": 1,
+          "note": "On the appointed mountain the eleven worship; the Great Commission — 'make disciples of all nations'",
+          "ref": "Matt 28:16-20"
+        },
+        {
+          "cityId": "bethany",
+          "year": 33.37,
+          "durationDays": 1,
+          "note": "Forty days after Passover he leads them to Bethany, blesses them, and is taken up",
+          "ref": "Luke 24:50-53; Acts 1:1-12"
+        }
+      ]
+    }
+  ],
+  "books": [
+    {
+      "id": "baptism-of-jesus",
+      "name": "The Baptism of Jesus",
+      "abbrev": "Baptism",
+      "writingLocationId": "bethany-beyond-jordan",
+      "dateRange": [29, 29],
+      "dateDebated": false,
+      "dateNote": "Opens the public ministry; the Spirit descends and the Father's voice affirms the Son.",
+      "journeyId": "period-1",
+      "recipientCityIds": ["bethany-beyond-jordan"],
+      "recipientRegion": "perea",
+      "theme": "The Father's voice and the Spirit anoint the Son at the threshold of his ministry",
+      "keyVerse": "Matt 3:17",
+      "attribution": "undisputed",
+      "ref": "Matt 3:13-17; Mark 1:9-11; Luke 3:21-22; John 1:29-34"
+    },
+    {
+      "id": "cana-wine",
+      "name": "The Wedding at Cana",
+      "abbrev": "Cana",
+      "writingLocationId": "cana",
+      "dateRange": [29, 29],
+      "dateDebated": false,
+      "dateNote": "The first of the signs in John's Gospel, near the start of the ministry.",
+      "journeyId": "period-1",
+      "recipientCityIds": ["cana"],
+      "recipientRegion": "galilee",
+      "theme": "The first sign: water into wine reveals his glory and the disciples believe",
+      "keyVerse": "John 2:11",
+      "attribution": "debated",
+      "ref": "John 2:1-11"
+    },
+    {
+      "id": "temple-cleansing",
+      "name": "Cleansing of the Temple",
+      "abbrev": "Temple",
+      "writingLocationId": "jerusalem",
+      "dateRange": [30, 30],
+      "dateDebated": true,
+      "dateNote": "John places a temple cleansing at the first Passover (2:13-22); the Synoptics place one in Passion Week. Whether these are one event or two is disputed.",
+      "journeyId": "period-1",
+      "recipientCityIds": ["jerusalem"],
+      "recipientRegion": "judea",
+      "theme": "Zeal for the Father's house; 'destroy this temple and in three days I will raise it up'",
+      "keyVerse": "John 2:19",
+      "attribution": "undisputed",
+      "ref": "John 2:13-22; Matt 21:12-13; Mark 11:15-18"
+    },
+    {
+      "id": "woman-at-well",
+      "name": "The Woman at the Well",
+      "abbrev": "The Well",
+      "writingLocationId": "sychar",
+      "dateRange": [30, 30],
+      "dateDebated": false,
+      "dateNote": "On the return through Samaria after the first Passover.",
+      "journeyId": "period-1",
+      "recipientCityIds": ["sychar"],
+      "recipientRegion": "samaria",
+      "theme": "Living water offered across the Jew–Samaritan divide; worship in spirit and truth",
+      "keyVerse": "John 4:14",
+      "attribution": "debated",
+      "ref": "John 4:1-42"
+    },
+    {
+      "id": "sermon-on-mount",
+      "name": "The Sermon on the Mount",
+      "abbrev": "Sermon",
+      "writingLocationId": "capernaum",
+      "dateRange": [31, 31],
+      "dateDebated": false,
+      "dateNote": "The great discourse of the Galilean ministry (Luke's parallel is the Sermon on the Plain).",
+      "journeyId": "period-2",
+      "recipientCityIds": ["capernaum"],
+      "recipientRegion": "galilee",
+      "theme": "The Beatitudes and the ethics of the kingdom — salt, light, and the Father's will",
+      "keyVerse": "Matt 5:3-10",
+      "attribution": "debated",
+      "ref": "Matt 5-7; Luke 6:20-49"
+    },
+    {
+      "id": "calming-storm",
+      "name": "Calming the Storm",
+      "abbrev": "The Storm",
+      "writingLocationId": "capernaum",
+      "dateRange": [31, 31],
+      "dateDebated": false,
+      "dateNote": "During a crossing of the Sea of Galilee toward the Decapolis.",
+      "journeyId": "period-2",
+      "recipientCityIds": ["gergesa"],
+      "recipientRegion": "decapolis",
+      "theme": "'Who then is this, that even wind and sea obey him?' — authority over chaos",
+      "keyVerse": "Mark 4:41",
+      "attribution": "debated",
+      "ref": "Mark 4:35-41; Matt 8:23-27; Luke 8:22-25"
+    },
+    {
+      "id": "feeding-5000",
+      "name": "Feeding the Five Thousand",
+      "abbrev": "The 5,000",
+      "writingLocationId": "bethsaida",
+      "dateRange": [32, 32],
+      "dateDebated": false,
+      "dateNote": "At the Passover of John 6 — the only miracle before the resurrection told in all four Gospels.",
+      "journeyId": "period-2",
+      "recipientCityIds": ["bethsaida"],
+      "recipientRegion": "galilee",
+      "theme": "Five loaves and two fish feed a multitude; 'I am the bread of life'",
+      "keyVerse": "John 6:35",
+      "attribution": "undisputed",
+      "ref": "Matt 14:13-21; Mark 6:30-44; Luke 9:10-17; John 6:1-15"
+    },
+    {
+      "id": "peters-confession",
+      "name": "Peter's Confession",
+      "abbrev": "Confess",
+      "writingLocationId": "caesarea-philippi",
+      "dateRange": [32, 32],
+      "dateDebated": false,
+      "dateNote": "At Caesarea Philippi, the hinge of the ministry toward the cross.",
+      "journeyId": "period-3",
+      "recipientCityIds": ["caesarea-philippi"],
+      "recipientRegion": "iturea",
+      "theme": "'You are the Christ, the Son of the living God'; the first passion prediction",
+      "keyVerse": "Matt 16:16",
+      "attribution": "debated",
+      "ref": "Matt 16:13-28; Mark 8:27-38; Luke 9:18-27"
+    },
+    {
+      "id": "transfiguration",
+      "name": "The Transfiguration",
+      "abbrev": "Transfig",
+      "writingLocationId": "mount-hermon",
+      "dateRange": [32, 32],
+      "dateDebated": false,
+      "dateNote": "About a week after Peter's confession, on a high mountain.",
+      "journeyId": "period-3",
+      "recipientCityIds": ["mount-hermon"],
+      "recipientRegion": "iturea",
+      "theme": "His face shines; Moses and Elijah attend; 'This is my beloved Son; listen to him'",
+      "keyVerse": "Mark 9:7",
+      "attribution": "debated",
+      "ref": "Matt 17:1-13; Mark 9:2-13; Luke 9:28-36"
+    },
+    {
+      "id": "raising-lazarus",
+      "name": "The Raising of Lazarus",
+      "abbrev": "Lazarus",
+      "writingLocationId": "bethany",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "At Bethany shortly before Passion Week; in John, the sign that seals the plot to kill him.",
+      "journeyId": "period-4",
+      "recipientCityIds": ["bethany"],
+      "recipientRegion": "judea",
+      "theme": "'I am the resurrection and the life'; a dead man called out of the tomb",
+      "keyVerse": "John 11:25",
+      "attribution": "debated",
+      "ref": "John 11:1-44"
+    },
+    {
+      "id": "triumphal-entry",
+      "name": "The Triumphal Entry",
+      "abbrev": "Entry",
+      "writingLocationId": "jerusalem",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "Palm Sunday — the opening of Passion Week, in all four Gospels.",
+      "journeyId": "period-5",
+      "recipientCityIds": ["jerusalem"],
+      "recipientRegion": "judea",
+      "theme": "The humble king on a colt; 'Blessed is he who comes in the name of the Lord'",
+      "keyVerse": "Matt 21:9",
+      "attribution": "undisputed",
+      "ref": "Matt 21:1-11; Mark 11:1-11; Luke 19:28-40; John 12:12-19"
+    },
+    {
+      "id": "olivet-discourse",
+      "name": "The Olivet Discourse",
+      "abbrev": "Olivet",
+      "writingLocationId": "mount-of-olives",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "Delivered on the Mount of Olives in the last week, overlooking the temple.",
+      "journeyId": "period-5",
+      "recipientCityIds": ["mount-of-olives"],
+      "recipientRegion": "judea",
+      "theme": "The fall of the temple and the coming of the Son of Man; 'watch therefore'",
+      "keyVerse": "Matt 24:35",
+      "attribution": "debated",
+      "ref": "Matt 24-25; Mark 13; Luke 21:5-36"
+    },
+    {
+      "id": "last-supper",
+      "name": "The Last Supper",
+      "abbrev": "Supper",
+      "writingLocationId": "jerusalem",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "Thursday evening of Passion Week, in the upper room.",
+      "journeyId": "period-5",
+      "recipientCityIds": ["jerusalem"],
+      "recipientRegion": "judea",
+      "theme": "The new covenant in bread and cup; the new commandment to love one another",
+      "keyVerse": "Luke 22:19-20",
+      "attribution": "undisputed",
+      "ref": "Matt 26:17-30; Mark 14:12-26; Luke 22:7-38; John 13-17"
+    },
+    {
+      "id": "crucifixion",
+      "name": "The Crucifixion",
+      "abbrev": "The Cross",
+      "writingLocationId": "jerusalem",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "Friday, 14 Nisan; crucified at Golgotha outside the city wall.",
+      "journeyId": "period-5",
+      "recipientCityIds": ["jerusalem"],
+      "recipientRegion": "judea",
+      "theme": "'It is finished' — the death of the Son and the torn veil",
+      "keyVerse": "John 19:30",
+      "attribution": "undisputed",
+      "ref": "Matt 27:32-56; Mark 15:21-41; Luke 23:26-49; John 19:16-37"
+    },
+    {
+      "id": "resurrection",
+      "name": "The Resurrection",
+      "abbrev": "Risen",
+      "writingLocationId": "jerusalem",
+      "dateRange": [33, 33],
+      "dateDebated": false,
+      "dateNote": "The third day; the empty tomb and the first appearances.",
+      "journeyId": "period-6",
+      "recipientCityIds": ["jerusalem"],
+      "recipientRegion": "judea",
+      "theme": "'He is not here, for he has risen' — death undone and the tomb empty",
+      "keyVerse": "Matt 28:6",
+      "attribution": "undisputed",
+      "ref": "Matt 28:1-10; Mark 16:1-8; Luke 24:1-12; John 20:1-18"
+    }
+  ],
+  "churchEvents": [
+    {
+      "id": "cana-first-sign",
+      "churchId": "cana",
+      "cityId": "cana",
+      "year": 29.27,
+      "journeyId": "period-1",
+      "label": "Water into wine",
+      "sublabel": "The first sign · John 2",
+      "type": "founding",
+      "ref": "John 2:1-11"
+    },
+    {
+      "id": "cana-officials-son",
+      "churchId": "cana",
+      "cityId": "cana",
+      "year": 30.15,
+      "journeyId": "period-1",
+      "label": "Official's son healed",
+      "sublabel": "The second sign, at a distance",
+      "type": "support",
+      "ref": "John 4:46-54"
+    },
+    {
+      "id": "sychar-living-water",
+      "churchId": "sychar",
+      "cityId": "sychar",
+      "year": 30.08,
+      "journeyId": "period-1",
+      "label": "Living water",
+      "sublabel": "The Samaritan woman · John 4",
+      "type": "letter-received",
+      "ref": "John 4:1-42"
+    },
+    {
+      "id": "capernaum-hq",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.3,
+      "journeyId": "period-1",
+      "label": "Ministry headquarters",
+      "sublabel": "'His own city' · Matt 9:1",
+      "type": "founding",
+      "ref": "Matt 4:13"
+    },
+    {
+      "id": "capernaum-matthew",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.5,
+      "journeyId": "period-2",
+      "label": "Matthew called",
+      "sublabel": "From the tax booth · Mark 2:14",
+      "type": "leadership",
+      "ref": "Mark 2:13-17"
+    },
+    {
+      "id": "capernaum-paralytic",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.6,
+      "journeyId": "period-2",
+      "label": "Paralytic forgiven & healed",
+      "sublabel": "Lowered through the roof",
+      "type": "support",
+      "ref": "Mark 2:1-12"
+    },
+    {
+      "id": "capernaum-jairus",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.65,
+      "journeyId": "period-2",
+      "label": "Jairus's daughter raised",
+      "sublabel": "'Talitha cumi' · Mark 5",
+      "type": "support",
+      "ref": "Mark 5:21-43"
+    },
+    {
+      "id": "nain-widows-son",
+      "churchId": "nain",
+      "cityId": "nain",
+      "year": 31.2,
+      "journeyId": "period-2",
+      "label": "Widow's son raised",
+      "sublabel": "At the town gate · Luke 7",
+      "type": "support",
+      "ref": "Luke 7:11-17"
+    },
+    {
+      "id": "chorazin-woe",
+      "churchId": "chorazin",
+      "cityId": "chorazin",
+      "year": 31.8,
+      "journeyId": "period-2",
+      "label": "Woe pronounced",
+      "sublabel": "'Woe to you, Chorazin!'",
+      "type": "letter-received",
+      "ref": "Matt 11:21; Luke 10:13"
+    },
+    {
+      "id": "gergesa-legion",
+      "churchId": "gergesa",
+      "cityId": "gergesa",
+      "year": 31.5,
+      "journeyId": "period-2",
+      "label": "Legion cast out",
+      "sublabel": "Into the herd of swine",
+      "type": "support",
+      "ref": "Mark 5:1-20"
+    },
+    {
+      "id": "bethsaida-5000",
+      "churchId": "bethsaida",
+      "cityId": "bethsaida",
+      "year": 32.0,
+      "journeyId": "period-2",
+      "label": "Five thousand fed",
+      "sublabel": "Five loaves, two fish · John 6",
+      "type": "founding",
+      "ref": "Matt 14:13-21; John 6:1-15"
+    },
+    {
+      "id": "bethsaida-woe",
+      "churchId": "bethsaida",
+      "cityId": "bethsaida",
+      "year": 32.05,
+      "journeyId": "period-2",
+      "label": "Woe pronounced",
+      "sublabel": "'Woe to you, Bethsaida!'",
+      "type": "letter-received",
+      "ref": "Matt 11:21"
+    },
+    {
+      "id": "bethsaida-blind",
+      "churchId": "bethsaida",
+      "cityId": "bethsaida",
+      "year": 32.25,
+      "journeyId": "period-3",
+      "label": "Blind man healed in stages",
+      "sublabel": "'Men like trees walking'",
+      "type": "support",
+      "ref": "Mark 8:22-26"
+    },
+    {
+      "id": "tyre-syrophoenician",
+      "churchId": "tyre",
+      "cityId": "tyre",
+      "year": 32.12,
+      "journeyId": "period-3",
+      "label": "Syrophoenician's daughter healed",
+      "sublabel": "'Great is your faith' · Mark 7",
+      "type": "support",
+      "ref": "Mark 7:24-30"
+    },
+    {
+      "id": "caesarea-confession",
+      "churchId": "caesarea-philippi",
+      "cityId": "caesarea-philippi",
+      "year": 32.3,
+      "journeyId": "period-3",
+      "label": "Peter's confession",
+      "sublabel": "'You are the Christ' · Matt 16",
+      "type": "founding",
+      "ref": "Matt 16:13-20"
+    },
+    {
+      "id": "hermon-transfiguration",
+      "churchId": "mount-hermon",
+      "cityId": "mount-hermon",
+      "year": 32.35,
+      "journeyId": "period-3",
+      "label": "The Transfiguration",
+      "sublabel": "'This is my beloved Son'",
+      "type": "founding",
+      "ref": "Matt 17:1-8"
+    },
+    {
+      "id": "bethany-lazarus",
+      "churchId": "bethany",
+      "cityId": "bethany",
+      "year": 33.08,
+      "journeyId": "period-4",
+      "label": "Lazarus raised",
+      "sublabel": "Dead four days · John 11",
+      "type": "support",
+      "ref": "John 11:1-44"
+    },
+    {
+      "id": "jericho-bartimaeus",
+      "churchId": "jericho",
+      "cityId": "jericho",
+      "year": 33.18,
+      "journeyId": "period-4",
+      "label": "Blind Bartimaeus healed",
+      "sublabel": "'Your faith has made you well'",
+      "type": "support",
+      "ref": "Mark 10:46-52"
+    },
+    {
+      "id": "jericho-zacchaeus",
+      "churchId": "jericho",
+      "cityId": "jericho",
+      "year": 33.19,
+      "journeyId": "period-4",
+      "label": "Zacchaeus welcomes Jesus",
+      "sublabel": "'Salvation has come to this house'",
+      "type": "leadership",
+      "ref": "Luke 19:1-10"
+    },
+    {
+      "id": "jerusalem-crucifixion",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 33.256,
+      "journeyId": "period-5",
+      "label": "Crucified at Golgotha",
+      "sublabel": "'It is finished' · John 19",
+      "type": "founding",
+      "ref": "John 19:16-37"
+    },
+    {
+      "id": "jerusalem-resurrection",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 33.258,
+      "journeyId": "period-6",
+      "label": "Risen from the dead",
+      "sublabel": "The empty tomb · Matt 28",
+      "type": "founding",
+      "ref": "Matt 28:1-10"
+    },
+    {
+      "id": "tiberias-restoration",
+      "churchId": "tiberias",
+      "cityId": "tiberias",
+      "year": 33.30,
+      "journeyId": "period-6",
+      "label": "Peter restored",
+      "sublabel": "'Feed my sheep' · John 21",
+      "type": "leadership",
+      "ref": "John 21:1-23"
+    }
+  ],
+  "paulEvents": [
+    { "id": "p1-baptism", "journeyId": "period-1", "year": 29.05, "label": "Baptized in the Jordan", "sublabel": "The Spirit descends as a dove", "ref": "Matt 3:16-17", "type": "major" },
+    { "id": "p1-temptation", "journeyId": "period-1", "year": 29.1, "label": "Tempted in the wilderness", "sublabel": "Forty days, three temptations", "ref": "Matt 4:1-11", "type": "minor" },
+    { "id": "p1-cana", "journeyId": "period-1", "year": 29.27, "label": "First sign at Cana", "sublabel": "Water into wine", "ref": "John 2:11", "type": "major" },
+    { "id": "p1-temple", "journeyId": "period-1", "year": 30.0, "label": "Temple cleansed at Passover", "sublabel": "'Zeal for your house'", "ref": "John 2:13-22", "type": "minor" },
+    { "id": "p1-nicodemus", "journeyId": "period-1", "year": 30.02, "label": "Nicodemus by night", "sublabel": "'You must be born again'", "ref": "John 3:1-21", "type": "minor" },
+    { "id": "p1-samaria", "journeyId": "period-1", "year": 30.08, "label": "The woman at the well", "sublabel": "Living water in Samaria", "ref": "John 4:1-42", "type": "major" },
+    { "id": "p1-nazareth-reject", "journeyId": "period-1", "year": 30.2, "label": "Rejected at Nazareth", "sublabel": "'No prophet is accepted at home'", "ref": "Luke 4:16-30", "type": "minor" },
+
+    { "id": "p2-call-four", "journeyId": "period-2", "year": 30.35, "label": "Calls the first disciples", "sublabel": "Fishers of men", "ref": "Mark 1:16-20", "type": "major" },
+    { "id": "p2-sermon", "journeyId": "period-2", "year": 30.8, "label": "Sermon on the Mount", "sublabel": "The Beatitudes", "ref": "Matt 5-7", "type": "major" },
+    { "id": "p2-nain", "journeyId": "period-2", "year": 31.2, "label": "Widow's son raised at Nain", "sublabel": "Compassion at the gate", "ref": "Luke 7:11-17", "type": "minor" },
+    { "id": "p2-parables", "journeyId": "period-2", "year": 31.35, "label": "Parables of the kingdom", "sublabel": "Taught from a boat", "ref": "Mark 4:1-34", "type": "minor" },
+    { "id": "p2-storm", "journeyId": "period-2", "year": 31.5, "label": "Storm stilled; Legion cast out", "sublabel": "Authority over sea and demons", "ref": "Mark 4:35-5:20", "type": "major" },
+    { "id": "p2-jairus", "journeyId": "period-2", "year": 31.65, "label": "Jairus's daughter raised", "sublabel": "'Talitha cumi'", "ref": "Mark 5:21-43", "type": "minor" },
+    { "id": "p2-5000", "journeyId": "period-2", "year": 32.0, "label": "Feeds the five thousand", "sublabel": "Then walks on the sea", "ref": "John 6:1-21", "type": "major" },
+
+    { "id": "p3-syrophoenician", "journeyId": "period-3", "year": 32.12, "label": "Syrophoenician woman's faith", "sublabel": "Ministry beyond Israel", "ref": "Mark 7:24-30", "type": "minor" },
+    { "id": "p3-4000", "journeyId": "period-3", "year": 32.2, "label": "Feeds the four thousand", "sublabel": "In the Decapolis", "ref": "Mark 8:1-9", "type": "minor" },
+    { "id": "p3-confession", "journeyId": "period-3", "year": 32.3, "label": "Peter's confession", "sublabel": "'You are the Christ'", "ref": "Matt 16:16", "type": "major" },
+    { "id": "p3-transfig", "journeyId": "period-3", "year": 32.35, "label": "The Transfiguration", "sublabel": "Glory on the mountain", "ref": "Matt 17:1-8", "type": "major" },
+
+    { "id": "p4-tabernacles", "journeyId": "period-4", "year": 32.6, "label": "Feast of Tabernacles", "sublabel": "'Rivers of living water'", "ref": "John 7:37-39", "type": "minor" },
+    { "id": "p4-blind-man", "journeyId": "period-4", "year": 32.92, "label": "Man born blind healed", "sublabel": "'I am the light of the world'", "ref": "John 9", "type": "minor" },
+    { "id": "p4-lazarus", "journeyId": "period-4", "year": 33.08, "label": "Lazarus raised", "sublabel": "'I am the resurrection'", "ref": "John 11:1-44", "type": "major" },
+    { "id": "p4-zacchaeus", "journeyId": "period-4", "year": 33.19, "label": "Zacchaeus at Jericho", "sublabel": "'Salvation has come'", "ref": "Luke 19:1-10", "type": "minor" },
+
+    { "id": "p5-entry", "journeyId": "period-5", "year": 33.240, "label": "Triumphal Entry", "sublabel": "Sunday — 'Hosanna'", "ref": "Matt 21:1-11", "type": "major" },
+    { "id": "p5-temple", "journeyId": "period-5", "year": 33.243, "label": "Temple cleansed", "sublabel": "Monday", "ref": "Mark 11:15-18", "type": "minor" },
+    { "id": "p5-olivet", "journeyId": "period-5", "year": 33.246, "label": "Olivet Discourse", "sublabel": "Tuesday — the last things", "ref": "Matt 24-25", "type": "minor" },
+    { "id": "p5-supper", "journeyId": "period-5", "year": 33.252, "label": "The Last Supper", "sublabel": "Thursday — the new covenant", "ref": "Luke 22:19-20", "type": "major" },
+    { "id": "p5-gethsemane", "journeyId": "period-5", "year": 33.254, "label": "Gethsemane & arrest", "sublabel": "'Not my will but yours'", "ref": "Matt 26:36-56", "type": "minor" },
+    { "id": "p5-crucifixion", "journeyId": "period-5", "year": 33.256, "label": "The Crucifixion", "sublabel": "Friday — 'It is finished'", "ref": "John 19:30", "type": "major" },
+
+    { "id": "p6-empty-tomb", "journeyId": "period-6", "year": 33.258, "label": "The empty tomb", "sublabel": "Appears to Mary Magdalene", "ref": "John 20:1-18", "type": "major" },
+    { "id": "p6-emmaus", "journeyId": "period-6", "year": 33.259, "label": "The Emmaus road", "sublabel": "Known in the breaking of bread", "ref": "Luke 24:13-35", "type": "minor" },
+    { "id": "p6-thomas", "journeyId": "period-6", "year": 33.27, "label": "Thomas believes", "sublabel": "'My Lord and my God'", "ref": "John 20:24-29", "type": "minor" },
+    { "id": "p6-galilee", "journeyId": "period-6", "year": 33.33, "label": "The Great Commission", "sublabel": "'Make disciples of all nations'", "ref": "Matt 28:16-20", "type": "major" },
+    { "id": "p6-ascension", "journeyId": "period-6", "year": 33.37, "label": "The Ascension", "sublabel": "Taken up from Bethany", "ref": "Acts 1:9-11", "type": "major" }
+  ],
+  "provinces": {
+    "description": "Herodian tetrarchies and neighboring regions during Jesus's ministry (~AD 29-33), replacing Paul's Roman provinces.",
+    "recommendedSource": "Herodian-era boundaries; adapt from klokantech Roman Empire GeoJSON or AWMC political data for the reign of Tiberius.",
+    "regions": [
+      { "id": "galilee", "name": "Galilee", "ruler": "Herod Antipas (tetrarch)" },
+      { "id": "judea", "name": "Judea", "ruler": "Pontius Pilate (Roman prefect)" },
+      { "id": "samaria", "name": "Samaria", "ruler": "Pontius Pilate (Roman prefect)" },
+      { "id": "perea", "name": "Perea", "ruler": "Herod Antipas (tetrarch)" },
+      { "id": "iturea", "name": "Iturea & Trachonitis", "ruler": "Herod Philip (tetrarch)" },
+      { "id": "decapolis", "name": "Decapolis", "ruler": "League of ten cities (Roman Syria)" },
+      { "id": "phoenicia", "name": "Phoenicia", "ruler": "Province of Syria" }
+    ],
+    "renderingNotes": "Render as semi-transparent fills; tint regions Jesus visited (Galilee, Judea, Samaria, Perea, Iturea, Decapolis, Phoenicia) with the 'provinceVisited' gold. Replace public/provinces.geojson with a Herodian dataset whose feature properties.name maps via normalizeProvinceName."
+  },
+  "mapConfig": {
+    "projection": "geoMercator",
+    "center": [35.35, 32.35],
+    "scaleHint": 11000,
+    "viewBox": "0 0 1200 680",
+    "note": "The whole drama fits within ~200 km — from Sidon (33.56N) to Bethlehem (31.7N), Emmaus (34.99E) to Mount Hermon (35.86E). Tune scale in MapView's d3.geoMercator so all sites sit inside the viewport; the 10m coastline swap matters most at this zoom.",
+    "boundingBox": { "west": 34.7, "east": 36.1, "south": 31.5, "north": 33.7 }
+  },
+  "colorSystem": {
+    "period1": { "primary": "#C9A84C", "dim": "#7a6430", "light": "#e9c86c", "label": "Early Ministry" },
+    "period2": { "primary": "#4A7C6F", "dim": "#2d5048", "light": "#6aaa9c", "label": "Galilean Ministry" },
+    "period3": { "primary": "#7B6FA0", "dim": "#4a4166", "light": "#a89dcc", "label": "Withdrawals" },
+    "period4": { "primary": "#C77B4A", "dim": "#7a4a28", "light": "#e0a06c", "label": "Judea & Perea" },
+    "period5": { "primary": "#B85042", "dim": "#7a3530", "light": "#d4786c", "label": "Passion Week" },
+    "period6": { "primary": "#5B8DB8", "dim": "#3a5c78", "light": "#8ab4d8", "label": "Resurrection" },
+    "cityMajor": "#c9a84c",
+    "cityMinor": "#a09a8e",
+    "writingLocation": "#e9c86c",
+    "recipientCity": "#4A7C6F",
+    "provinceVisited": { "fill": "#c9a84c", "opacity": 0.07 },
+    "provinceUnvisited": { "fill": "#a09a8e", "opacity": 0.04 },
+    "provinceBorder": { "stroke": "#c9a84c", "opacity": 0.25, "width": 0.8 }
+  }
+}

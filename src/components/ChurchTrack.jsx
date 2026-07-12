@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 import { buildStopLayout, STOP_MARGIN_X } from '../utils/stopLayout'
 
 const TRACK_Y = 28   // vertical center of SVG

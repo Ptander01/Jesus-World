@@ -2,7 +2,7 @@ import { useRef, useEffect, useMemo, useState } from 'react'
 import * as d3 from 'd3'
 import * as topojson from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 const W = 1200
 const H = 680
@@ -17,11 +17,12 @@ function haversineKm([lon1, lat1], [lon2, lat2]) {
 }
 
 const JOURNEY_MAP = {
-  'journey-1':    journeyData.colorSystem.journey1,
-  'journey-2':    journeyData.colorSystem.journey2,
-  'journey-3':    journeyData.colorSystem.journey3,
-  'rome-journey': journeyData.colorSystem.romeJourney,
-  'post-rome':    journeyData.colorSystem.postRome,
+  'period-1': journeyData.colorSystem.period1,
+  'period-2': journeyData.colorSystem.period2,
+  'period-3': journeyData.colorSystem.period3,
+  'period-4': journeyData.colorSystem.period4,
+  'period-5': journeyData.colorSystem.period5,
+  'period-6': journeyData.colorSystem.period6,
 }
 
 // d3-geo treats polygon rings spherically: a ring wound the "wrong" way fills
@@ -123,27 +124,25 @@ function applyRevealState(jd, revealLen, opacity) {
   })
 }
 
+// Maps the Herodian-era region dataset's feature names to the region ids used
+// in gospels-data.json. Extend as the chosen provinces.geojson dictates.
 function normalizeProvinceName(rawName) {
   const map = {
-    'Asia':                  'asia',
-    'Macedonia':             'macedonia',
-    'Achaia':                'achaia',
-    'Syria':                 'syria',
-    'Galatia et Cappadocia': 'galatia',
-    'Galatia':               'galatia',
-    'Cilicia':               'cilicia',
-    'Cyprus':                'cyprus',
-    'Sicilia':               'sicilia',
-    'Dalmatia':              'dalmatia',
-    'Thracia':               'thracia',
-    'Bithynia et Pontus':    'bithynia-pontus',
-    'Lycia et Pamphylia':    'lycia-pamphylia',
-    'Creta et Cyrene':       'creta-cyrenaica',
-    'Africa Proconsularis':  'africa-proconsularis',
-    'Iudaea':                'iudaea',
-    'I':   'italia', 'II':  'italia', 'III': 'italia', 'IV': 'italia',
-    'V':   'italia', 'VI':  'italia', 'VII': 'italia', 'VIII': 'italia',
-    'IX':  'italia', 'X':   'italia', 'XI':  'italia',
+    'Galilee':                'galilee',
+    'Judaea':                 'judea',
+    'Judea':                  'judea',
+    'Iudaea':                 'judea',
+    'Samaria':                'samaria',
+    'Peraea':                 'perea',
+    'Perea':                  'perea',
+    'Ituraea':                'iturea',
+    'Iturea et Trachonitis':  'iturea',
+    'Gaulanitis':             'iturea',
+    'Trachonitis':            'iturea',
+    'Decapolis':              'decapolis',
+    'Phoenice':               'phoenicia',
+    'Phoenicia':              'phoenicia',
+    'Syria':                  'phoenicia',
   }
   return map[rawName] ?? rawName.toLowerCase().replace(/\s+/g, '-')
 }
@@ -172,7 +171,7 @@ function applyZoomStyling(mapGEl, k) {
   g.selectAll('.map-borders').attr('stroke-width', 0.7 / s)
   g.selectAll('.map-coast').attr('stroke-width', 0.6 / s)
   g.selectAll('.province-border').attr('stroke-width', 0.8 / s)
-  g.selectAll('.via-egnatia').attr('stroke-width', 0.8 / s)
+  g.selectAll('.era-road').attr('stroke-width', 0.8 / s)
   g.selectAll('.seg-hit').attr('stroke-width', 12 / k) // hit zone stays screen-constant
 
   g.selectAll('.city-dot').each(function () {
@@ -248,7 +247,7 @@ function getArcLengthAtPoint(pathNode, tx, ty, total) {
 }
 
 function getPaulLocationAtYear(year, cityById) {
-  if (year < 46) return cityById['antioch-syria']?.coords ?? null
+  if (year < 29) return cityById['nazareth']?.coords ?? null
   const candidates = [...journeyData.journeys].reverse()
   for (const journey of candidates) {
     if (year < journey.dateRange[0] || year > journey.dateRange[1]) continue
@@ -268,23 +267,24 @@ function getPaulLocationAtYear(year, cityById) {
 }
 
 function getPlayZoom(location) {
-  if (!location) return 1.5
+  if (!location) return 1.4
   const [lon, lat] = location
-  if (lon < 20 || (lat < 37 && lon < 28)) return 1.2
-  if (lon >= 20 && lon <= 27 && lat >= 37 && lat <= 42) return 2.0
-  return 1.6
+  // The whole ministry fits in ~200 km, so zoom stays gentle. Tighten a little
+  // around Jerusalem/Judea for the Passion Week beats.
+  if (lat < 32.2 && lon >= 34.9 && lon <= 35.6) return 2.2
+  return 1.5
 }
 
-// Scale bar showing a fixed 500 km reference in the bottom-right corner
+// Scale bar showing a fixed 50 km reference in the bottom-right corner
 function ScaleBar({ projection, theme }) {
   const barColor = theme === 'light' ? '#4a5a6a' : '#7a8ab0'
-  const TARGET_KM = 500
+  const TARGET_KM = 50
   const R = 6371
-  // Compute pixel width for TARGET_KM at the map's center latitude (37°N)
-  const centerLat = 37 * Math.PI / 180
+  // Compute pixel width for TARGET_KM at the map's center latitude (~32°N)
+  const centerLat = 32 * Math.PI / 180
   const dLon = (TARGET_KM / R) / Math.cos(centerLat) * (180 / Math.PI)
-  const [x0] = projection([26, 37])
-  const [x1] = projection([26 + dLon, 37])
+  const [x0] = projection([35.3, 32])
+  const [x1] = projection([35.3 + dLon, 32])
   const barW = Math.round(x1 - x0)
 
   // Position in SVG units, bottom-right
@@ -362,8 +362,10 @@ export default function MapView({
     () => topojson.mesh(atlas, atlas.objects.countries, (a, b) => a !== b),
     [atlas]
   )
+  // Gospels theatre: from Sidon down to Bethlehem, Emmaus across to Mt Hermon —
+  // a tall, narrow ~200 km strip, so the scale is far higher than Paul's basin.
   const projection = useMemo(
-    () => d3.geoMercator().center([26, 37]).scale(950).translate([W / 2, H / 2]),
+    () => d3.geoMercator().center([35.4, 32.4]).scale(12500).translate([W / 2, H / 2]),
     []
   )
   const pathGen = useMemo(() => d3.geoPath(projection), [projection])
@@ -404,11 +406,16 @@ export default function MapView({
     return modes
   }, [cityById])
 
-  const visitedIds = useMemo(() => new Set(
-    journeyData.provinces.relevantProvinces
-      .filter(p => p.paulVisited)
-      .map(p => p.id)
-  ), [])
+  // Regions the ministry actually reaches — derived from the provinces of every
+  // city visited by any period, used to gold-tint those tetrarchies.
+  const visitedIds = useMemo(() => {
+    const visited = new Set()
+    journeyData.journeys.forEach(j => j.waypoints.forEach(wp => {
+      const city = cityById[wp.cityId]
+      if (city?.province) visited.add(city.province)
+    }))
+    return visited
+  }, [cityById])
 
   const lineGen = useMemo(() =>
     d3.line()
@@ -543,35 +550,50 @@ export default function MapView({
       })
     }
 
-    // ── Via Egnatia road
-    const viaEgnatiaWaypoints = [[19.47, 41.32], [24.29, 41.01], [26.67, 41.67]]
-    const viaEgnatiaProjected = viaEgnatiaWaypoints.map(c => projection(c))
+    // ── Era roads: the Via Maris (coast → Jezreel → Galilee) and the
+    // Jordan-valley pilgrim road (Galilee → Jericho → Jerusalem, the route
+    // Galilean pilgrims took to skirt Samaria).
+    const ERA_ROADS = [
+      {
+        label: 'VIA MARIS',
+        labelIdx: 1,
+        pts: [[34.90, 32.50], [35.18, 32.60], [35.53, 32.82]],
+      },
+      {
+        label: 'JORDAN ROAD',
+        labelIdx: 2,
+        pts: [[35.57, 32.88], [35.55, 32.40], [35.50, 32.00], [35.46, 31.87], [35.28, 31.83], [35.23, 31.78]],
+      },
+    ]
     const roadG = mapG.append('g').attr('pointer-events', 'none')
-    roadG.append('path')
-      .attr('class', 'via-egnatia')
-      .attr('d', `M ${viaEgnatiaProjected.map(p => p.join(',')).join(' L ')}`)
-      .attr('fill', 'none')
-      .attr('stroke', '#c9a84c')
-      .attr('stroke-width', 0.8)
-      .attr('stroke-opacity', 0.25)
-      .attr('stroke-dasharray', '6 4')
-      .attr('stroke-linecap', 'round')
-    const midPt = viaEgnatiaProjected[1]
-    roadG.append('text')
-      .attr('class', 'road-label')
-      .attr('x', midPt[0])
-      .attr('y', midPt[1] - 7)
-      .attr('text-anchor', 'middle')
-      .attr('font-family', 'Cinzel, serif')
-      .attr('font-size', 9)
-      .attr('letter-spacing', 3)
-      .attr('fill', '#c9a84c')
-      .attr('fill-opacity', 0.35)
-      .attr('paint-order', 'stroke')
-      .attr('stroke', haloColor)
-      .attr('stroke-opacity', 0.4)
-      .attr('stroke-linejoin', 'round')
-      .text('VIA EGNATIA')
+    ERA_ROADS.forEach(road => {
+      const proj = road.pts.map(c => projection(c))
+      roadG.append('path')
+        .attr('class', 'era-road')
+        .attr('d', `M ${proj.map(p => p.join(',')).join(' L ')}`)
+        .attr('fill', 'none')
+        .attr('stroke', '#c9a84c')
+        .attr('stroke-width', 0.8)
+        .attr('stroke-opacity', 0.25)
+        .attr('stroke-dasharray', '6 4')
+        .attr('stroke-linecap', 'round')
+      const midPt = proj[road.labelIdx]
+      roadG.append('text')
+        .attr('class', 'road-label')
+        .attr('x', midPt[0])
+        .attr('y', midPt[1] - 7)
+        .attr('text-anchor', 'middle')
+        .attr('font-family', 'Cinzel, serif')
+        .attr('font-size', 9)
+        .attr('letter-spacing', 3)
+        .attr('fill', '#c9a84c')
+        .attr('fill-opacity', 0.35)
+        .attr('paint-order', 'stroke')
+        .attr('stroke', haloColor)
+        .attr('stroke-opacity', 0.4)
+        .attr('stroke-linejoin', 'round')
+        .text(road.label)
+    })
 
     // ── Journey lines
     const linesG = mapG.append('g')
@@ -616,7 +638,7 @@ export default function MapView({
       })
 
       // Visible route: one sampled sub-path per waypoint pair — sea legs dashed,
-      // land legs solid over a casing; post-rome stays dashed throughout (traditional)
+      // land legs solid over a casing; period-6 (Resurrection) stays dashed throughout
       const caseG = linesG.append('g')
       const segG  = linesG.append('g')
       const segs = []
@@ -627,7 +649,7 @@ export default function MapView({
         const d = samplePath(node, l0, l1)
         dStrings.push(d)
         const segLen = l1 - l0
-        const dash = journey.id === 'post-rome'
+        const dash = journey.id === 'period-6'
           ? [8, 5]
           : segModes[`${journey.id}:${i}`] === 'sea' ? [4, 3.2] : null
         let caseEl = null
@@ -742,7 +764,7 @@ export default function MapView({
             .attr('stroke-opacity', isActive ? 0.9 : 0.5)
             .attr('stroke-linecap', 'round')
             .attr('stroke-linejoin', 'round')
-          if (journey.id === 'post-rome') segEl.attr('stroke-dasharray', '8 5')
+          if (journey.id === 'period-6') segEl.attr('stroke-dasharray', '8 5')
         }
       }
     })
@@ -1006,7 +1028,7 @@ export default function MapView({
     })
 
     // ── Journey line reveal (per-segment: solid legs via dashoffset,
-    // dashed sea/post-rome legs via constructed dasharray)
+    // dashed sea/period-6 legs via constructed dasharray)
     let paulPos = null
     journeyData.journeys.forEach(journey => {
       const jd = lineDataRef.current[journey.id]
@@ -1136,7 +1158,7 @@ export default function MapView({
         <g ref={mapGRef} />
       </svg>
 
-      {/* Scale bar — fixed 500 km reference, bottom-right */}
+      {/* Scale bar — fixed 50 km reference, bottom-right */}
       <ScaleBar projection={projection} theme={theme} />
 
       {segmentTip && !tooltipCity && (

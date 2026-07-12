@@ -1,14 +1,9 @@
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 export default function BookDetailPanel({ book, onClose }) {
   const writingCity = book
     ? journeyData.cities.find(c => c.id === book.writingLocationId)
     : null
-  const recipientCities = book
-    ? (book.recipientCityIds || [])
-        .map(id => journeyData.cities.find(c => c.id === id))
-        .filter(Boolean)
-    : []
 
   return (
     <div className={`bdp${book ? ' bdp--open' : ''}`}>
@@ -19,13 +14,15 @@ export default function BookDetailPanel({ book, onClose }) {
           <h2 className="bdp-title">{book.name}</h2>
 
           <div className="bdp-badge">
-            AD {book.dateRange[0]}–{book.dateRange[1]}
-            {book.dateDebated && <span className="bdp-badge-debated"> · date debated</span>}
+            AD {Math.round(book.dateRange[0]) === Math.round(book.dateRange[1])
+              ? Math.round(book.dateRange[0])
+              : `${Math.round(book.dateRange[0])}–${Math.round(book.dateRange[1])}`}
+            {book.dateDebated && <span className="bdp-badge-debated"> · chronology debated</span>}
           </div>
 
           {writingCity && (
             <div className="bdp-section">
-              <div className="bdp-label">Written from</div>
+              <div className="bdp-label">Setting</div>
               <div className="bdp-writing-loc">
                 <span className="bdp-city-name">{writingCity.name}</span>
                 <span className="bdp-province">{writingCity.province}</span>
@@ -33,13 +30,11 @@ export default function BookDetailPanel({ book, onClose }) {
             </div>
           )}
 
-          {recipientCities.length > 0 && (
+          {book.recipientRegion && (
             <div className="bdp-section">
-              <div className="bdp-label">Recipients</div>
+              <div className="bdp-label">Region</div>
               <div className="bdp-chips">
-                {recipientCities.map(city => (
-                  <span key={city.id} className="bdp-chip">{city.name}</span>
-                ))}
+                <span className="bdp-chip">{book.recipientRegion}</span>
               </div>
             </div>
           )}
@@ -60,36 +55,18 @@ export default function BookDetailPanel({ book, onClose }) {
 
           {book.attribution === 'debated' && (
             <div className="bdp-attr-note">
-              Authorship debated — not in all scholarly canons of undisputed Pauline letters.
+              Attested in fewer than all four Gospels (single Gospel or the Synoptics).
             </div>
           )}
 
           <div className="bdp-study-sep" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {book.id === 'philippians' ? (
-              <button
-                className="bdp-study-btn"
-                onClick={() => window.open('/philippians-study.html', '_blank')}
-              >
-                Study Guide
-              </button>
-            ) : (
-              <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
-                Study Guide — coming soon
-              </button>
-            )}
-            {book.id === 'philippians' ? (
-              <button
-                className="bdp-study-btn"
-                onClick={() => window.open('/philippians-map.html', '_blank')}
-              >
-                Maps &amp; Timeline →
-              </button>
-            ) : (
-              <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
-                Maps &amp; Timeline — coming soon
-              </button>
-            )}
+            <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
+              Study Guide — coming soon
+            </button>
+            <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
+              Maps &amp; Timeline — coming soon
+            </button>
           </div>
         </>
       )}

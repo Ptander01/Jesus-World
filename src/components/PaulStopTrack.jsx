@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 import { buildStopLayout, STOP_MARGIN_X } from '../utils/stopLayout'
 
 const SVG_H   = 130

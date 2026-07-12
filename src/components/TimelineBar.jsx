@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 import TimelineDetail from './TimelineDetail'
 
 const TW = 1200
@@ -32,15 +32,16 @@ const VIEWBOXES = [
 // Clamps keep it usable at extreme window widths (mild stretch only there).
 const H_MIN = [64, 64, 104, 96]
 const H_MAX = [112, 112, 190, 160]
-const STATE_LABELS  = ['Journeys', 'Letters Appear', 'Journeys + Letters', 'The Letters']
+const STATE_LABELS  = ['Periods', 'Events Appear', 'Periods + Events', 'The Events']
 
-const xScale = d3.scaleLinear().domain([44, 68]).range([80, 1140])
+const xScale = d3.scaleLinear().domain([29, 33.5]).range([80, 1140])
 
 const CAPSULE_BARS = journeyData.journeys.map(j => ({
-  id: j.id, color: j.color, dr: j.dateRange, dashed: j.id === 'post-rome',
+  id: j.id, color: j.color, dr: j.dateRange, dashed: j.id === 'period-6',
 }))
 
-const YEAR_TICKS = [44, 46, 49, 52, 57, 60, 62, 67]
+// Whole ministry years; Passovers (John 2:13; 6:4; 11:55) fall at 30, 32, 33.
+const YEAR_TICKS = [29, 30, 31, 32, 33]
 
 const jColor = {}
 journeyData.journeys.forEach(j => { jColor[j.id] = j.color })
@@ -168,30 +169,31 @@ function dateLabel(b) {
   return b.dateDebated ? `c. ${s}` : s
 }
 
-// Maps a book to its primary recipient city/church
+// Maps a marquee event to the site where it happened (its "church" thread)
 const BOOK_CHURCH = {
-  'galatians':        'antioch-pisidia',
-  '1-thessalonians':  'thessalonica',
-  '2-thessalonians':  'thessalonica',
-  '1-corinthians':    'corinth',
-  '2-corinthians':    'corinth',
-  'romans':           'rome',
-  'philippians':      'philippi',
-  'colossians':       'colossae',
-  'ephesians':        'ephesus',
-  'philemon':         'colossae',
-  '1-timothy':        'ephesus',
-  'titus':            'crete',
-  '2-timothy':        'ephesus',
+  'baptism-of-jesus': 'bethany-beyond-jordan',
+  'cana-wine':        'cana',
+  'temple-cleansing': 'jerusalem',
+  'woman-at-well':    'sychar',
+  'sermon-on-mount':  'capernaum',
+  'calming-storm':    'gergesa',
+  'feeding-5000':     'bethsaida',
+  'peters-confession':'caesarea-philippi',
+  'transfiguration':  'mount-hermon',
+  'raising-lazarus':  'bethany',
+  'triumphal-entry':  'jerusalem',
+  'olivet-discourse': 'mount-of-olives',
+  'last-supper':      'jerusalem',
+  'crucifixion':      'jerusalem',
+  'resurrection':     'jerusalem',
 }
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
-// Churches Paul did not plant — story row shows this note instead of a planted→letter bracket
+// Sites without a "founding"-type event — story row shows a context note
+// instead of a first-act→moment bracket
 const ORIGIN_NOTES = {
-  rome:     'Planted by others — Paul had not yet visited · Rom 1:13',
-  colossae: 'Planted by Epaphras — Paul never visited · Col 1:7, 2:1',
-  crete:    'Origin unrecorded — Titus appointed elders · Titus 1:5',
+  'mount-of-olives': 'Delivered on the ridge over the temple · Matt 24-25',
 }
 
 function stopR(days) {
@@ -371,7 +373,7 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)) }
 
 function getSvgYear(clientX, svgEl) {
   const r = svgEl.getBoundingClientRect()
-  return clamp(xScale.invert(((clientX - r.left) / r.width) * TW), 44, 68)
+  return clamp(xScale.invert(((clientX - r.left) / r.width) * TW), 29, 33.5)
 }
 
 function paulNote(year) {
@@ -699,7 +701,7 @@ export default function TimelineBar({
       .attr('shape-rendering', 'crispEdges')
     ;[
       { label: 'TIMELINE', cy: (BY + AXIS_Y) / 2,   cls: 'tl-lbl-timeline' },
-      { label: 'BOOKS',    cy: bs === 3 ? 150 : 110, cls: 'tl-lbl-books' },
+      { label: 'EVENTS',   cy: bs === 3 ? 150 : 110, cls: 'tl-lbl-books' },
     ].forEach(({ label, cy, cls }) =>
       g.append('text')
         .attr('class', cls)

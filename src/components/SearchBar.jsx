@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 const allCities = journeyData.cities
 const allBooks  = journeyData.books

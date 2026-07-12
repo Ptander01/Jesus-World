@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
@@ -15,14 +15,14 @@ const BEATS = journeyData.journeys
   )
   .sort((a, b) => a.year - b.year)
 
-// Shown before the first journey begins (AD 44 up to the first waypoint)
+// Shown before the first period begins (AD 29 up to the first waypoint)
 const INTRO_BEAT = {
   key: 'intro',
-  cityName: 'Antioch',
-  note: 'The church at Antioch sets apart Paul and Barnabas for the work the Spirit has called them to.',
-  ref: 'Acts 13:1–3',
-  journeyName: 'Before the Journeys',
-  color: '#c9a84c',
+  cityName: 'Nazareth',
+  note: 'In the hill country of Galilee, the carpenter’s son leaves Nazareth for the Jordan, where John is baptizing — the public ministry is about to begin.',
+  ref: 'Luke 3:23; Mark 1:9',
+  journeyName: 'Before the Ministry',
+  color: '#C9A84C',
 }
 
 export default function StoryLayer({ timelineYear, onStoryPlay }) {
@@ -58,8 +58,8 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
         <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
           <path d="M0 0 L10 6 L0 12 Z" fill="currentColor" />
         </svg>
-        <span>Paul&rsquo;s Story</span>
-        <span className="story-btn__sub">AD 44–67</span>
+        <span>Jesus&rsquo;s Story</span>
+        <span className="story-btn__sub">AD 29–33</span>
       </button>
     )
   }
@@ -80,7 +80,7 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
         {beat.ref ? <span className="story-caption__ref">{beat.ref}</span> : <span />}
         {writing.length > 0 && (
           <span className="story-caption__writing">
-            ✍ {writing.map(b => b.abbrev).join(' · ')}
+            ✦ {writing.map(b => b.abbrev).join(' · ')}
           </span>
         )}
       </div>

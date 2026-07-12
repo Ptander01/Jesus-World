@@ -3,7 +3,7 @@ import PaulStopTrack from './PaulStopTrack'
 import PaulEventTrack from './PaulEventTrack'
 import BookTrack from './BookTrack'
 import ChurchTrack from './ChurchTrack'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 

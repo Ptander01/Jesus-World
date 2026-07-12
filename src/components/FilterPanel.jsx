@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import journeyData from '../data/pauline-journeys-data.json'
+import journeyData from '../data/gospels-data.json'
 
 export default function FilterPanel({
   activeJourneys,
@@ -49,7 +49,7 @@ export default function FilterPanel({
           <button
             className={`fp-tab ${viewMode === 'books' ? 'fp-tab--active' : ''}`}
             onClick={() => onViewModeChange('books')}
-          >Books</button>
+          >Events</button>
         </div>
 
         {/* ── Journey mode ── */}
@@ -68,7 +68,9 @@ export default function FilterPanel({
             <div className="fp-journey-list">
               {journeyData.journeys.map(journey => {
                 const active = activeJourneys.has(journey.id)
-                const isPostRome = journey.id === 'post-rome'
+                const isPostRome = journey.id === 'period-6'
+                const drStart = Math.round(journey.dateRange[0])
+                const drEnd   = Math.round(journey.dateRange[1])
                 return (
                   <label
                     key={journey.id}
@@ -97,7 +99,7 @@ export default function FilterPanel({
                         {isPostRome && <span className="fp-muted"> (traditional)</span>}
                       </span>
                       <span className="fp-journey-date">
-                        AD {journey.dateRange[0]}–{journey.dateRange[1]}
+                        AD {drStart === drEnd ? drStart : `${drStart}–${drEnd}`}
                       </span>
                     </span>
                   </label>
@@ -131,8 +133,8 @@ export default function FilterPanel({
             </div>
 
             <div className="fp-attr-legend">
-              <span className="fp-muted">Regular = undisputed authorship</span>
-              <span className="fp-muted fp-em">Italic = debated attribution</span>
+              <span className="fp-muted">Regular = in all four Gospels</span>
+              <span className="fp-muted fp-em">Italic = fewer Gospels / disputed</span>
             </div>
           </>
         )}
