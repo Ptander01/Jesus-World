@@ -36,6 +36,10 @@ const STATE_LABELS  = ['Periods', 'Events Appear', 'Periods + Events', 'The Even
 
 const xScale = d3.scaleLinear().domain([29, 33.5]).range([80, 1140])
 
+// Minimum on-screen width for a capsule bar so a day-scale period (Passion
+// Week is barely a week on a 4.5-year axis) still shows a visible nub.
+const MIN_BAR_W = 7
+
 const CAPSULE_BARS = journeyData.journeys.map(j => ({
   id: j.id, color: j.color, dr: j.dateRange, dashed: j.id === 'period-6',
 }))
@@ -469,8 +473,8 @@ export default function TimelineBar({
     CAPSULE_BARS.forEach(bar => {
       const clipRect = defs.select(`[data-bar-clip="${bar.id}"]`)
       if (clipRect.empty()) return
-      const x1    = xScale(Math.max(44, bar.dr[0])) + 1.5
-      const x2    = xScale(Math.min(68, bar.dr[1])) - 1.5
+      const x1    = xScale(Math.max(xScale.domain()[0], bar.dr[0])) + 1.5
+      const x2    = Math.max(xScale(Math.min(xScale.domain()[1], bar.dr[1])) - 1.5, x1 + MIN_BAR_W)
       const fullW = Math.max(0, x2 - x1)
 
       if (timelineYear === null) {
@@ -582,8 +586,8 @@ export default function TimelineBar({
 
     // ── ClipPaths for progressive bar reveal ────────────────────────────
     CAPSULE_BARS.forEach(bar => {
-      const x1    = xScale(Math.max(44, bar.dr[0])) + 1.5
-      const x2    = xScale(Math.min(68, bar.dr[1])) - 1.5
+      const x1    = xScale(Math.max(xScale.domain()[0], bar.dr[0])) + 1.5
+      const x2    = Math.max(xScale(Math.min(xScale.domain()[1], bar.dr[1])) - 1.5, x1 + MIN_BAR_W)
       const fullW = Math.max(0, x2 - x1)
       let initialW = fullW
       if (currentYear !== null) {
@@ -608,8 +612,8 @@ export default function TimelineBar({
       .attr('opacity', bs === 3 ? 0.07 : 1)
 
     CAPSULE_BARS.forEach(bar => {
-      const x1 = xScale(Math.max(44, bar.dr[0])) + 1.5
-      const x2 = xScale(Math.min(68, bar.dr[1])) - 1.5
+      const x1 = xScale(Math.max(xScale.domain()[0], bar.dr[0])) + 1.5
+      const x2 = Math.max(xScale(Math.min(xScale.domain()[1], bar.dr[1])) - 1.5, x1 + MIN_BAR_W)
       if (x2 <= x1) return
       const active = activeJourneys.has(bar.id)
 
@@ -1130,8 +1134,8 @@ export default function TimelineBar({
               preserveAspectRatio="none"
             >
               {CAPSULE_BARS.map(bar => {
-                const x1 = xScale(Math.max(44, bar.dr[0])) + 1.5
-                const x2 = xScale(Math.min(68, bar.dr[1])) - 1.5
+                const x1 = xScale(Math.max(xScale.domain()[0], bar.dr[0])) + 1.5
+                const x2 = Math.max(xScale(Math.min(xScale.domain()[1], bar.dr[1])) - 1.5, x1 + MIN_BAR_W)
                 if (x2 <= x1) return null
                 const isSelected = bar.id === detailJourneyId
                 return (

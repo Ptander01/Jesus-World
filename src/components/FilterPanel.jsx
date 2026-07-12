@@ -75,7 +75,7 @@ export default function FilterPanel({
                   <label
                     key={journey.id}
                     className={`fp-journey-row ${active ? '' : 'fp-journey-row--dim'}`}
-                    style={{ '--jc': journey.color, background: active ? 'var(--surface-2)' : 'transparent' }}
+                    style={{ '--jc': journey.color, background: 'transparent' }}
                   >
                     <input
                       type="checkbox"
