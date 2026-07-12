@@ -1,30 +1,30 @@
 :root {
-  --bg:           #0c0f18;
-  --surface:      #13182a;
-  --surface-2:    #1a2035;
-  --surface-3:    #212842;
+  --bg:           #0e2017;
+  --surface:      #16352a;
+  --surface-2:    #1e4033;
+  --surface-3:    #264b3c;
   --accent:       #c9a84c;
   --accent-dim:   #7a6430;
   --accent-lt:    #e9c86c;
-  --cream:        #ede8dc;
-  --cream-dim:    #a09a8e;
-  --muted:        #5c6078;
-  --border:       #232a42;
-  --border-lt:    #2e3858;
+  --cream:        #eef0e2;
+  --cream-dim:    #a4b298;
+  --muted:        #7c8c72;
+  --border:       #2a5340;
+  --border-lt:    #3a6650;
 
   --font-body:    'Lora', Georgia, serif;
   --font-display: 'Cinzel', serif;
   --font-serif:   'Cormorant Garamond', Georgia, serif;
 
   /* ── Glass / lip token system ── */
-  --glass-bg:      rgba(13,16,32,0.55);
+  --glass-bg:      rgba(14,32,23,0.60);
   --glass-blur:    blur(20px);
   --glass-shine:   rgba(255,255,255,0.06);
   --glass-border:  rgba(255,255,255,0.07);
 
   /* Pill backgrounds — directional gradient gives material depth */
-  --pill-bg:        linear-gradient(150deg, #141828 0%, #0f1220 50%, #0c0e1a 100%);
-  --pill-bg-active: linear-gradient(150deg, #0a0c15 0%, #111422 50%, #151928 100%);
+  --pill-bg:        linear-gradient(150deg, #1a3a2c 0%, #123023 50%, #0e2419 100%);
+  --pill-bg-active: linear-gradient(150deg, #0c1e15 0%, #163628 50%, #1e4433 100%);
 
   /* 3-D lip shadows — outer raised, inner pressed, hover lift, gold focus */
   --lip-out:
@@ -61,7 +61,7 @@
   --city-writing:   #e9c86c;
   --city-recipient: #4A7C6F;
   --city-major:     #c9a84c;
-  --city-minor:     #2a3d5a;
+  --city-minor:     #2e5240;
 }
 
 [data-theme="light"] {

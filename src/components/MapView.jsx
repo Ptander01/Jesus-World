@@ -464,9 +464,9 @@ export default function MapView({
     lineDataRef.current = {}
 
     // Halo behind labels — sits between the theme's land and sea tones
-    const haloColor = isLight ? '#d3c9ae' : '#0a1220'
+    const haloColor = isLight ? '#d3c9ae' : '#0a1710'
     // Casing under land route segments — background tone lifts routes off the map
-    const caseColor = isLight ? '#f5f0e8' : '#060d1a'
+    const caseColor = isLight ? '#f5f0e8' : '#06110b'
 
     // ── Graticule
     mapG.append('path')
@@ -474,7 +474,7 @@ export default function MapView({
       .attr('d', pathGen)
       .attr('class', 'map-graticule')
       .attr('fill', 'none')
-      .attr('stroke', isLight ? '#8a9eb0' : '#0c1828')
+      .attr('stroke', isLight ? '#8a9eb0' : '#0d2016')
       .attr('stroke-width', 0.5)
       .attr('opacity', 0.4)
 
@@ -482,7 +482,7 @@ export default function MapView({
     mapG.append('path')
       .datum(land)
       .attr('d', pathGen)
-      .attr('fill', isLight ? '#cbbfa0' : '#111d2e')
+      .attr('fill', isLight ? '#cbbfa0' : '#15291d')
       .attr('stroke', 'none')
 
     // ── Coastline stroke — sharpens the sea/land edge
@@ -491,7 +491,7 @@ export default function MapView({
       .attr('d', pathGen)
       .attr('class', 'map-coast')
       .attr('fill', 'none')
-      .attr('stroke', isLight ? '#8fa4b4' : '#24364e')
+      .attr('stroke', isLight ? '#8fa4b4' : '#2c4a38')
       .attr('stroke-width', 0.6)
       .attr('stroke-opacity', 0.8)
 
@@ -501,7 +501,7 @@ export default function MapView({
       .attr('d', pathGen)
       .attr('class', 'map-borders')
       .attr('fill', 'none')
-      .attr('stroke', isLight ? '#9aacb8' : '#1e2e48')
+      .attr('stroke', isLight ? '#9aacb8' : '#243f30')
       .attr('stroke-width', 0.7)
 
     // ── Province fills, borders, labels
