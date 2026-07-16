@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
-import { attestationLabel } from '../lib/attestation.js'
+import { attestationLabel, inLens } from '../lib/attestation.js'
+
+const LENSES = ['All', 'Synoptics', 'Matthew', 'Mark', 'Luke', 'John']
 
 export default function FilterPanel({
   activeJourneys,
   selectedBookId,
   viewMode,
   showProvinces,
+  lens = 'All',
+  onLensChange,
   onJourneyToggle,
   onBookSelect,
   onViewModeChange,
@@ -16,16 +20,28 @@ export default function FilterPanel({
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Parables grouped by topic, in first-appearance order. `topic` is a key
-  // ("kingdom"); parableTopics carries the display label.
+  // ("kingdom"); parableTopics carries the display label. Groups that the Lens
+  // empties out are dropped rather than left as bare headings.
   const parableThemes = useMemo(() => {
     const groups = new Map()
     for (const p of journeyData.parables ?? []) {
+      if (!inLens(p.gospels, lens)) continue
       const label = journeyData.parableTopics?.[p.topic]?.label ?? p.topic
       if (!groups.has(label)) groups.set(label, [])
       groups.get(label).push(p)
     }
     return [...groups.entries()]
-  }, [])
+  }, [lens])
+
+  // How much of the located corpus the current Lens keeps — shown as a live readout
+  // so the Lens states its own cost.
+  const lensCounts = useMemo(() => {
+    const located = journeyData.churchEvents.filter(e => e.gospels)
+    return {
+      shown: located.filter(e => inLens(e.gospels, lens)).length,
+      total: located.length,
+    }
+  }, [lens])
 
   const cityName = id => journeyData.cities.find(c => c.id === id)?.name ?? id
 
@@ -39,13 +55,14 @@ export default function FilterPanel({
     ]
     const groups = {}
     for (const e of journeyData.churchEvents ?? []) {
+      if (!inLens(e.gospels, lens)) continue
       if (!groups[e.category]) groups[e.category] = []
       groups[e.category].push(e)
     }
     return meta
-      .filter(([cat]) => groups[cat])
+      .filter(([cat]) => groups[cat]?.length)
       .map(([cat, label, color]) => [label, color, groups[cat].sort((a, b) => a.year - b.year)])
-  }, [])
+  }, [lens])
 
   const allActive  = journeyData.journeys.every(j => activeJourneys.has(j.id))
   const noneActive = journeyData.journeys.every(j => !activeJourneys.has(j.id))
@@ -74,6 +91,27 @@ export default function FilterPanel({
       )}
 
       <aside className={`fp${mobileOpen ? ' fp--open' : ''}`}>
+        {/* ── Gospel Lens — sits above the tabs because it governs all of them,
+             plus the map and the timeline ── */}
+        <div className="fp-lens">
+          <div className="fp-lens-head">Gospel Lens</div>
+          <div className="fp-lens-pills">
+            {LENSES.map(l => (
+              <button
+                key={l}
+                type="button"
+                className={`fp-lens-pill${lens === l ? ' fp-lens-pill--active' : ''}`}
+                onClick={() => onLensChange?.(l)}
+              >{l}</button>
+            ))}
+          </div>
+          <div className="fp-lens-note">
+            {lens === 'All'
+              ? `All ${lensCounts.total} located events`
+              : `${lensCounts.shown} of ${lensCounts.total} events · places this Gospel records nothing go dark`}
+          </div>
+        </div>
+
         {/* ── Mode toggle ── */}
         <div className="fp-tabs">
           <button

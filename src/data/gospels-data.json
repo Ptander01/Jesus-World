@@ -862,7 +862,13 @@
       "theme": "The Father's voice and the Spirit anoint the Son at the threshold of his ministry",
       "keyVerse": "Matt 3:17",
       "attribution": "undisputed",
-      "ref": "Matt 3:13-17; Mark 1:9-11; Luke 3:21-22; John 1:29-34"
+      "ref": "Matt 3:13-17; Mark 1:9-11; Luke 3:21-22; John 1:29-34",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "cana-wine",
@@ -883,7 +889,10 @@
       "theme": "The first sign: water into wine reveals his glory and the disciples believe",
       "keyVerse": "John 2:11",
       "attribution": "debated",
-      "ref": "John 2:1-11"
+      "ref": "John 2:1-11",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "temple-cleansing",
@@ -904,7 +913,12 @@
       "theme": "Zeal for the Father's house; 'destroy this temple and in three days I will raise it up'",
       "keyVerse": "John 2:19",
       "attribution": "undisputed",
-      "ref": "John 2:13-22; Matt 21:12-13; Mark 11:15-18"
+      "ref": "John 2:13-22; Matt 21:12-13; Mark 11:15-18",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "John"
+      ]
     },
     {
       "id": "woman-at-well",
@@ -925,7 +939,10 @@
       "theme": "Living water offered across the Jew–Samaritan divide; worship in spirit and truth",
       "keyVerse": "John 4:14",
       "attribution": "debated",
-      "ref": "John 4:1-42"
+      "ref": "John 4:1-42",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "sermon-on-mount",
@@ -946,7 +963,11 @@
       "theme": "The Beatitudes and the ethics of the kingdom — salt, light, and the Father's will",
       "keyVerse": "Matt 5:3-10",
       "attribution": "debated",
-      "ref": "Matt 5-7; Luke 6:20-49"
+      "ref": "Matt 5-7; Luke 6:20-49",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ]
     },
     {
       "id": "calming-storm",
@@ -967,7 +988,12 @@
       "theme": "'Who then is this, that even wind and sea obey him?' — authority over chaos",
       "keyVerse": "Mark 4:41",
       "attribution": "debated",
-      "ref": "Mark 4:35-41; Matt 8:23-27; Luke 8:22-25"
+      "ref": "Mark 4:35-41; Matt 8:23-27; Luke 8:22-25",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "feeding-5000",
@@ -988,7 +1014,13 @@
       "theme": "Five loaves and two fish feed a multitude; 'I am the bread of life'",
       "keyVerse": "John 6:35",
       "attribution": "undisputed",
-      "ref": "Matt 14:13-21; Mark 6:30-44; Luke 9:10-17; John 6:1-15"
+      "ref": "Matt 14:13-21; Mark 6:30-44; Luke 9:10-17; John 6:1-15",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "peters-confession",
@@ -1009,7 +1041,12 @@
       "theme": "'You are the Christ, the Son of the living God'; the first passion prediction",
       "keyVerse": "Matt 16:16",
       "attribution": "debated",
-      "ref": "Matt 16:13-28; Mark 8:27-38; Luke 9:18-27"
+      "ref": "Matt 16:13-28; Mark 8:27-38; Luke 9:18-27",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "transfiguration",
@@ -1030,7 +1067,12 @@
       "theme": "His face shines; Moses and Elijah attend; 'This is my beloved Son; listen to him'",
       "keyVerse": "Mark 9:7",
       "attribution": "debated",
-      "ref": "Matt 17:1-13; Mark 9:2-13; Luke 9:28-36"
+      "ref": "Matt 17:1-13; Mark 9:2-13; Luke 9:28-36",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "raising-lazarus",
@@ -1051,7 +1093,10 @@
       "theme": "'I am the resurrection and the life'; a dead man called out of the tomb",
       "keyVerse": "John 11:25",
       "attribution": "debated",
-      "ref": "John 11:1-44"
+      "ref": "John 11:1-44",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "triumphal-entry",
@@ -1072,7 +1117,13 @@
       "theme": "The humble king on a colt; 'Blessed is he who comes in the name of the Lord'",
       "keyVerse": "Matt 21:9",
       "attribution": "undisputed",
-      "ref": "Matt 21:1-11; Mark 11:1-11; Luke 19:28-40; John 12:12-19"
+      "ref": "Matt 21:1-11; Mark 11:1-11; Luke 19:28-40; John 12:12-19",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "olivet-discourse",
@@ -1093,7 +1144,12 @@
       "theme": "The fall of the temple and the coming of the Son of Man; 'watch therefore'",
       "keyVerse": "Matt 24:35",
       "attribution": "debated",
-      "ref": "Matt 24-25; Mark 13; Luke 21:5-36"
+      "ref": "Matt 24-25; Mark 13; Luke 21:5-36",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "last-supper",
@@ -1114,7 +1170,13 @@
       "theme": "The new covenant in bread and cup; the new commandment to love one another",
       "keyVerse": "Luke 22:19-20",
       "attribution": "undisputed",
-      "ref": "Matt 26:17-30; Mark 14:12-26; Luke 22:7-38; John 13-17"
+      "ref": "Matt 26:17-30; Mark 14:12-26; Luke 22:7-38; John 13-17",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "crucifixion",
@@ -1135,7 +1197,13 @@
       "theme": "'It is finished' — the death of the Son and the torn veil",
       "keyVerse": "John 19:30",
       "attribution": "undisputed",
-      "ref": "Matt 27:32-56; Mark 15:21-41; Luke 23:26-49; John 19:16-37"
+      "ref": "Matt 27:32-56; Mark 15:21-41; Luke 23:26-49; John 19:16-37",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "resurrection",
@@ -1156,7 +1224,13 @@
       "theme": "'He is not here, for he has risen' — death undone and the tomb empty",
       "keyVerse": "Matt 28:6",
       "attribution": "undisputed",
-      "ref": "Matt 28:1-10; Mark 16:1-8; Luke 24:1-12; John 20:1-18"
+      "ref": "Matt 28:1-10; Mark 16:1-8; Luke 24:1-12; John 20:1-18",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     }
   ],
   "churchEvents": [
@@ -1186,7 +1260,10 @@
       "sublabel": "'You must be born again'",
       "type": "leadership",
       "category": "encounter",
-      "ref": "John 3:1-21"
+      "ref": "John 3:1-21",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "sychar-living-water",
@@ -1198,7 +1275,10 @@
       "sublabel": "The Samaritan woman · John 4",
       "type": "letter-received",
       "ref": "John 4:1-42",
-      "category": "encounter"
+      "category": "encounter",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "cana-officials-son",
@@ -1226,7 +1306,10 @@
       "sublabel": "'His own city' · Matt 9:1",
       "type": "founding",
       "ref": "Matt 4:13",
-      "category": "event"
+      "category": "event",
+      "gospels": [
+        "Matthew"
+      ]
     },
     {
       "id": "capernaum-call-four",
@@ -1238,7 +1321,11 @@
       "sublabel": "Peter, Andrew, James, John",
       "type": "leadership",
       "category": "encounter",
-      "ref": "Mark 1:16-20"
+      "ref": "Mark 1:16-20",
+      "gospels": [
+        "Matthew",
+        "Mark"
+      ]
     },
     {
       "id": "capernaum-first-catch",
@@ -1301,7 +1388,12 @@
       "sublabel": "From the tax booth · Mark 2:14",
       "type": "leadership",
       "ref": "Mark 2:13-17",
-      "category": "encounter"
+      "category": "encounter",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "capernaum-paralytic",
@@ -1400,7 +1492,12 @@
       "sublabel": "Taught from a boat, Matt 13",
       "type": "letter-received",
       "category": "teaching",
-      "ref": "Matthew 13:1-52"
+      "ref": "Matthew 13:1-52",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "sea-calm-storm",
@@ -1534,7 +1631,11 @@
       "sublabel": "'Woe to you, Chorazin!'",
       "type": "letter-received",
       "ref": "Matt 11:21; Luke 10:13",
-      "category": "teaching"
+      "category": "teaching",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ]
     },
     {
       "id": "bethsaida-5000",
@@ -1583,7 +1684,11 @@
       "sublabel": "'Woe to you, Bethsaida!'",
       "type": "letter-received",
       "ref": "Matt 11:21",
-      "category": "teaching"
+      "category": "teaching",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ]
     },
     {
       "id": "capernaum-bread-life",
@@ -1595,7 +1700,10 @@
       "sublabel": "In the synagogue",
       "type": "letter-received",
       "category": "teaching",
-      "ref": "John 6:22-59"
+      "ref": "John 6:22-59",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "tyre-syrophoenician",
@@ -1673,7 +1781,12 @@
       "sublabel": "'You are the Christ' · Matt 16",
       "type": "founding",
       "ref": "Matt 16:13-20",
-      "category": "event"
+      "category": "event",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "hermon-transfiguration",
@@ -1685,7 +1798,12 @@
       "sublabel": "'This is my beloved Son'",
       "type": "founding",
       "ref": "Matt 17:1-8",
-      "category": "event"
+      "category": "event",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "hermon-boy-spirit",
@@ -1732,7 +1850,10 @@
       "sublabel": "'Neither do I condemn you'",
       "type": "leadership",
       "category": "encounter",
-      "ref": "John 8:1-11"
+      "ref": "John 8:1-11",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "jerusalem-light-world",
@@ -1744,7 +1865,10 @@
       "sublabel": "At the Feast of Tabernacles",
       "type": "letter-received",
       "category": "teaching",
-      "ref": "John 8:12-30"
+      "ref": "John 8:12-30",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "jerusalem-blind-born",
@@ -1788,7 +1912,10 @@
       "sublabel": "Feast of Dedication",
       "type": "letter-received",
       "category": "teaching",
-      "ref": "John 10:1-21"
+      "ref": "John 10:1-21",
+      "gospels": [
+        "John"
+      ]
     },
     {
       "id": "bethany-mary-martha",
@@ -1800,7 +1927,10 @@
       "sublabel": "'One thing is necessary'",
       "type": "leadership",
       "category": "encounter",
-      "ref": "Luke 10:38-42"
+      "ref": "Luke 10:38-42",
+      "gospels": [
+        "Luke"
+      ]
     },
     {
       "id": "perea-bent-woman",
@@ -1846,7 +1976,12 @@
       "sublabel": "Goes away sorrowful",
       "type": "leadership",
       "category": "encounter",
-      "ref": "Mark 10:17-27"
+      "ref": "Mark 10:17-27",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "bethany-lazarus",
@@ -1892,7 +2027,10 @@
       "sublabel": "'Salvation has come to this house'",
       "type": "leadership",
       "ref": "Luke 19:1-10",
-      "category": "encounter"
+      "category": "encounter",
+      "gospels": [
+        "Luke"
+      ]
     },
     {
       "id": "jerusalem-fig-tree",
@@ -1921,7 +2059,10 @@
       "sublabel": "'Blind guides'",
       "type": "letter-received",
       "category": "teaching",
-      "ref": "Matthew 23:1-39"
+      "ref": "Matthew 23:1-39",
+      "gospels": [
+        "Matthew"
+      ]
     },
     {
       "id": "gethsemane-ear",
@@ -1949,7 +2090,13 @@
       "sublabel": "'It is finished' · John 19",
       "type": "founding",
       "ref": "John 19:16-37",
-      "category": "event"
+      "category": "event",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "jerusalem-resurrection",
@@ -1961,7 +2108,13 @@
       "sublabel": "The empty tomb · Matt 28",
       "type": "founding",
       "ref": "Matt 28:1-10",
-      "category": "event"
+      "category": "event",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
     },
     {
       "id": "tiberias-second-catch",
@@ -1989,7 +2142,10 @@
       "sublabel": "'Feed my sheep' · John 21",
       "type": "leadership",
       "ref": "John 21:15-23",
-      "category": "encounter"
+      "category": "encounter",
+      "gospels": [
+        "John"
+      ]
     }
   ],
   "paulEvents": [

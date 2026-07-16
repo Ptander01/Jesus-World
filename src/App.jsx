@@ -26,7 +26,7 @@ const PLAY_END   = 33.4
 // Passion Week / Resurrection beats live in fractional years, so a year is a lot.
 const SECONDS_PER_YEAR = 6
 
-export default function App() {
+export default function App({ lens = 'All', onLensChange }) {
   const [activeJourneys, setActiveJourneys] = useState(new Set())
   const [selectedBookId, setSelectedBookId] = useState(null)
   const [viewMode, setViewMode]             = useState('journeys')
@@ -253,6 +253,8 @@ export default function App() {
             selectedBookId={selectedBookId}
             viewMode={viewMode}
             showProvinces={showProvinces}
+            lens={lens}
+            onLensChange={onLensChange}
             onJourneyToggle={handleJourneyToggle}
             onBookSelect={handleBookSelect}
             onViewModeChange={setViewMode}
@@ -275,6 +277,7 @@ export default function App() {
             isPlaying={isPlaying}
             detailJourneyId={detailJourneyId}
             theme={theme}
+            lens={lens}
           />
           <StoryLayer
             timelineYear={timelineYear}

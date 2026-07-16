@@ -10,6 +10,9 @@ const routeOf = () => window.location.hash.replace(/^#/, '')
 
 export default function Root() {
   const [route, setRoute] = useState(routeOf)
+  // The Gospel Lens lives here, above the routes, so the atlas and the visuals share
+  // one selection — flipping to John on the map keeps John on the charts.
+  const [lens, setLens] = useState('All')
 
   useEffect(() => {
     const onHash = () => setRoute(routeOf())
@@ -20,9 +23,9 @@ export default function Root() {
   if (route === '/visuals') {
     return (
       <Suspense fallback={null}>
-        <VisualsDemo />
+        <VisualsDemo lens={lens} onLensChange={setLens} />
       </Suspense>
     )
   }
-  return <App />
+  return <App lens={lens} onLensChange={setLens} />
 }

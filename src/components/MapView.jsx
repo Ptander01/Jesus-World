@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import * as topojson from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 import journeyData from '../data/gospels-data.json'
+import { inLens } from '../lib/attestation.js'
 
 const W = 1200
 const H = 680
@@ -321,6 +322,7 @@ export default function MapView({
   detailJourneyId,
   onMapReady,
   theme,
+  lens = 'All',
 }) {
   const isLight = theme === 'light'
   const svgRef      = useRef(null)
@@ -416,6 +418,33 @@ export default function MapView({
     }))
     return visited
   }, [cityById])
+
+  // Cities the Gospel Lens keeps lit: those with at least one event the chosen
+  // Gospel(s) actually record. `null` under "All" means "no lens constraint" —
+  // distinct from an empty set, which would mean "nothing survives".
+  //
+  // The Lens deliberately does NOT touch the journey lines. Attestation is a property
+  // of the events we hold `gospels[]` for; the itinerary between them isn't attested
+  // per-Gospel in this data, so dimming the route would assert more than we know.
+  const lensCityIds = useMemo(() => {
+    if (lens === 'All') return null
+    const lit = new Set()
+    for (const e of journeyData.churchEvents) {
+      if (inLens(e.gospels, lens)) lit.add(e.cityId)
+    }
+    // Route cities we hold no event for (Nazareth, Emmaus, Mount of Olives, ...) are
+    // exempt: a dark dot claims "this Gospel records nothing here", and for these the
+    // silence is our corpus's, not the Gospel's — Nazareth would otherwise go dark
+    // under Matthew, who names it repeatedly. The Lens only speaks where we have
+    // evidence to speak with.
+    const withEvents = new Set(journeyData.churchEvents.map(e => e.cityId))
+    for (const j of journeyData.journeys) {
+      for (const w of j.waypoints) {
+        if (!withEvents.has(w.cityId)) lit.add(w.cityId)
+      }
+    }
+    return lit
+  }, [lens])
 
   const lineGen = useMemo(() =>
     d3.line()
@@ -865,7 +894,7 @@ export default function MapView({
       const [x, y] = pt
       if (x < -20 || x > W + 20 || y < -20 || y > H + 20) return
 
-      const isActive = activeCityIds.has(city.id)
+      const isActive = activeCityIds.has(city.id) && (!lensCityIds || lensCityIds.has(city.id))
 
       const r    = city.tier === 1 ? 5 : city.tier === 2 ? 3.5 : 2.25
       const fill = isActive ? (city.tier === 1 ? '#c9a84c' : '#a09a8e') : 'none'
@@ -995,7 +1024,7 @@ export default function MapView({
 
     applyZoomStyling(mapGRef.current, kRef.current)
 
-  }, [projection, pathGen, land, borders, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes])
+  }, [projection, pathGen, land, borders, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes, lensCityIds])
 
   // ── Progressive reveal — synchronized to timelineYear ─────────────────
   useEffect(() => {

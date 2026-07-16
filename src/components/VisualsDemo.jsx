@@ -8,11 +8,12 @@ import "../styles/visuals.css";
 
 const LENSES = ["All", "Synoptics", "Matthew", "Mark", "Luke", "John"];
 
-// Live harness: a Gospel Lens + period filter drive all four visuals at once.
-// Wire `lens`/`bands` to your real timeline + Lens state to replace this shell.
-export default function VisualsDemo() {
-  const [lens, setLens] = useState("All");
+// The Gospel Lens is owned by Root and shared with the atlas, so a selection made on
+// the map still holds here. `bands` is still local — the timeline scrubber is App
+// state and isn't reachable from this route yet.
+export default function VisualsDemo({ lens = "All", onLensChange }) {
   const [bands, setBands] = useState([]); // empty = all periods
+  const setLens = onLensChange ?? (() => {});
 
   const toggleBand = (b) =>
     setBands((prev) => (prev.includes(b) ? prev.filter((x) => x !== b) : [...prev, b]));

@@ -1231,6 +1231,60 @@ body {
 }
 
 /* mode tabs */
+/* ── Gospel Lens ── the one control that governs map + timeline + every tab */
+.fp-lens {
+  flex-shrink: 0;
+  padding: 10px 12px 11px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fp-lens-head {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 7px;
+}
+
+.fp-lens-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fp-lens-pill {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  background: var(--pill-bg);
+  border: 1px solid var(--border-lt);
+  border-radius: 12px;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: color 0.16s, border-color 0.16s, background 0.16s;
+}
+
+.fp-lens-pill:hover { color: var(--cream); border-color: var(--accent-dim); }
+
+.fp-lens-pill--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.fp-lens-note {
+  margin-top: 7px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
 .fp-tabs {
   display: flex;
   flex-shrink: 0;
