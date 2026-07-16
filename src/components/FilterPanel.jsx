@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
+import { attestationLabel } from '../lib/attestation.js'
 
 export default function FilterPanel({
   activeJourneys,
@@ -14,12 +15,14 @@ export default function FilterPanel({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Parables grouped by theme, in first-appearance order
+  // Parables grouped by topic, in first-appearance order. `topic` is a key
+  // ("kingdom"); parableTopics carries the display label.
   const parableThemes = useMemo(() => {
     const groups = new Map()
     for (const p of journeyData.parables ?? []) {
-      if (!groups.has(p.theme)) groups.set(p.theme, [])
-      groups.get(p.theme).push(p)
+      const label = journeyData.parableTopics?.[p.topic]?.label ?? p.topic
+      if (!groups.has(label)) groups.set(label, [])
+      groups.get(label).push(p)
     }
     return [...groups.entries()]
   }, [])
@@ -208,7 +211,7 @@ export default function FilterPanel({
                     {p.lesson && <div className="fp-parable-lesson">{p.lesson}</div>}
                     <div className="fp-parable-meta">
                       <span className="fp-parable-ref">{p.ref.split(';')[0]}</span>
-                      <span className="fp-parable-gospels">{p.gospels}</span>
+                      <span className="fp-parable-gospels">{attestationLabel(p.gospels)}</span>
                     </div>
                     {p.occasion && (
                       <button

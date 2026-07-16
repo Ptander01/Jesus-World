@@ -1170,19 +1170,23 @@
       "sublabel": "The first sign · John 2",
       "type": "founding",
       "ref": "John 2:1-11",
-      "category": "miracle"
+      "category": "miracle",
+      "miracleType": "nature",
+      "gospels": [
+        "John"
+      ]
     },
     {
-      "id": "cana-officials-son",
-      "churchId": "cana",
-      "cityId": "cana",
-      "year": 30.15,
+      "id": "jerusalem-nicodemus",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 30.01,
       "journeyId": "period-1",
-      "label": "Official's son healed",
-      "sublabel": "The second sign, at a distance",
-      "type": "support",
-      "ref": "John 4:46-54",
-      "category": "miracle"
+      "label": "Nicodemus by night",
+      "sublabel": "'You must be born again'",
+      "type": "leadership",
+      "category": "encounter",
+      "ref": "John 3:1-21"
     },
     {
       "id": "sychar-living-water",
@@ -1197,6 +1201,22 @@
       "category": "encounter"
     },
     {
+      "id": "cana-officials-son",
+      "churchId": "cana",
+      "cityId": "cana",
+      "year": 30.15,
+      "journeyId": "period-1",
+      "label": "Official's son healed",
+      "sublabel": "The second sign, at a distance",
+      "type": "support",
+      "ref": "John 4:46-54",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
       "id": "capernaum-hq",
       "churchId": "capernaum",
       "cityId": "capernaum",
@@ -1207,6 +1227,69 @@
       "type": "founding",
       "ref": "Matt 4:13",
       "category": "event"
+    },
+    {
+      "id": "capernaum-call-four",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.35,
+      "journeyId": "period-2",
+      "label": "Calls the first disciples",
+      "sublabel": "Peter, Andrew, James, John",
+      "type": "leadership",
+      "category": "encounter",
+      "ref": "Mark 1:16-20"
+    },
+    {
+      "id": "capernaum-first-catch",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.36,
+      "journeyId": "period-2",
+      "label": "First Catch of Fish",
+      "sublabel": "The first catch of fish · Luke 5",
+      "type": "support",
+      "ref": "Luke 5:1-11",
+      "category": "miracle",
+      "miracleType": "provision",
+      "gospels": [
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-unclean-spirit",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.4,
+      "journeyId": "period-2",
+      "label": "Drives out an unclean spirit",
+      "sublabel": "In the synagogue",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Mark 1:21-28",
+      "miracleType": "exorcism",
+      "gospels": [
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-peters-mother",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.42,
+      "journeyId": "period-2",
+      "label": "Peter's mother-in-law healed",
+      "sublabel": "Fever leaves her",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Mark 1:29-31",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "capernaum-matthew",
@@ -1230,19 +1313,66 @@
       "sublabel": "Lowered through the roof",
       "type": "support",
       "ref": "Mark 2:1-12",
-      "category": "miracle"
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
-      "id": "capernaum-jairus",
+      "id": "capernaum-leper",
       "churchId": "capernaum",
       "cityId": "capernaum",
-      "year": 31.65,
+      "year": 30.7,
       "journeyId": "period-2",
-      "label": "Jairus's daughter raised",
-      "sublabel": "'Talitha cumi' · Mark 5",
+      "label": "A leper cleansed",
+      "sublabel": "'If you are willing'",
       "type": "support",
-      "ref": "Mark 5:21-43",
-      "category": "miracle"
+      "category": "miracle",
+      "ref": "Mark 1:40-45",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-withered-hand",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 30.9,
+      "journeyId": "period-2",
+      "label": "Withered hand restored",
+      "sublabel": "On the Sabbath",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Mark 3:1-6",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-centurion",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.05,
+      "journeyId": "period-2",
+      "label": "Centurion's servant healed",
+      "sublabel": "'Such faith'",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Luke 7:1-10",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ]
     },
     {
       "id": "nain-widows-son",
@@ -1254,7 +1384,145 @@
       "sublabel": "At the town gate · Luke 7",
       "type": "support",
       "ref": "Luke 7:11-17",
-      "category": "miracle"
+      "category": "miracle",
+      "miracleType": "resurrection",
+      "gospels": [
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-kingdom-parables",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.3,
+      "journeyId": "period-2",
+      "label": "Parables of the Kingdom",
+      "sublabel": "Taught from a boat, Matt 13",
+      "type": "letter-received",
+      "category": "teaching",
+      "ref": "Matthew 13:1-52"
+    },
+    {
+      "id": "sea-calm-storm",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.48,
+      "journeyId": "period-2",
+      "label": "Calming the Storm",
+      "sublabel": "'Peace! Be still!' · crossing to Gergesa",
+      "type": "support",
+      "ref": "Mark 4:35-41",
+      "category": "miracle",
+      "miracleType": "nature",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "gergesa-legion",
+      "churchId": "gergesa",
+      "cityId": "gergesa",
+      "year": 31.5,
+      "journeyId": "period-2",
+      "label": "Legion cast out",
+      "sublabel": "Into the herd of swine",
+      "type": "support",
+      "ref": "Mark 5:1-20",
+      "category": "miracle",
+      "miracleType": "exorcism",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "jerusalem-bethesda",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 31.5,
+      "journeyId": "period-2",
+      "label": "Invalid healed at Bethesda",
+      "sublabel": "After 38 years",
+      "type": "support",
+      "category": "miracle",
+      "ref": "John 5:1-15",
+      "miracleType": "healing",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "capernaum-bleeding-woman",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.64,
+      "journeyId": "period-2",
+      "label": "Woman with the Bleeding",
+      "sublabel": "Twelve years of bleeding · Mark 5",
+      "type": "support",
+      "ref": "Mark 5:25-34",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-jairus",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.65,
+      "journeyId": "period-2",
+      "label": "Jairus's daughter raised",
+      "sublabel": "'Talitha cumi' · Mark 5",
+      "type": "support",
+      "ref": "Mark 5:21-43",
+      "category": "miracle",
+      "miracleType": "resurrection",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "capernaum-two-blind",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.66,
+      "journeyId": "period-2",
+      "label": "Two Blind Men",
+      "sublabel": "'According to your faith' · Matt 9",
+      "type": "support",
+      "ref": "Matt 9:27-31",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew"
+      ],
+      "optional": true
+    },
+    {
+      "id": "capernaum-mute-demoniac",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 31.67,
+      "journeyId": "period-2",
+      "label": "A Mute Demoniac",
+      "sublabel": "The mute man speaks · Matt 9",
+      "type": "support",
+      "ref": "Matt 9:32-34",
+      "category": "miracle",
+      "miracleType": "exorcism",
+      "gospels": [
+        "Matthew"
+      ],
+      "optional": true
     },
     {
       "id": "chorazin-woe",
@@ -1269,18 +1537,6 @@
       "category": "teaching"
     },
     {
-      "id": "gergesa-legion",
-      "churchId": "gergesa",
-      "cityId": "gergesa",
-      "year": 31.5,
-      "journeyId": "period-2",
-      "label": "Legion cast out",
-      "sublabel": "Into the herd of swine",
-      "type": "support",
-      "ref": "Mark 5:1-20",
-      "category": "miracle"
-    },
-    {
       "id": "bethsaida-5000",
       "churchId": "bethsaida",
       "cityId": "bethsaida",
@@ -1290,7 +1546,32 @@
       "sublabel": "Five loaves, two fish · John 6",
       "type": "founding",
       "ref": "Matt 14:13-21; John 6:1-15",
-      "category": "miracle"
+      "category": "miracle",
+      "miracleType": "provision",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "sea-walk-water",
+      "churchId": "bethsaida",
+      "cityId": "bethsaida",
+      "year": 32.02,
+      "journeyId": "period-2",
+      "label": "Walks on the water",
+      "sublabel": "'Take heart, it is I'",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Matt 14:22-33",
+      "miracleType": "nature",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "John"
+      ]
     },
     {
       "id": "bethsaida-woe",
@@ -1305,16 +1586,16 @@
       "category": "teaching"
     },
     {
-      "id": "bethsaida-blind",
-      "churchId": "bethsaida",
-      "cityId": "bethsaida",
-      "year": 32.25,
-      "journeyId": "period-3",
-      "label": "Blind man healed in stages",
-      "sublabel": "'Men like trees walking'",
-      "type": "support",
-      "ref": "Mark 8:22-26",
-      "category": "miracle"
+      "id": "capernaum-bread-life",
+      "churchId": "capernaum",
+      "cityId": "capernaum",
+      "year": 32.06,
+      "journeyId": "period-2",
+      "label": "Bread of Life discourse",
+      "sublabel": "In the synagogue",
+      "type": "letter-received",
+      "category": "teaching",
+      "ref": "John 6:22-59"
     },
     {
       "id": "tyre-syrophoenician",
@@ -1326,7 +1607,61 @@
       "sublabel": "'Great is your faith' · Mark 7",
       "type": "support",
       "ref": "Mark 7:24-30",
-      "category": "miracle"
+      "category": "miracle",
+      "miracleType": "exorcism",
+      "gospels": [
+        "Matthew",
+        "Mark"
+      ]
+    },
+    {
+      "id": "decapolis-deaf",
+      "churchId": "gergesa",
+      "cityId": "gergesa",
+      "year": 32.18,
+      "journeyId": "period-3",
+      "label": "A deaf man healed",
+      "sublabel": "'Ephphatha!'",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Mark 7:31-37",
+      "miracleType": "healing",
+      "gospels": [
+        "Mark"
+      ]
+    },
+    {
+      "id": "decapolis-4000",
+      "churchId": "gergesa",
+      "cityId": "gergesa",
+      "year": 32.2,
+      "journeyId": "period-3",
+      "label": "The four thousand fed",
+      "sublabel": "Seven loaves",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Mark 8:1-9",
+      "miracleType": "provision",
+      "gospels": [
+        "Matthew",
+        "Mark"
+      ]
+    },
+    {
+      "id": "bethsaida-blind",
+      "churchId": "bethsaida",
+      "cityId": "bethsaida",
+      "year": 32.25,
+      "journeyId": "period-3",
+      "label": "Blind man healed in stages",
+      "sublabel": "'Men like trees walking'",
+      "type": "support",
+      "ref": "Mark 8:22-26",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Mark"
+      ]
     },
     {
       "id": "caesarea-confession",
@@ -1353,232 +1688,22 @@
       "category": "event"
     },
     {
-      "id": "bethany-lazarus",
-      "churchId": "bethany",
-      "cityId": "bethany",
-      "year": 33.08,
-      "journeyId": "period-4",
-      "label": "Lazarus raised",
-      "sublabel": "Dead four days · John 11",
-      "type": "support",
-      "ref": "John 11:1-44",
-      "category": "miracle"
-    },
-    {
-      "id": "jericho-bartimaeus",
-      "churchId": "jericho",
-      "cityId": "jericho",
-      "year": 33.18,
-      "journeyId": "period-4",
-      "label": "Blind Bartimaeus healed",
-      "sublabel": "'Your faith has made you well'",
-      "type": "support",
-      "ref": "Mark 10:46-52",
-      "category": "miracle"
-    },
-    {
-      "id": "jericho-zacchaeus",
-      "churchId": "jericho",
-      "cityId": "jericho",
-      "year": 33.19,
-      "journeyId": "period-4",
-      "label": "Zacchaeus welcomes Jesus",
-      "sublabel": "'Salvation has come to this house'",
-      "type": "leadership",
-      "ref": "Luke 19:1-10",
-      "category": "encounter"
-    },
-    {
-      "id": "jerusalem-crucifixion",
-      "churchId": "jerusalem",
-      "cityId": "jerusalem",
-      "year": 33.256,
-      "journeyId": "period-5",
-      "label": "Crucified at Golgotha",
-      "sublabel": "'It is finished' · John 19",
-      "type": "founding",
-      "ref": "John 19:16-37",
-      "category": "event"
-    },
-    {
-      "id": "jerusalem-resurrection",
-      "churchId": "jerusalem",
-      "cityId": "jerusalem",
-      "year": 33.258,
-      "journeyId": "period-6",
-      "label": "Risen from the dead",
-      "sublabel": "The empty tomb · Matt 28",
-      "type": "founding",
-      "ref": "Matt 28:1-10",
-      "category": "event"
-    },
-    {
-      "id": "tiberias-restoration",
-      "churchId": "tiberias",
-      "cityId": "tiberias",
-      "year": 33.3,
-      "journeyId": "period-6",
-      "label": "Peter restored",
-      "sublabel": "'Feed my sheep' · John 21",
-      "type": "leadership",
-      "ref": "John 21:1-23",
-      "category": "encounter"
-    },
-    {
-      "id": "capernaum-call-four",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 30.35,
-      "journeyId": "period-2",
-      "label": "Calls the first disciples",
-      "sublabel": "Peter, Andrew, James, John",
-      "type": "leadership",
-      "category": "encounter",
-      "ref": "Mark 1:16-20"
-    },
-    {
-      "id": "capernaum-unclean-spirit",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 30.4,
-      "journeyId": "period-2",
-      "label": "Drives out an unclean spirit",
-      "sublabel": "In the synagogue",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Mark 1:21-28"
-    },
-    {
-      "id": "capernaum-peters-mother",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 30.42,
-      "journeyId": "period-2",
-      "label": "Peter's mother-in-law healed",
-      "sublabel": "Fever leaves her",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Mark 1:29-31"
-    },
-    {
-      "id": "capernaum-leper",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 30.7,
-      "journeyId": "period-2",
-      "label": "A leper cleansed",
-      "sublabel": "'If you are willing'",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Mark 1:40-45"
-    },
-    {
-      "id": "capernaum-withered-hand",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 30.9,
-      "journeyId": "period-2",
-      "label": "Withered hand restored",
-      "sublabel": "On the Sabbath",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Mark 3:1-6"
-    },
-    {
-      "id": "capernaum-centurion",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 31.05,
-      "journeyId": "period-2",
-      "label": "Centurion's servant healed",
-      "sublabel": "'Such faith'",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Luke 7:1-10"
-    },
-    {
-      "id": "jerusalem-nicodemus",
-      "churchId": "jerusalem",
-      "cityId": "jerusalem",
-      "year": 30.01,
-      "journeyId": "period-1",
-      "label": "Nicodemus by night",
-      "sublabel": "'You must be born again'",
-      "type": "leadership",
-      "category": "encounter",
-      "ref": "John 3:1-21"
-    },
-    {
-      "id": "jerusalem-bethesda",
-      "churchId": "jerusalem",
-      "cityId": "jerusalem",
-      "year": 31.5,
-      "journeyId": "period-2",
-      "label": "Invalid healed at Bethesda",
-      "sublabel": "After 38 years",
-      "type": "support",
-      "category": "miracle",
-      "ref": "John 5:1-15"
-    },
-    {
-      "id": "capernaum-kingdom-parables",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 31.3,
-      "journeyId": "period-2",
-      "label": "Parables of the Kingdom",
-      "sublabel": "Taught from a boat, Matt 13",
-      "type": "letter-received",
-      "category": "teaching",
-      "ref": "Matthew 13:1-52"
-    },
-    {
-      "id": "sea-walk-water",
-      "churchId": "bethsaida",
-      "cityId": "bethsaida",
-      "year": 32.02,
-      "journeyId": "period-2",
-      "label": "Walks on the water",
-      "sublabel": "'Take heart, it is I'",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Matt 14:22-33"
-    },
-    {
-      "id": "capernaum-bread-life",
-      "churchId": "capernaum",
-      "cityId": "capernaum",
-      "year": 32.06,
-      "journeyId": "period-2",
-      "label": "Bread of Life discourse",
-      "sublabel": "In the synagogue",
-      "type": "letter-received",
-      "category": "teaching",
-      "ref": "John 6:22-59"
-    },
-    {
-      "id": "decapolis-deaf",
-      "churchId": "gergesa",
-      "cityId": "gergesa",
-      "year": 32.18,
+      "id": "hermon-boy-spirit",
+      "churchId": "mount-hermon",
+      "cityId": "mount-hermon",
+      "year": 32.36,
       "journeyId": "period-3",
-      "label": "A deaf man healed",
-      "sublabel": "'Ephphatha!'",
+      "label": "Boy with a Spirit",
+      "sublabel": "'I believe; help my unbelief' · Mark 9",
       "type": "support",
+      "ref": "Mark 9:14-29",
       "category": "miracle",
-      "ref": "Mark 7:31-37"
-    },
-    {
-      "id": "decapolis-4000",
-      "churchId": "gergesa",
-      "cityId": "gergesa",
-      "year": 32.2,
-      "journeyId": "period-3",
-      "label": "The four thousand fed",
-      "sublabel": "Seven loaves",
-      "type": "support",
-      "category": "miracle",
-      "ref": "Mark 8:1-9"
+      "miracleType": "exorcism",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
     },
     {
       "id": "capernaum-tax-fish",
@@ -1590,19 +1715,12 @@
       "sublabel": "For the temple tax",
       "type": "support",
       "category": "miracle",
-      "ref": "Matt 17:24-27"
-    },
-    {
-      "id": "jerusalem-light-world",
-      "churchId": "jerusalem",
-      "cityId": "jerusalem",
-      "year": 32.62,
-      "journeyId": "period-4",
-      "label": "'I am the light of the world'",
-      "sublabel": "At the Feast of Tabernacles",
-      "type": "letter-received",
-      "category": "teaching",
-      "ref": "John 8:12-30"
+      "ref": "Matt 17:24-27",
+      "miracleType": "nature",
+      "gospels": [
+        "Matthew"
+      ],
+      "optional": true
     },
     {
       "id": "jerusalem-adulteress",
@@ -1617,6 +1735,18 @@
       "ref": "John 8:1-11"
     },
     {
+      "id": "jerusalem-light-world",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 32.62,
+      "journeyId": "period-4",
+      "label": "'I am the light of the world'",
+      "sublabel": "At the Feast of Tabernacles",
+      "type": "letter-received",
+      "category": "teaching",
+      "ref": "John 8:12-30"
+    },
+    {
       "id": "jerusalem-blind-born",
       "churchId": "jerusalem",
       "cityId": "jerusalem",
@@ -1626,7 +1756,27 @@
       "sublabel": "Mud and Siloam",
       "type": "support",
       "category": "miracle",
-      "ref": "John 9:1-41"
+      "ref": "John 9:1-41",
+      "miracleType": "healing",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "samaria-ten-lepers",
+      "churchId": "sychar",
+      "cityId": "sychar",
+      "year": 32.72,
+      "journeyId": "period-4",
+      "label": "Ten lepers cleansed",
+      "sublabel": "Only one returns to thank",
+      "type": "support",
+      "category": "miracle",
+      "ref": "Luke 17:11-19",
+      "miracleType": "healing",
+      "gospels": [
+        "Luke"
+      ]
     },
     {
       "id": "jerusalem-good-shepherd",
@@ -1653,6 +1803,40 @@
       "ref": "Luke 10:38-42"
     },
     {
+      "id": "perea-bent-woman",
+      "churchId": "bethany-beyond-jordan",
+      "cityId": "bethany-beyond-jordan",
+      "year": 33,
+      "journeyId": "period-4",
+      "label": "Woman Bent 18 Years",
+      "sublabel": "Bent double for eighteen years · Luke 13",
+      "type": "support",
+      "ref": "Luke 13:10-17",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Luke"
+      ],
+      "optional": true
+    },
+    {
+      "id": "perea-dropsy",
+      "churchId": "bethany-beyond-jordan",
+      "cityId": "bethany-beyond-jordan",
+      "year": 33.01,
+      "journeyId": "period-4",
+      "label": "Man with Dropsy",
+      "sublabel": "Healed on the Sabbath · Luke 14",
+      "type": "support",
+      "ref": "Luke 14:1-6",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Luke"
+      ],
+      "optional": true
+    },
+    {
       "id": "perea-rich-ruler",
       "churchId": "bethany-beyond-jordan",
       "cityId": "bethany-beyond-jordan",
@@ -1665,16 +1849,50 @@
       "ref": "Mark 10:17-27"
     },
     {
-      "id": "samaria-ten-lepers",
-      "churchId": "sychar",
-      "cityId": "sychar",
-      "year": 32.72,
+      "id": "bethany-lazarus",
+      "churchId": "bethany",
+      "cityId": "bethany",
+      "year": 33.08,
       "journeyId": "period-4",
-      "label": "Ten lepers cleansed",
-      "sublabel": "Only one returns to thank",
+      "label": "Lazarus raised",
+      "sublabel": "Dead four days · John 11",
       "type": "support",
+      "ref": "John 11:1-44",
       "category": "miracle",
-      "ref": "Luke 17:11-19"
+      "miracleType": "resurrection",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "jericho-bartimaeus",
+      "churchId": "jericho",
+      "cityId": "jericho",
+      "year": 33.18,
+      "journeyId": "period-4",
+      "label": "Blind Bartimaeus healed",
+      "sublabel": "'Your faith has made you well'",
+      "type": "support",
+      "ref": "Mark 10:46-52",
+      "category": "miracle",
+      "miracleType": "healing",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "jericho-zacchaeus",
+      "churchId": "jericho",
+      "cityId": "jericho",
+      "year": 33.19,
+      "journeyId": "period-4",
+      "label": "Zacchaeus welcomes Jesus",
+      "sublabel": "'Salvation has come to this house'",
+      "type": "leadership",
+      "ref": "Luke 19:1-10",
+      "category": "encounter"
     },
     {
       "id": "jerusalem-fig-tree",
@@ -1686,7 +1904,12 @@
       "sublabel": "Withered by morning",
       "type": "support",
       "category": "miracle",
-      "ref": "Mark 11:12-21"
+      "ref": "Mark 11:12-21",
+      "miracleType": "nature",
+      "gospels": [
+        "Matthew",
+        "Mark"
+      ]
     },
     {
       "id": "jerusalem-woes",
@@ -1710,7 +1933,63 @@
       "sublabel": "His last miracle before the cross",
       "type": "support",
       "category": "miracle",
-      "ref": "Luke 22:50-51"
+      "ref": "Luke 22:50-51",
+      "miracleType": "healing",
+      "gospels": [
+        "Luke"
+      ]
+    },
+    {
+      "id": "jerusalem-crucifixion",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 33.256,
+      "journeyId": "period-5",
+      "label": "Crucified at Golgotha",
+      "sublabel": "'It is finished' · John 19",
+      "type": "founding",
+      "ref": "John 19:16-37",
+      "category": "event"
+    },
+    {
+      "id": "jerusalem-resurrection",
+      "churchId": "jerusalem",
+      "cityId": "jerusalem",
+      "year": 33.258,
+      "journeyId": "period-6",
+      "label": "Risen from the dead",
+      "sublabel": "The empty tomb · Matt 28",
+      "type": "founding",
+      "ref": "Matt 28:1-10",
+      "category": "event"
+    },
+    {
+      "id": "tiberias-second-catch",
+      "churchId": "tiberias",
+      "cityId": "tiberias",
+      "year": 33.29,
+      "journeyId": "period-6",
+      "label": "Second Catch of Fish",
+      "sublabel": "153 fish at daybreak · John 21",
+      "type": "support",
+      "ref": "John 21:1-14",
+      "category": "miracle",
+      "miracleType": "provision",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "tiberias-restoration",
+      "churchId": "tiberias",
+      "cityId": "tiberias",
+      "year": 33.3,
+      "journeyId": "period-6",
+      "label": "Peter restored",
+      "sublabel": "'Feed my sheep' · John 21",
+      "type": "leadership",
+      "ref": "John 21:15-23",
+      "category": "encounter"
     }
   ],
   "paulEvents": [
@@ -2129,23 +2408,32 @@
     {
       "id": "sower",
       "name": "The Sower",
-      "theme": "Kingdom of Heaven",
-      "gospels": "Synoptics",
-      "ref": "Matt 13:1-23; Mark 4:1-20; Luke 8:4-15",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ],
+      "ref": "Matt 13:1-23",
       "lesson": "The same word bears fruit or not depending on the soil of the heart.",
+      "journeyId": "period-2",
       "occasion": {
         "cityId": "capernaum",
         "year": 31.3,
         "note": "Taught in parables from a boat by the Sea of Galilee (Matthew 13)"
-      }
+      },
+      "locationNote": "Taught from a boat near Capernaum."
     },
     {
       "id": "weeds",
-      "name": "The Weeds among the Wheat",
-      "theme": "Kingdom of Heaven",
-      "gospels": "Matthew",
+      "name": "Weeds Among Wheat",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew"
+      ],
       "ref": "Matt 13:24-30",
       "lesson": "Good and evil grow together until the final harvest.",
+      "journeyId": "period-2",
       "occasion": {
         "cityId": "capernaum",
         "year": 31.3,
@@ -2153,12 +2441,17 @@
       }
     },
     {
-      "id": "mustard-seed",
-      "name": "The Mustard Seed",
-      "theme": "Kingdom of Heaven",
-      "gospels": "Synoptics",
-      "ref": "Matt 13:31-32; Mark 4:30-32",
+      "id": "mustard",
+      "name": "Mustard Seed",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ],
+      "ref": "Matt 13:31-32",
       "lesson": "The kingdom starts small and grows beyond all expectation.",
+      "journeyId": "period-2",
       "occasion": {
         "cityId": "capernaum",
         "year": 31.3,
@@ -2166,12 +2459,43 @@
       }
     },
     {
-      "id": "treasure-pearl",
-      "name": "The Hidden Treasure and the Pearl",
-      "theme": "Kingdom of Heaven",
-      "gospels": "Matthew",
-      "ref": "Matt 13:44-46",
-      "lesson": "The kingdom is worth selling everything to gain.",
+      "id": "leaven",
+      "name": "The Leaven",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ],
+      "ref": "Matt 13:33",
+      "lesson": "Hidden, quiet, total — the kingdom works through the whole.",
+      "journeyId": "period-2"
+    },
+    {
+      "id": "treasure",
+      "name": "Hidden Treasure",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 13:44",
+      "lesson": "Worth selling everything to possess.",
+      "journeyId": "period-2",
+      "occasion": {
+        "cityId": "capernaum",
+        "year": 31.3,
+        "note": "Taught in parables from a boat by the Sea of Galilee (Matthew 13)"
+      }
+    },
+    {
+      "id": "pearl",
+      "name": "Pearl of Great Price",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 13:45-46",
+      "lesson": "One find so precious the merchant liquidates all he has.",
+      "journeyId": "period-2",
       "occasion": {
         "cityId": "capernaum",
         "year": 31.3,
@@ -2180,11 +2504,14 @@
     },
     {
       "id": "dragnet",
-      "name": "The Net",
-      "theme": "Kingdom of Heaven",
-      "gospels": "Matthew",
+      "name": "The Dragnet",
+      "topic": "kingdom",
+      "gospels": [
+        "Matthew"
+      ],
       "ref": "Matt 13:47-50",
       "lesson": "The final sorting of the righteous and the wicked.",
+      "journeyId": "period-2",
       "occasion": {
         "cityId": "capernaum",
         "year": 31.3,
@@ -2192,25 +2519,44 @@
       }
     },
     {
+      "id": "growing-seed",
+      "name": "Growing Seed",
+      "topic": "kingdom",
+      "gospels": [
+        "Mark"
+      ],
+      "ref": "Mark 4:26-29",
+      "lesson": "The seed grows the farmer knows not how — God gives the increase.",
+      "journeyId": "period-2"
+    },
+    {
       "id": "lost-sheep",
       "name": "The Lost Sheep",
-      "theme": "Grace and the Lost",
-      "gospels": "Matthew and Luke",
-      "ref": "Luke 15:3-7; Matt 18:12-14",
+      "topic": "lost",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ],
+      "ref": "Luke 15:3-7",
       "lesson": "Heaven rejoices over one sinner who repents.",
+      "journeyId": "period-4",
       "occasion": {
         "cityId": "bethany-beyond-jordan",
         "year": 33,
         "note": "Taught in the Perean ministry to tax collectors and sinners"
-      }
+      },
+      "locationNote": "Luke's setting on the journey; Matt 18 sets a parallel in Galilee."
     },
     {
       "id": "lost-coin",
       "name": "The Lost Coin",
-      "theme": "Grace and the Lost",
-      "gospels": "Luke",
+      "topic": "lost",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 15:8-10",
       "lesson": "God searches diligently for what is lost.",
+      "journeyId": "period-4",
       "occasion": {
         "cityId": "bethany-beyond-jordan",
         "year": 33,
@@ -2218,12 +2564,15 @@
       }
     },
     {
-      "id": "prodigal-son",
+      "id": "prodigal",
       "name": "The Prodigal Son",
-      "theme": "Grace and the Lost",
-      "gospels": "Luke",
+      "topic": "lost",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 15:11-32",
       "lesson": "The Father runs to welcome the returning sinner.",
+      "journeyId": "period-4",
       "occasion": {
         "cityId": "bethany-beyond-jordan",
         "year": 33,
@@ -2231,54 +2580,38 @@
       }
     },
     {
-      "id": "vineyard-workers",
-      "name": "The Workers in the Vineyard",
-      "theme": "Grace and the Lost",
-      "gospels": "Matthew",
-      "ref": "Matt 20:1-16",
-      "lesson": "Grace is generous, not earned by the hours worked."
-    },
-    {
-      "id": "good-samaritan",
-      "name": "The Good Samaritan",
-      "theme": "Discipleship and Mercy",
-      "gospels": "Luke",
-      "ref": "Luke 10:25-37",
-      "lesson": "Love your neighbor, even across enemy lines.",
-      "occasion": {
-        "cityId": "jericho",
-        "year": 32.8,
-        "note": "Answering a lawyer on the Jerusalem-Jericho road"
-      }
-    },
-    {
-      "id": "unforgiving-servant",
-      "name": "The Unforgiving Servant",
-      "theme": "Discipleship and Mercy",
-      "gospels": "Matthew",
-      "ref": "Matt 18:21-35",
-      "lesson": "Forgive as you have been forgiven.",
-      "occasion": {
-        "cityId": "capernaum",
-        "year": 32.42,
-        "note": "Answering Peter on how often to forgive"
-      }
+      "id": "two-debtors",
+      "name": "Two Debtors",
+      "topic": "lost",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 7:41-43",
+      "lesson": "He who is forgiven much loves much.",
+      "journeyId": "period-2",
+      "locationNote": "At Simon the Pharisee's table."
     },
     {
       "id": "friend-midnight",
-      "name": "The Friend at Midnight",
-      "theme": "Prayer and Humility",
-      "gospels": "Luke",
+      "name": "Friend at Midnight",
+      "topic": "prayer",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 11:5-8",
-      "lesson": "Keep asking; persistence in prayer is honored."
+      "lesson": "Keep asking; persistence in prayer is honored.",
+      "journeyId": "period-4"
     },
     {
       "id": "persistent-widow",
-      "name": "The Persistent Widow",
-      "theme": "Prayer and Humility",
-      "gospels": "Luke",
+      "name": "Persistent Widow",
+      "topic": "prayer",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 18:1-8",
       "lesson": "Pray always and do not lose heart.",
+      "journeyId": "period-4",
       "occasion": {
         "cityId": "bethany-beyond-jordan",
         "year": 33.05,
@@ -2287,11 +2620,14 @@
     },
     {
       "id": "pharisee-tax",
-      "name": "The Pharisee and the Tax Collector",
-      "theme": "Prayer and Humility",
-      "gospels": "Luke",
+      "name": "Pharisee & Tax Collector",
+      "topic": "prayer",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 18:9-14",
       "lesson": "The humble, not the self-righteous, go home justified.",
+      "journeyId": "period-4",
       "occasion": {
         "cityId": "bethany-beyond-jordan",
         "year": 33.06,
@@ -2301,57 +2637,308 @@
     {
       "id": "rich-fool",
       "name": "The Rich Fool",
-      "theme": "Wealth and Poverty",
-      "gospels": "Luke",
-      "ref": "Luke 12:13-21",
-      "lesson": "Life is not measured by the abundance of possessions."
+      "topic": "money",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 12:16-21",
+      "lesson": "Life is not measured by the abundance of possessions.",
+      "journeyId": "period-4"
+    },
+    {
+      "id": "shrewd-manager",
+      "name": "The Shrewd Manager",
+      "topic": "money",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 16:1-13",
+      "lesson": "Use worldly wealth wisely for eternal ends; serve God, not money.",
+      "journeyId": "period-4"
     },
     {
       "id": "rich-lazarus",
-      "name": "The Rich Man and Lazarus",
-      "theme": "Wealth and Poverty",
-      "gospels": "Luke",
+      "name": "Rich Man & Lazarus",
+      "topic": "money",
+      "gospels": [
+        "Luke"
+      ],
       "ref": "Luke 16:19-31",
-      "lesson": "Indifference to the poor has eternal consequences."
-    },
-    {
-      "id": "ten-virgins",
-      "name": "The Ten Virgins",
-      "theme": "Watchfulness and Judgment",
-      "gospels": "Matthew",
-      "ref": "Matt 25:1-13",
-      "lesson": "Be ready; the bridegroom comes at an unknown hour.",
-      "occasion": {
-        "cityId": "mount-of-olives",
-        "year": 33.246,
-        "note": "Part of the Olivet Discourse in Passion Week"
-      }
+      "lesson": "Indifference to the poor has eternal consequences.",
+      "journeyId": "period-4"
     },
     {
       "id": "talents",
       "name": "The Talents",
-      "theme": "Watchfulness and Judgment",
-      "gospels": "Matthew and Luke",
-      "ref": "Matt 25:14-30; Luke 19:11-27",
-      "lesson": "Faithfully invest what the master entrusts.",
+      "topic": "money",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 25:14-30",
+      "lesson": "Entrusted, invested, accountable — faithfulness with what you're given.",
+      "journeyId": "period-5",
       "occasion": {
         "cityId": "mount-of-olives",
         "year": 33.246,
         "note": "Part of the Olivet Discourse in Passion Week"
-      }
+      },
+      "locationNote": "Part of the Olivet Discourse."
+    },
+    {
+      "id": "minas",
+      "name": "The Minas",
+      "topic": "money",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 19:11-27",
+      "lesson": "A nobleman departs and returns to settle accounts.",
+      "journeyId": "period-4",
+      "locationNote": "Told near Jericho, approaching Jerusalem."
+    },
+    {
+      "id": "ten-virgins",
+      "name": "The Ten Virgins",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 25:1-13",
+      "lesson": "Be ready; the bridegroom comes at an unknown hour.",
+      "journeyId": "period-5",
+      "occasion": {
+        "cityId": "mount-of-olives",
+        "year": 33.246,
+        "note": "Part of the Olivet Discourse in Passion Week"
+      },
+      "locationNote": "Part of the Olivet Discourse."
+    },
+    {
+      "id": "builders",
+      "name": "Wise & Foolish Builders",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ],
+      "ref": "Matt 7:24-27",
+      "lesson": "Two houses, one storm — hearing versus doing his words.",
+      "journeyId": "period-2",
+      "locationNote": "Close of the Sermon on the Mount."
+    },
+    {
+      "id": "great-banquet",
+      "name": "The Great Banquet",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ],
+      "ref": "Luke 14:15-24",
+      "lesson": "The invited make excuses; the highways and hedges are filled.",
+      "journeyId": "period-4",
+      "locationNote": "Matt 22 sets a royal parallel in Jerusalem."
+    },
+    {
+      "id": "faithful-servant",
+      "name": "Faithful & Wise Servant",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ],
+      "ref": "Matt 24:45-51",
+      "lesson": "Found working or found drunk — the master returns unannounced.",
+      "journeyId": "period-5"
+    },
+    {
+      "id": "wicked-tenants",
+      "name": "Wicked Tenants",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ],
+      "ref": "Matt 21:33-46",
+      "lesson": "They kill the vineyard owner's son — judgment on the leaders.",
+      "journeyId": "period-5",
+      "locationNote": "Taught in the temple during Passion Week."
+    },
+    {
+      "id": "barren-fig",
+      "name": "Barren Fig Tree",
+      "topic": "readiness",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 13:6-9",
+      "lesson": "One more year to bear fruit — patience with a limit.",
+      "journeyId": "period-4"
     },
     {
       "id": "sheep-goats",
-      "name": "The Sheep and the Goats",
-      "theme": "Watchfulness and Judgment",
-      "gospels": "Matthew",
+      "name": "Sheep & Goats",
+      "topic": "readiness",
+      "gospels": [
+        "Matthew"
+      ],
       "ref": "Matt 25:31-46",
       "lesson": "The nations are judged by mercy shown to the least.",
+      "journeyId": "period-5",
       "occasion": {
         "cityId": "mount-of-olives",
         "year": 33.246,
         "note": "Part of the Olivet Discourse in Passion Week"
+      },
+      "optional": true,
+      "locationNote": "Close of the Olivet Discourse; part parable, part judgment vision."
+    },
+    {
+      "id": "unforgiving",
+      "name": "Unforgiving Servant",
+      "topic": "mercy",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 18:23-35",
+      "lesson": "Forgive as you have been forgiven.",
+      "journeyId": "period-3",
+      "occasion": {
+        "cityId": "capernaum",
+        "year": 32.42,
+        "note": "Answering Peter on how often to forgive"
       }
+    },
+    {
+      "id": "good-samaritan",
+      "name": "The Good Samaritan",
+      "topic": "mercy",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 10:25-37",
+      "lesson": "Love your neighbor, even across enemy lines.",
+      "journeyId": "period-4",
+      "occasion": {
+        "cityId": "jericho",
+        "year": 32.8,
+        "note": "Answering a lawyer on the Jerusalem-Jericho road"
+      },
+      "locationNote": "Set on the Jerusalem-Jericho road."
+    },
+    {
+      "id": "wineskins",
+      "name": "New Cloth & Wineskins",
+      "topic": "cost",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ],
+      "ref": "Matt 9:16-17",
+      "lesson": "The new covenant cannot be patched onto the old system.",
+      "journeyId": "period-2",
+      "locationNote": "At Levi's feast."
+    },
+    {
+      "id": "tower-king",
+      "name": "Tower Builder & King at War",
+      "topic": "cost",
+      "gospels": [
+        "Luke"
+      ],
+      "ref": "Luke 14:28-33",
+      "lesson": "Count the cost before you follow — discipleship is total.",
+      "journeyId": "period-4"
+    },
+    {
+      "id": "lamp-basket",
+      "name": "Lamp Under a Basket",
+      "topic": "cost",
+      "gospels": [
+        "Mark",
+        "Luke"
+      ],
+      "ref": "Mark 4:21-25",
+      "lesson": "Light is meant to be set out, not hidden.",
+      "journeyId": "period-2"
+    },
+    {
+      "id": "vineyard-laborers",
+      "name": "Laborers in the Vineyard",
+      "topic": "cost",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 20:1-16",
+      "lesson": "Grace is generous, not earned by the hours worked.",
+      "journeyId": "period-4",
+      "locationNote": "Taught on the way up to Jerusalem."
+    },
+    {
+      "id": "two-sons",
+      "name": "The Two Sons",
+      "topic": "cost",
+      "gospels": [
+        "Matthew"
+      ],
+      "ref": "Matt 21:28-32",
+      "lesson": "One says no and obeys; one says yes and doesn't. Deeds over words.",
+      "journeyId": "period-5",
+      "locationNote": "Taught in the temple during Passion Week."
     }
-  ]
+  ],
+  "miracleTypes": {
+    "healing": {
+      "label": "Healings",
+      "color": "#5a9e8a"
+    },
+    "exorcism": {
+      "label": "Exorcisms",
+      "color": "#9a6b8a"
+    },
+    "resurrection": {
+      "label": "Raising the Dead",
+      "color": "#c98a3c"
+    },
+    "nature": {
+      "label": "Power over Nature",
+      "color": "#6b8cba"
+    },
+    "provision": {
+      "label": "Provision",
+      "color": "#a89050"
+    }
+  },
+  "parableTopics": {
+    "kingdom": {
+      "label": "The Kingdom",
+      "color": "#c98a3c"
+    },
+    "lost": {
+      "label": "Grace & the Lost",
+      "color": "#5a9e8a"
+    },
+    "prayer": {
+      "label": "Prayer",
+      "color": "#6b8cba"
+    },
+    "money": {
+      "label": "Money & Stewardship",
+      "color": "#a89050"
+    },
+    "readiness": {
+      "label": "Judgment & Readiness",
+      "color": "#9a6b8a"
+    },
+    "mercy": {
+      "label": "Forgiveness & Mercy",
+      "color": "#8a9a5a"
+    },
+    "cost": {
+      "label": "Discipleship & Cost",
+      "color": "#b0705a"
+    }
+  }
 }
