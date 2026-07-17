@@ -10,18 +10,14 @@
   scroll-behavior: smooth;
 }
 
-/* 3D Perspective Viewport */
+/* Parallax viewport */
 .hero-perspective {
-  perspective: 800px;
-  perspective-origin: center 0;
   height: 100vh;
   overflow: hidden;
   position: relative;
 }
 
-/* Stage: preserve-3d for layered transforms */
 .hero-stage {
-  transform-style: preserve-3d;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -30,35 +26,25 @@
   justify-content: center;
 }
 
-/* Base layer styles */
+/* Base layer styles. The scale() gives each layer overscan so the scroll-driven
+   translateY (applied by JS, and capped below the overscan budget) never exposes an
+   edge. JS rewrites `transform` on scroll and must re-include this scale — see
+   HeroLanding.jsx (LAYER_SCALE). */
 .hero-layer {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  image-rendering: auto;
+  transform: translate3d(0, 0, 0) scale(1.2);
   pointer-events: none;
   will-change: transform;
 }
 
-/* Layer 1: Sky (scrolls slowest — highest translateZ) */
-.hero-layer-1 {
-  transform: translateZ(0.6px) scale(1.4);
-  z-index: 1;
-}
-
-/* Layer 2: Midground Sea of Galilee (normal speed — z=0) */
-.hero-layer-2 {
-  transform: translateZ(0px);
-  z-index: 2;
-}
-
-/* Layer 3: Foreground Hill (scrolls fastest — negative translateZ) */
-.hero-layer-3 {
-  transform: translateZ(-0.6px) scale(0.67);
-  z-index: 3;
-}
+/* Depth order only — parallax speed is driven by JS, not CSS. */
+.hero-layer-1 { z-index: 1; } /* sky (furthest) */
+.hero-layer-2 { z-index: 2; } /* midground: Sea of Galilee */
+.hero-layer-3 { z-index: 3; } /* foreground hill (nearest) */
 
 /* ── Content Overlay — centered title area ── */
 .hero-content {

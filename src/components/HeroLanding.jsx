@@ -3,6 +3,10 @@ import { useRef, useEffect } from 'react'
 const GREEK = 'Ἐν ἀρχῇ ἦν ὁ λόγος'
 const GREEK_TRANS = 'In the beginning was the Word · John 1:1'
 
+// Overscan applied to every hero layer. Must match `.hero-layer` scale() in hero.css:
+// its ~10% top margin (0.1 × 672px ≈ 67px) covers the capped downward parallax offsets.
+const LAYER_SCALE = 1.2
+
 export default function HeroLanding({ onEnter }) {
   const scrollRef = useRef(null)
   const enteredRef = useRef(false)
@@ -18,17 +22,17 @@ export default function HeroLanding({ onEnter }) {
       const max = scroller.scrollHeight - scroller.clientHeight
       const progress = max > 0 ? Math.min(1, scroller.scrollTop / max) : 0
 
-      // Parallax effect: each layer moves at a different rate based on scroll
-      // Layer 1 (sky, furthest): moves slowest
-      // Layer 2 (midground): moves at normal speed
-      // Layer 3 (foreground): moves fastest
-      const offset1 = scroller.scrollTop * 0.3
-      const offset2 = scroller.scrollTop * 0.6
-      const offset3 = scroller.scrollTop * 0.9
+      // Scroll-driven parallax. Each layer is nudged DOWN as you scroll; the nearest
+      // layer moves least, so relative to the scrolling container the foreground drifts
+      // upward fastest and the sky lingers — natural depth. Offsets are clamped to CAP
+      // (a fraction of LAYER_SCALE's overscan) so a translate never exposes a layer edge;
+      // past ~one viewport of scroll the drift is frozen while the scene scrolls away.
+      const s = Math.min(scroller.scrollTop, 700)
+      const tf = (o) => `translate3d(0, ${o}px, 0) scale(${LAYER_SCALE})`
 
-      if (layer1Ref.current) layer1Ref.current.style.transform = `translateY(${offset1}px)`
-      if (layer2Ref.current) layer2Ref.current.style.transform = `translateY(${offset2}px)`
-      if (layer3Ref.current) layer3Ref.current.style.transform = `translateY(${offset3}px)`
+      if (layer1Ref.current) layer1Ref.current.style.transform = tf(s * 0.086) // sky   → cap 60
+      if (layer2Ref.current) layer2Ref.current.style.transform = tf(s * 0.054) // mid   → cap 38
+      if (layer3Ref.current) layer3Ref.current.style.transform = tf(s * 0.023) // fore  → cap 16
 
       if (progress >= 0.985 && !enteredRef.current) {
         enteredRef.current = true
