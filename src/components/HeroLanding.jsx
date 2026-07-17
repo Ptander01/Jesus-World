@@ -6,6 +6,9 @@ const GREEK_TRANS = 'In the beginning was the Word · John 1:1'
 export default function HeroLanding({ onEnter }) {
   const scrollRef = useRef(null)
   const enteredRef = useRef(false)
+  const layer1Ref = useRef(null)
+  const layer2Ref = useRef(null)
+  const layer3Ref = useRef(null)
 
   useEffect(() => {
     const scroller = scrollRef.current
@@ -14,6 +17,19 @@ export default function HeroLanding({ onEnter }) {
     const onScroll = () => {
       const max = scroller.scrollHeight - scroller.clientHeight
       const progress = max > 0 ? Math.min(1, scroller.scrollTop / max) : 0
+
+      // Parallax effect: each layer moves at a different rate based on scroll
+      // Layer 1 (sky, furthest): moves slowest
+      // Layer 2 (midground): moves at normal speed
+      // Layer 3 (foreground): moves fastest
+      const offset1 = scroller.scrollTop * 0.3
+      const offset2 = scroller.scrollTop * 0.6
+      const offset3 = scroller.scrollTop * 0.9
+
+      if (layer1Ref.current) layer1Ref.current.style.transform = `translateY(${offset1}px)`
+      if (layer2Ref.current) layer2Ref.current.style.transform = `translateY(${offset2}px)`
+      if (layer3Ref.current) layer3Ref.current.style.transform = `translateY(${offset3}px)`
+
       if (progress >= 0.985 && !enteredRef.current) {
         enteredRef.current = true
         onEnter()
@@ -36,17 +52,17 @@ export default function HeroLanding({ onEnter }) {
       <div className="hero-perspective">
         <div className="hero-stage">
           {/* Layer 1: Sky (scrolls slowest) */}
-          <div className="hero-layer hero-layer-1" style={{
+          <div ref={layer1Ref} className="hero-layer hero-layer-1" style={{
             backgroundImage: `url(/assets/image1_sky.png)`
           }} />
 
           {/* Layer 2: Midground Sea of Galilee (normal speed) */}
-          <div className="hero-layer hero-layer-2" style={{
+          <div ref={layer2Ref} className="hero-layer hero-layer-2" style={{
             backgroundImage: `url(/assets/image2_midground.png)`
           }} />
 
           {/* Layer 3: Foreground Hill (scrolls fastest) */}
-          <div className="hero-layer hero-layer-3" style={{
+          <div ref={layer3Ref} className="hero-layer hero-layer-3" style={{
             backgroundImage: `url(/assets/image3_foreground.png)`
           }} />
         </div>
