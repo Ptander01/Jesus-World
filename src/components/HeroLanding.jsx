@@ -1,4 +1,9 @@
 import { useRef, useEffect } from 'react'
+// Imported (not served from /public) so Vite content-hashes the filenames — a changed
+// image gets a new URL, so browser/CDN caches can never serve a stale layer.
+import image1Sky from '../assets/hero/image1_sky.png'
+import image2Midground from '../assets/hero/image2_midground.png'
+import image3Foreground from '../assets/hero/image3_foreground.png'
 
 const GREEK = 'Ἐν ἀρχῇ ἦν ὁ λόγος'
 const GREEK_TRANS = 'In the beginning was the Word · John 1:1'
@@ -57,17 +62,17 @@ export default function HeroLanding({ onEnter }) {
         <div className="hero-stage">
           {/* Layer 1: Sky (scrolls slowest) */}
           <div ref={layer1Ref} className="hero-layer hero-layer-1" style={{
-            backgroundImage: `url(/assets/image1_sky.png)`
+            backgroundImage: `url(${image1Sky})`
           }} />
 
           {/* Layer 2: Midground Sea of Galilee (normal speed) */}
           <div ref={layer2Ref} className="hero-layer hero-layer-2" style={{
-            backgroundImage: `url(/assets/image2_midground.png)`
+            backgroundImage: `url(${image2Midground})`
           }} />
 
           {/* Layer 3: Foreground Hill (scrolls fastest) */}
           <div ref={layer3Ref} className="hero-layer hero-layer-3" style={{
-            backgroundImage: `url(/assets/image3_foreground.png)`
+            backgroundImage: `url(${image3Foreground})`
           }} />
         </div>
 
