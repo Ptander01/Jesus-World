@@ -26,7 +26,7 @@ const PLAY_END   = 33.4
 // Passion Week / Resurrection beats live in fractional years, so a year is a lot.
 const SECONDS_PER_YEAR = 6
 
-export default function App({ lens = 'All', onLensChange }) {
+export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange }) {
   const [activeJourneys, setActiveJourneys] = useState(new Set())
   const [selectedBookId, setSelectedBookId] = useState(null)
   const [viewMode, setViewMode]             = useState('journeys')
@@ -38,13 +38,7 @@ export default function App({ lens = 'All', onLensChange }) {
   const [playSpeed, setPlaySpeed]           = useState(1)
   const [detailJourneyId, setDetailJourneyId]       = useState(null)
   const [activeChurchTracks, setActiveChurchTracks] = useState(new Set())
-  const [theme, setTheme] = useState(() => localStorage.getItem('pw-theme') || 'dark')
   const panToCityRef = useRef(null)
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('pw-theme', theme)
-  }, [theme])
 
   const playFrameRef           = useRef(null)
   const playStartTimeRef       = useRef(null)
@@ -243,7 +237,7 @@ export default function App({ lens = 'All', onLensChange }) {
         />
         <ThemeToggle
           theme={theme}
-          onToggle={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          onToggle={() => onThemeChange?.(theme === 'dark' ? 'light' : 'dark')}
         />
       </header>
       <div className="app-body">

@@ -54,13 +54,21 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
 
   if (timelineYear === null) {
     return (
-      <button className="story-btn" onClick={onStoryPlay}>
-        <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
-          <path d="M0 0 L10 6 L0 12 Z" fill="currentColor" />
-        </svg>
-        <span>Jesus&rsquo;s Story</span>
-        <span className="story-btn__sub">AD 29–33</span>
-      </button>
+      <div className="story-entry">
+        <button className="story-btn" onClick={onStoryPlay}>
+          <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true">
+            <path d="M0 0 L10 6 L0 12 Z" fill="currentColor" />
+          </svg>
+          <span>Jesus&rsquo;s Story</span>
+          <span className="story-btn__sub">AD 29–33</span>
+        </button>
+        {/* The reader is a mode, not a chart — offered here beside the tour rather
+            than buried behind a URL. */}
+        <a className="story-read" href="#/read">
+          <span>Read the Last Week</span>
+          <span className="story-btn__sub">Scripture</span>
+        </a>
+      </div>
     )
   }
 

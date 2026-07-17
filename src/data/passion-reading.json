@@ -1,0 +1,532 @@
+{
+  "_readme": "Passion Week reading pilot — the scroll-driven counterpart to the exploratory atlas. `prose` is editorial connective tissue drafted by Claude for Patrick to edit. `verses` is scripture, fetched verbatim from bible-api.com and NOT retyped — do not hand-edit verse text; re-fetch instead. Sections are ordered by `year` and drive the map: each one pans to `cityId` and sets the timeline to `year`.",
+  "translation": {
+    "id": "web",
+    "name": "World English Bible",
+    "note": "Public Domain",
+    "source": "bible-api.com"
+  },
+  "sections": [
+    {
+      "id": "entry",
+      "day": "Sunday",
+      "year": 33.24,
+      "cityId": "bethphage",
+      "title": "The Entry",
+      "ref": "Matthew 21:8-11",
+      "verses": [
+        {
+          "v": 8,
+          "text": "A very great multitude spread their clothes on the road. Others cut branches from the trees, and spread them on the road."
+        },
+        {
+          "v": 9,
+          "text": "The multitudes who went in front of him, and those who followed, kept shouting, “Hosanna to the son of David! Blessed is he who comes in the name of the Lord! Hosanna in the highest!”"
+        },
+        {
+          "v": 10,
+          "text": "When he had come into Jerusalem, all the city was stirred up, saying, “Who is this?”"
+        },
+        {
+          "v": 11,
+          "text": "The multitudes said, “This is the prophet, Jesus, from Nazareth of Galilee.”"
+        }
+      ],
+      "prose": "The week opens at Bethphage, on the eastern shoulder of the Mount of Olives, where the road up from Jericho crests and the city comes suddenly into view. Pilgrims are streaming in for Passover and Jerusalem is swollen to several times its ordinary size. He sends for a colt and rides down. It is a deliberate, legible act, and all four Gospels record it.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "temple",
+      "day": "Monday",
+      "year": 33.243,
+      "cityId": "jerusalem",
+      "title": "The Temple",
+      "ref": "Mark 11:15-18",
+      "verses": [
+        {
+          "v": 15,
+          "text": "They came to Jerusalem, and Jesus entered into the temple, and began to throw out those who sold and those who bought in the temple, and overthrew the money changers’ tables, and the seats of those who sold the doves."
+        },
+        {
+          "v": 16,
+          "text": "He would not allow anyone to carry a container through the temple."
+        },
+        {
+          "v": 17,
+          "text": "He taught, saying to them, “Isn’t it written, ‘My house will be called a house of prayer for all the nations?’ But you have made it a den of robbers!”"
+        },
+        {
+          "v": 18,
+          "text": "The chief priests and the scribes heard it, and sought how they might destroy him. For they feared him, because all the multitude was astonished at his teaching."
+        }
+      ],
+      "prose": "The next morning he goes into the temple's outer court, where pilgrims changed Roman coin for the Tyrian shekel the tax required, and bought animals for sacrifice. It was a necessary trade, and he overturns it. Mark is careful about what follows: from this day the authorities begin looking for a way to kill him.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "fig-tree",
+      "day": "Tuesday",
+      "year": 33.2435,
+      "cityId": "jerusalem",
+      "title": "The Fig Tree",
+      "ref": "Mark 11:20-22",
+      "verses": [
+        {
+          "v": 20,
+          "text": "As they passed by in the morning, they saw the fig tree withered away from the roots."
+        },
+        {
+          "v": 21,
+          "text": "Peter, remembering, said to him, “Rabbi, look! The fig tree which you cursed has withered away.”"
+        },
+        {
+          "v": 22,
+          "text": "Jesus answered them, “Have faith in God."
+        }
+      ],
+      "prose": "Mark brackets the temple scene with a fig tree — cursed on the way in, found withered on the way back out. The arrangement is deliberate. It is the same judgment told twice: once in a tree, once in a courtyard.",
+      "gospels": [
+        "Matthew",
+        "Mark"
+      ]
+    },
+    {
+      "id": "lament",
+      "day": "Tuesday",
+      "year": 33.2455,
+      "cityId": "jerusalem",
+      "title": "The Lament",
+      "ref": "Matthew 23:37-39",
+      "verses": [
+        {
+          "v": 37,
+          "text": "“Jerusalem, Jerusalem, who kills the prophets, and stones those who are sent to her! How often I would have gathered your children together, even as a hen gathers her chicks under her wings, and you would not!"
+        },
+        {
+          "v": 38,
+          "text": "Behold, your house is left to you desolate."
+        },
+        {
+          "v": 39,
+          "text": "For I tell you, you will not see me from now on, until you say, ‘Blessed is he who comes in the name of the Lord!’”"
+        }
+      ],
+      "prose": "A long day of confrontation in the temple courts — questions about taxes, about resurrection, about the greatest commandment. Matthew closes it with a denunciation of the religious leadership that runs the length of a chapter. It ends not in anger but in grief, and in an image domestic enough to be startling.",
+      "gospels": [
+        "Matthew",
+        "Luke"
+      ]
+    },
+    {
+      "id": "olivet",
+      "day": "Tuesday",
+      "year": 33.246,
+      "cityId": "mount-of-olives",
+      "title": "Not One Stone",
+      "ref": "Matthew 24:1-2",
+      "verses": [
+        {
+          "v": 1,
+          "text": "Jesus went out from the temple, and was going on his way. His disciples came to him to show him the buildings of the temple."
+        },
+        {
+          "v": 2,
+          "text": "But he answered them, “You see all of these things, don’t you? Most certainly I tell you, there will not be left here one stone on another, that will not be thrown down.”"
+        }
+      ],
+      "prose": "Herod's temple was not finished. It had been under construction for forty-six years and would take another three decades; its foundation stones were famous, some weighing hundreds of tons. Leaving it, the disciples point them out — the way anyone points out something enormous. Within forty years Rome would take the building apart.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "judas",
+      "day": "Wednesday",
+      "year": 33.249,
+      "cityId": "bethany",
+      "title": "Thirty Pieces",
+      "ref": "Matthew 26:14-16",
+      "verses": [
+        {
+          "v": 14,
+          "text": "Then one of the twelve, who was called Judas Iscariot, went to the chief priests,"
+        },
+        {
+          "v": 15,
+          "text": "and said, “What are you willing to give me, that I should deliver him to you?” They weighed out for him thirty pieces of silver."
+        },
+        {
+          "v": 16,
+          "text": "From that time he sought opportunity to betray him."
+        }
+      ],
+      "prose": "Wednesday is nearly silent in the Gospels. He lodges at Bethany, two miles east over the ridge — the same village where Lazarus came out of the tomb. Somewhere in that quiet, one of the twelve goes to the chief priests. Matthew alone names the price.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "supper",
+      "day": "Thursday",
+      "year": 33.252,
+      "cityId": "jerusalem",
+      "title": "The Supper",
+      "ref": "Luke 22:19-20",
+      "verses": [
+        {
+          "v": 19,
+          "text": "He took bread, and when he had given thanks, he broke, and gave it to them, saying, “This is my body which is given for you. Do this in memory of me.”"
+        },
+        {
+          "v": 20,
+          "text": "Likewise, he took the cup after supper, saying, “This cup is the new covenant in my blood, which is poured out for you."
+        }
+      ],
+      "prose": "Thursday evening, in a borrowed upper room inside the walls. The meal is Passover — or very nearly. John's chronology places the crucifixion before the Passover meal rather than after it, one of the sharpest disagreements between the Gospels, and not one that tidies away. Luke gives the words most churches still repeat.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "gethsemane",
+      "day": "Thursday night",
+      "year": 33.254,
+      "cityId": "gethsemane",
+      "title": "The Garden",
+      "ref": "Matthew 26:38-42",
+      "verses": [
+        {
+          "v": 38,
+          "text": "Then he said to them, “My soul is exceedingly sorrowful, even to death. Stay here, and watch with me.”"
+        },
+        {
+          "v": 39,
+          "text": "He went forward a little, fell on his face, and prayed, saying, “My Father, if it is possible, let this cup pass away from me; nevertheless, not what I desire, but what you desire.”"
+        },
+        {
+          "v": 40,
+          "text": "He came to the disciples, and found them sleeping, and said to Peter, “What, couldn’t you watch with me for one hour?"
+        },
+        {
+          "v": 41,
+          "text": "Watch and pray, that you don’t enter into temptation. The spirit indeed is willing, but the flesh is weak.”"
+        },
+        {
+          "v": 42,
+          "text": "Again, a second time he went away, and prayed, saying, “My Father, if this cup can’t pass away from me unless I drink it, your desire be done.”"
+        }
+      ],
+      "prose": "Gethsemane means oil press. It lies at the foot of the Mount of Olives, across the Kidron valley from the temple — perhaps twenty minutes' walk from the upper room, downhill in the dark. Luke is the one who mentions sweat like blood. Matthew records the prayer, and records that he prayed it more than once.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke"
+      ]
+    },
+    {
+      "id": "arrest",
+      "day": "Thursday night",
+      "year": 33.2545,
+      "cityId": "gethsemane",
+      "title": "The Arrest",
+      "ref": "Luke 22:47-51",
+      "verses": [
+        {
+          "v": 47,
+          "text": "While he was still speaking, behold, a multitude, and he who was called Judas, one of the twelve, was leading them. He came near to Jesus to kiss him."
+        },
+        {
+          "v": 48,
+          "text": "But Jesus said to him, “Judas, do you betray the Son of Man with a kiss?”"
+        },
+        {
+          "v": 49,
+          "text": "When those who were around him saw what was about to happen, they said to him, “Lord, shall we strike with the sword?”"
+        },
+        {
+          "v": 50,
+          "text": "A certain one of them struck the servant of the high priest, and cut off his right ear."
+        },
+        {
+          "v": 51,
+          "text": "But Jesus answered, “Let me at least do this”—and he touched his ear, and healed him."
+        }
+      ],
+      "prose": "All four Gospels record the arrest, and all four record a disciple drawing a sword and taking off a servant's ear. Only Luke records that Jesus healed it. Only John names the man: Malchus. It is the last miracle before the cross, and it is done for one of the people who came to take him.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "cross",
+      "day": "Friday",
+      "year": 33.256,
+      "cityId": "jerusalem",
+      "title": "The Cross",
+      "ref": "John 19:25-30",
+      "verses": [
+        {
+          "v": 25,
+          "text": "But there were standing by the cross of Jesus his mother, and his mother’s sister, Mary the wife of Clopas, and Mary Magdalene."
+        },
+        {
+          "v": 26,
+          "text": "Therefore when Jesus saw his mother, and the disciple whom he loved standing there, he said to his mother, “Woman, behold, your son!”"
+        },
+        {
+          "v": 27,
+          "text": "Then he said to the disciple, “Behold, your mother!” From that hour, the disciple took her to his own home."
+        },
+        {
+          "v": 28,
+          "text": "After this, Jesus, seeing that all things were now finished, that the Scripture might be fulfilled, said, “I am thirsty.”"
+        },
+        {
+          "v": 29,
+          "text": "Now a vessel full of vinegar was set there; so they put a sponge full of the vinegar on hyssop, and held it at his mouth."
+        },
+        {
+          "v": 30,
+          "text": "When Jesus therefore had received the vinegar, he said, “It is finished.” He bowed his head, and gave up his spirit."
+        }
+      ],
+      "prose": "Crucifixion was Roman, public, and engineered to take a long time. Golgotha stood outside the wall and beside a road, so that it would be seen. Matthew and Mark record the cry of dereliction. John records something quieter — a man arranging his mother's care, and then a single word in Greek, tetelestai: it is finished.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "tomb",
+      "day": "Sunday, at dawn",
+      "year": 33.258,
+      "cityId": "jerusalem",
+      "title": "The Garden Again",
+      "ref": "John 20:11-18",
+      "verses": [
+        {
+          "v": 11,
+          "text": "But Mary was standing outside at the tomb weeping. So, as she wept, she stooped and looked into the tomb,"
+        },
+        {
+          "v": 12,
+          "text": "and she saw two angels in white sitting, one at the head, and one at the feet, where the body of Jesus had lain."
+        },
+        {
+          "v": 13,
+          "text": "They told her, “Woman, why are you weeping?” She said to them, “Because they have taken away my Lord, and I don’t know where they have laid him.”"
+        },
+        {
+          "v": 14,
+          "text": "When she had said this, she turned around and saw Jesus standing, and didn’t know that it was Jesus."
+        },
+        {
+          "v": 15,
+          "text": "Jesus said to her, “Woman, why are you weeping? Who are you looking for?” She, supposing him to be the gardener, said to him, “Sir, if you have carried him away, tell me where you have laid him, and I will take him away.”"
+        },
+        {
+          "v": 16,
+          "text": "Jesus said to her, “Mary.” She turned and said to him, “Rabboni!” which is to say, “Teacher!”"
+        },
+        {
+          "v": 17,
+          "text": "Jesus said to her, “Don’t hold me, for I haven’t yet ascended to my Father; but go to my brothers, and tell them, ‘I am ascending to my Father and your Father, to my God and your God.’”"
+        },
+        {
+          "v": 18,
+          "text": "Mary Magdalene came and told the disciples that she had seen the Lord, and that he had said these things to her."
+        }
+      ],
+      "prose": "John is precise about the setting: in the place where he was crucified there was a garden, and in the garden a new tomb. The story returns to one. In John's telling Mary Magdalene is alone, she is the first, and she mistakes him for the gardener — which, at the mouth of a tomb in a garden at dawn, is a reasonable thing to think.",
+      "gospels": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ]
+    },
+    {
+      "id": "emmaus",
+      "day": "That same day",
+      "year": 33.259,
+      "cityId": "emmaus",
+      "title": "The Road to Emmaus",
+      "ref": "Luke 24:28-32",
+      "verses": [
+        {
+          "v": 28,
+          "text": "They came near to the village, where they were going, and he acted like he would go further."
+        },
+        {
+          "v": 29,
+          "text": "They urged him, saying, “Stay with us, for it is almost evening, and the day is almost over.” He went in to stay with them."
+        },
+        {
+          "v": 30,
+          "text": "When he had sat down at the table with them, he took the bread and gave thanks. Breaking it, he gave it to them."
+        },
+        {
+          "v": 31,
+          "text": "Their eyes were opened, and they recognized him, and he vanished out of their sight."
+        },
+        {
+          "v": 32,
+          "text": "They said to one another, “Weren’t our hearts burning within us, while he spoke to us along the way, and while he opened the Scriptures to us?”"
+        }
+      ],
+      "prose": "Seven miles out of Jerusalem, two disciples walk home. Luke alone tells this, and tells it at length: a stranger falls in beside them and explains the scriptures the whole way, and they do not know him. They know him when he breaks the bread — and then he is gone. This is the road the atlas has always drawn and never had an event for.",
+      "gospels": [
+        "Luke"
+      ]
+    },
+    {
+      "id": "thomas",
+      "day": "A week later",
+      "year": 33.262,
+      "cityId": "jerusalem",
+      "title": "Thomas",
+      "ref": "John 20:24-29",
+      "verses": [
+        {
+          "v": 24,
+          "text": "But Thomas, one of the twelve, called Didymus, wasn’t with them when Jesus came."
+        },
+        {
+          "v": 25,
+          "text": "The other disciples therefore said to him, “We have seen the Lord!” But he said to them, “Unless I see in his hands the print of the nails, put my finger into the print of the nails, and put my hand into his side, I will not believe.”"
+        },
+        {
+          "v": 26,
+          "text": "After eight days again his disciples were inside, and Thomas was with them. Jesus came, the doors being locked, and stood in the middle, and said, “Peace be to you.”"
+        },
+        {
+          "v": 27,
+          "text": "Then he said to Thomas, “Reach here your finger, and see my hands. Reach here your hand, and put it into my side. Don’t be unbelieving, but believing.”"
+        },
+        {
+          "v": 28,
+          "text": "Thomas answered him, “My Lord and my God!”"
+        },
+        {
+          "v": 29,
+          "text": "Jesus said to him, “Because you have seen me, you have believed. Blessed are those who have not seen, and have believed.”"
+        }
+      ],
+      "prose": "A week later, the same room. Thomas has become a byword for doubt, which is a little unfair — he asks for exactly what the other ten had already been given, and were not blamed for. When he gets it, John gives him the strongest confession in the book.",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "peter",
+      "day": "Afterward",
+      "year": 33.3,
+      "cityId": "tiberias",
+      "title": "Breakfast on the Shore",
+      "ref": "John 21:15-17",
+      "verses": [
+        {
+          "v": 15,
+          "text": "So when they had eaten their breakfast, Jesus said to Simon Peter, “Simon, son of Jonah, do you love me more than these?” He said to him, “Yes, Lord; you know that I have affection for you.” He said to him, “Feed my lambs.”"
+        },
+        {
+          "v": 16,
+          "text": "He said to him again a second time, “Simon, son of Jonah, do you love me?” He said to him, “Yes, Lord; you know that I have affection for you.” He said to him, “Tend my sheep.”"
+        },
+        {
+          "v": 17,
+          "text": "He said to him the third time, “Simon, son of Jonah, do you have affection for me?” Peter was grieved because he asked him the third time, “Do you have affection for me?” He said to him, “Lord, you know everything. You know that I have affection for you.” Jesus said to him, “Feed my sheep."
+        }
+      ],
+      "prose": "Back in Galilee, at the lake where it started, they have gone fishing. On the beach there is a charcoal fire. John used that word once before, for the fire in the courtyard where Peter stood warming himself and said three times that he did not know the man. Three denials. Three questions.",
+      "gospels": [
+        "John"
+      ]
+    },
+    {
+      "id": "commission",
+      "day": "On the mountain",
+      "year": 33.33,
+      "cityId": "galilee-mountain",
+      "title": "The Commission",
+      "ref": "Matthew 28:16-20",
+      "verses": [
+        {
+          "v": 16,
+          "text": "But the eleven disciples went into Galilee, to the mountain where Jesus had sent them."
+        },
+        {
+          "v": 17,
+          "text": "When they saw him, they bowed down to him, but some doubted."
+        },
+        {
+          "v": 18,
+          "text": "Jesus came to them and spoke to them, saying, “All authority has been given to me in heaven and on earth."
+        },
+        {
+          "v": 19,
+          "text": "Go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit,"
+        },
+        {
+          "v": 20,
+          "text": "teaching them to observe all things that I commanded you. Behold, I am with you always, even to the end of the age.” Amen."
+        }
+      ],
+      "prose": "An appointed mountain in Galilee; Matthew never says which one. The eleven worship him, and Matthew adds a detail no one inventing this would include: some doubted. The book ends with a command and a promise — and no ascension. Matthew simply stops, with him still there.",
+      "gospels": [
+        "Matthew"
+      ]
+    },
+    {
+      "id": "ascension",
+      "day": "Forty days on",
+      "year": 33.37,
+      "cityId": "bethany",
+      "title": "Bethany, Again",
+      "ref": "Luke 24:50-53",
+      "verses": [
+        {
+          "v": 50,
+          "text": "He led them out as far as Bethany, and he lifted up his hands, and blessed them."
+        },
+        {
+          "v": 51,
+          "text": "While he blessed them, he withdrew from them, and was carried up into heaven."
+        },
+        {
+          "v": 52,
+          "text": "They worshiped him, and returned to Jerusalem with great joy,"
+        },
+        {
+          "v": 53,
+          "text": "and were continually in the temple, praising and blessing God. Amen."
+        }
+      ],
+      "prose": "Luke closes where the week had lodged. Forty days after the Passover he leads them out as far as Bethany, lifts his hands, blesses them, and is parted from them. Luke is the only evangelist to narrate it, and he tells it twice — once to end the Gospel, once to begin the Acts.",
+      "gospels": [
+        "Luke"
+      ]
+    }
+  ]
+}
