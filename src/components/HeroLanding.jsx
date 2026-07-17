@@ -67,34 +67,23 @@ export default function HeroLanding({ onEnter }) {
           }} />
         </div>
 
-        {/* Content Overlay — outside preserve-3d stage to avoid 3D rendering issues */}
+        {/* Content Overlay — centered title area only */}
         <div className="hero-content">
-          <div className="hero-sidebar">
-            <div className="hero-gospel-lens">
-              <div className="hero-lens-label">Gospel Lens</div>
-              <div className="hero-lens-placeholder" />
+          <div className="hero-title-area">
+            <div className="hero-kicker">An Atlas of the Gospels</div>
+            <h1 className="hero-title">Jesus&rsquo;s World</h1>
+            <p className="hero-sub">The places, the people, and the four years that changed the world.</p>
+            <div className="hero-verse" tabIndex={0}>
+              <span className="hero-verse-text">{GREEK}</span>
+              <span className="hero-verse-tip">{GREEK_TRANS}</span>
             </div>
+            <button className="hero-enter" onClick={enter} type="button">
+              <span>Enter the Atlas</span>
+              <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" className="hero-chev">
+                <path d="M6 0 L6 12 M1 7 L6 12 L11 7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
-
-          <div className="hero-center">
-            <div className="hero-title-area">
-              <div className="hero-kicker">An Atlas of the Gospels</div>
-              <h1 className="hero-title">Jesus&rsquo;s World</h1>
-              <p className="hero-sub">The places, the people, and the four years that changed the world.</p>
-              <div className="hero-verse" tabIndex={0}>
-                <span className="hero-verse-text">{GREEK}</span>
-                <span className="hero-verse-tip">{GREEK_TRANS}</span>
-              </div>
-              <button className="hero-enter" onClick={enter} type="button">
-                <span>Enter the Atlas</span>
-                <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" className="hero-chev">
-                  <path d="M6 0 L6 12 M1 7 L6 12 L11 7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div className="hero-map-area" />
         </div>
       </div>
 
