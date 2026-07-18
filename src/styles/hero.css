@@ -50,25 +50,153 @@
 .hero-layer-2 { z-index: 2; transform: scale(1.12); } /* midground: Sea of Galilee */
 .hero-layer-3 { z-index: 3; transform: translate3d(0, 55vh, 0) scale(1.12); } /* foreground hill — waits below the fold */
 
-/* Breathing sunlight over the sun in the sky layer (JS keeps it riding with layer 1). */
+/* ── Living light: breathing glow + slowly sweeping rays over the sun ──
+   The wrapper is moved by JS (rides the sky layer); the children carry their own
+   CSS animations, so the two never fight over `transform`. */
 .hero-glow {
   position: absolute;
   inset: 0;
   z-index: 4;
   pointer-events: none;
+  will-change: transform;
+  /* contain both light effects to the sun's neighborhood (explicit radius —
+     percentage stops on an unsized circle resolve against the farthest corner
+     and would let the rays span the whole screen) */
+  -webkit-mask-image: radial-gradient(circle 34vw at 83% 48%, #000 25%, transparent 78%);
+  mask-image: radial-gradient(circle 34vw at 83% 48%, #000 25%, transparent 78%);
+}
+
+.hero-glow-core {
+  position: absolute;
+  inset: 0;
   background: radial-gradient(circle at 83% 48%,
-    rgba(255, 216, 150, 0.30),
-    rgba(255, 196, 110, 0.10) 22%,
-    transparent 46%);
+    rgba(255, 224, 160, 0.55),
+    rgba(255, 200, 120, 0.22) 18%,
+    rgba(255, 190, 110, 0.08) 32%,
+    transparent 52%);
   mix-blend-mode: screen;
-  animation: heroGlowBreathe 7s ease-in-out infinite;
-  will-change: opacity, transform;
+  animation: heroGlowBreathe 6s ease-in-out infinite;
 }
 
 @keyframes heroGlowBreathe {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+
+/* Rays: a repeating conic wedge field centered on the sun, rotating one wedge
+   period per loop so the sweep is seamless and perpetual. The element is oversized
+   (inset -25%) so its edges never show while rotating; 83%/48% of the stage maps
+   to 72%/48.7% of this larger box. */
+.hero-rays {
+  position: absolute;
+  inset: -25%;
+  background: repeating-conic-gradient(from 0deg at 72% 48.7%,
+    rgba(255, 218, 150, 0) 0deg,
+    rgba(255, 218, 150, 0.035) 2.5deg,
+    rgba(255, 218, 150, 0.06) 4deg,
+    rgba(255, 218, 150, 0.035) 5.5deg,
+    rgba(255, 218, 150, 0) 8deg,
+    rgba(255, 218, 150, 0) 12deg);
+  mix-blend-mode: screen;
+  transform-origin: 72% 48.7%;
+  animation: heroRaysSweep 40s linear infinite;
+  will-change: transform;
+}
+
+@keyframes heroRaysSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(12deg); }
+}
+
+/* ── Mist drifting over the lake (children of layer 2, so they ride its parallax) ── */
+.hero-mist {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(14px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.hero-mist-1 {
+  left: 34%;
+  top: 45%;
+  width: 44%;
+  height: 13%;
+  background: radial-gradient(ellipse closest-side, rgba(215, 228, 220, 0.30), transparent 70%);
+  animation: heroMistDrift1 26s ease-in-out infinite alternate;
+}
+
+.hero-mist-2 {
+  left: 46%;
+  top: 53%;
+  width: 38%;
+  height: 11%;
+  background: radial-gradient(ellipse closest-side, rgba(222, 232, 226, 0.24), transparent 70%);
+  animation: heroMistDrift2 34s ease-in-out infinite alternate;
+}
+
+@keyframes heroMistDrift1 {
+  from { transform: translateX(-3%); opacity: 0.75; }
+  to { transform: translateX(5%); opacity: 1; }
+}
+
+@keyframes heroMistDrift2 {
+  from { transform: translateX(4%); opacity: 1; }
+  to { transform: translateX(-5%); opacity: 0.7; }
+}
+
+/* ── Distant birds: tiny gull glyphs crossing the sky (children of layer 2) ──
+   The flock traverses in the first 65% of the loop, then waits off-screen right;
+   the snap back to the left happens entirely off-screen. */
+.hero-birds {
+  position: absolute;
+  top: 24%;
+  left: 0;
+  animation: heroFlight 75s linear infinite;
+  will-change: transform;
+}
+
+@keyframes heroFlight {
+  0% { transform: translate(-12vw, 0); }
+  65% { transform: translate(106vw, 3.5vh); }
+  65.001%, 100% { transform: translate(120vw, 3.5vh); }
+}
+
+.hb {
+  stroke: rgba(26, 36, 32, 0.55);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  fill: none;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: heroFlap 0.9s ease-in-out infinite;
+}
+
+.hb-s {
+  stroke-width: 1.2;
+  stroke: rgba(26, 36, 32, 0.42);
+}
+
+@keyframes heroFlap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.45); }
+}
+
+.hb-bob {
+  animation: heroBirdBob 5s ease-in-out infinite alternate;
+}
+
+@keyframes heroBirdBob {
+  from { transform: translateY(-1.6px); }
+  to { transform: translateY(1.6px); }
+}
+
+.hb-bob-2 { animation-duration: 6.3s; }
+.hb-bob-3 { animation-duration: 4.4s; }
+.hb-bob-4 { animation-duration: 5.7s; }
+.hb-bob-2 .hb { animation-delay: 0.22s; }
+.hb-bob-3 .hb { animation-delay: 0.41s; }
+.hb-bob-4 .hb { animation-delay: 0.12s; }
 
 /* ── Content Overlay — centered title area ── */
 .hero-content {
@@ -222,7 +350,8 @@
 @media (prefers-reduced-motion: reduce) {
   .hero { scroll-behavior: auto; }
   .hero-kicker, .hero-title, .hero-sub, .hero-verse, .hero-enter, .hero-chev,
-  .hero-glow {
+  .hero-glow-core, .hero-rays, .hero-mist, .hero-birds, .hb, .hb-bob {
     animation: none;
   }
+  .hero-birds { display: none; }
 }

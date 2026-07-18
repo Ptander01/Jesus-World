@@ -144,10 +144,25 @@ export default function HeroLanding({ onEnter }) {
       <div className="hero-track">
         <div className="hero-stage" ref={stageRef}>
           <div ref={layer1Ref} className="hero-layer hero-layer-1" style={{ backgroundImage: `url(${image1Sky})` }} />
-          <div ref={layer2Ref} className="hero-layer hero-layer-2" style={{ backgroundImage: `url(${image2Midground})` }} />
+          <div ref={layer2Ref} className="hero-layer hero-layer-2" style={{ backgroundImage: `url(${image2Midground})` }}>
+            {/* Living details ride the midground's parallax as children of layer 2 */}
+            <div className="hero-mist hero-mist-1" aria-hidden="true" />
+            <div className="hero-mist hero-mist-2" aria-hidden="true" />
+            <div className="hero-birds" aria-hidden="true">
+              <svg viewBox="0 0 132 48" width="132" height="48">
+                <g className="hb-bob hb-bob-1"><path className="hb" d="M6 18 C9 13 12 13 15 18 C18 13 21 13 24 18" /></g>
+                <g className="hb-bob hb-bob-2"><path className="hb hb-s" d="M44 10 C46.5 6 49 6 51.5 10 C54 6 56.5 6 59 10" /></g>
+                <g className="hb-bob hb-bob-3"><path className="hb" d="M78 24 C81 19 84 19 87 24 C90 19 93 19 96 24" /></g>
+                <g className="hb-bob hb-bob-4"><path className="hb hb-s" d="M112 16 C114 12.5 116 12.5 118 16 C120 12.5 122 12.5 124 16" /></g>
+              </svg>
+            </div>
+          </div>
           <div ref={layer3Ref} className="hero-layer hero-layer-3" style={{ backgroundImage: `url(${image3Foreground})` }} />
-          {/* Breathing sunlight, anchored over the sun in the sky layer */}
-          <div ref={glowRef} className="hero-glow" aria-hidden="true" />
+          {/* Living light: breathing glow + sweeping rays, anchored over the sun */}
+          <div ref={glowRef} className="hero-glow" aria-hidden="true">
+            <div className="hero-glow-core" />
+            <div className="hero-rays" />
+          </div>
 
           {/* Content Overlay — centered title area only */}
           <div className="hero-content" ref={contentRef}>
