@@ -1,4 +1,6 @@
-/* hero.css — pure CSS 3D parallax using image layers and translateZ scaling */
+/* hero.css — pinned "depth glide" parallax. A sticky stage holds the scene in the
+   viewport while a taller track supplies scroll distance; JS glides each layer at its
+   own rate (HeroLanding.jsx LAYERS), then fades the stage to hand off to the atlas. */
 
 .hero {
   position: fixed;
@@ -6,45 +8,44 @@
   z-index: 2000;
   overflow-y: auto;
   overflow-x: hidden;
-  background: #0a1a12;
+  /* Transparent so the end-of-scroll stage fade dissolves through to the atlas behind.
+     The opaque sky layer covers this while the scene is on screen. */
+  background: transparent;
   scroll-behavior: smooth;
 }
 
-/* Parallax viewport */
-.hero-perspective {
-  height: 100vh;
-  overflow: hidden;
+/* Tall track = scroll distance. ~2.4 viewports gives ~1.4vh of travel to glide through. */
+.hero-track {
+  height: 240vh;
   position: relative;
 }
 
+/* Sticky stage pins the scene to the top of the viewport for the length of the track. */
 .hero-stage {
-  position: relative;
+  position: sticky;
+  top: 0;
   height: 100vh;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
-/* Base layer styles. The scale() gives each layer overscan so the scroll-driven
-   translateY (applied by JS, and capped below the overscan budget) never exposes an
-   edge. JS rewrites `transform` on scroll and must re-include this scale — see
-   HeroLanding.jsx (LAYER_SCALE). */
+/* Base layer styles. Each layer's scale() is overscan: the JS parallax only ever
+   nudges layers UPWARD, and the scale keeps the bottom edge covered through that
+   travel. JS rewrites `transform` on scroll and re-includes this scale — the per-layer
+   values below must match LAYERS[].scale in HeroLanding.jsx. */
 .hero-layer {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  transform: translate3d(0, 0, 0) scale(1.2);
   pointer-events: none;
   will-change: transform;
 }
 
-/* Depth order only — parallax speed is driven by JS, not CSS. */
-.hero-layer-1 { z-index: 1; } /* sky (furthest) */
-.hero-layer-2 { z-index: 2; } /* midground: Sea of Galilee */
-.hero-layer-3 { z-index: 3; } /* foreground hill (nearest) */
+.hero-layer-1 { z-index: 1; transform: scale(1.12); } /* sky (furthest) */
+.hero-layer-2 { z-index: 2; transform: scale(1.24); } /* midground: Sea of Galilee */
+.hero-layer-3 { z-index: 3; transform: scale(1.34); } /* foreground hill (nearest) */
 
 /* ── Content Overlay — centered title area ── */
 .hero-content {
@@ -185,12 +186,6 @@
 @keyframes heroRise {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
-}
-
-/* ── Scroll Runway ── */
-.hero-runway {
-  height: 180vh;
-  background: #0a1a12;
 }
 
 /* ── Responsive ── */
