@@ -1,24 +1,31 @@
 import { useRef, useEffect } from 'react'
 // Imported (not served from /public) so Vite content-hashes the filenames — a changed
 // image gets a new URL, so browser/CDN caches can never serve a stale layer.
-import image1Sky from '../assets/hero/image1_sky.png'
-import image2Midground from '../assets/hero/image2_midground.png'
-import image3Foreground from '../assets/hero/image3_foreground.png'
+import image1Sky from '../assets/hero/image1_sky.webp'
+import image2Midground from '../assets/hero/image2_midground.webp'
+import image3Foreground from '../assets/hero/image3_foreground.webp'
 
 const GREEK = 'Ἐν ἀρχῇ ἦν ὁ λόγος'
 const GREEK_TRANS = 'In the beginning was the Word · John 1:1'
 
-// Depth-glide parallax. The scene is PINNED (a sticky stage inside a taller scroll
-// track), so as you scroll each layer glides at its own rate and the depth reads
-// clearly instead of the whole scene just scrolling away. Motion is expressed as a
-// fraction of the viewport height and combined with a base scale that provides the
-// overscan those upward translations consume — see LAYERS + hero.css `.hero-layer-N`.
-// Each layer's `scale` here must match its CSS base scale so the two agree at rest.
+// ── Depth-glide parallax ─────────────────────────────────────────────────────
+// The scene is PINNED (sticky stage inside a tall scroll track). Scrolling glides
+// each layer between `from` and `to` (fractions of viewport height): the story opens
+// on the full midground vista — the foreground cliff waits almost entirely below the
+// fold (from: +0.55) — then the cliff sweeps up and toward the viewer (grow) while
+// the sky barely breathes. `scale` is the resting overscan; kept near 1 so the full
+// painted width of the art shows (the bitmaps carry their own vertical headroom).
+// CSS base scales in hero.css `.hero-layer-N` must match `scale` here.
+// `mouse` is the ± px of cursor parallax per layer (deeper = more).
 const LAYERS = [
-  { key: 'layer1', shift: -0.04, scale: 1.12, grow: 0.00 }, // sky — barely moves
-  { key: 'layer2', shift: -0.11, scale: 1.24, grow: 0.00 }, // midground — medium
-  { key: 'layer3', shift: -0.22, scale: 1.34, grow: 0.14 }, // foreground — fast + drifts toward you
+  { key: 'layer1', from: 0.0, to: -0.02, scale: 1.05, grow: 0.0, mouse: 5 }, // sky
+  { key: 'layer2', from: 0.0, to: -0.05, scale: 1.12, grow: 0.04, mouse: 11 }, // midground
+  { key: 'layer3', from: 0.55, to: -0.04, scale: 1.12, grow: 0.1, mouse: 19 }, // foreground
 ]
+
+// Static composition used when prefers-reduced-motion: a mid-glide pose (cliff
+// partially risen) so the scene reads complete without any scroll animation.
+const REDUCED_POSE = 0.35
 
 // Smooth 0→1 ramp across [a,b], flat outside — used for fades so they ease in/out.
 const smoothstep = (x, a, b) => {
@@ -32,6 +39,7 @@ export default function HeroLanding({ onEnter }) {
   const layer1Ref = useRef(null)
   const layer2Ref = useRef(null)
   const layer3Ref = useRef(null)
+  const glowRef = useRef(null)
   const contentRef = useRef(null)
   const stageRef = useRef(null)
 
@@ -40,38 +48,88 @@ export default function HeroLanding({ onEnter }) {
     if (!scroller) return
     const refs = { layer1: layer1Ref, layer2: layer2Ref, layer3: layer3Ref }
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const finePointer = window.matchMedia('(pointer: fine)').matches
 
-    const apply = (p) => {
-      const h = scroller.clientHeight
-      // Respect reduced-motion: hold the layers still, only fade the title + scene.
-      for (const l of LAYERS) {
-        const el = refs[l.key].current
-        if (el) el.style.transform = reduce
-          ? `scale(${l.scale})`
-          : `translate3d(0, ${p * l.shift * h}px, 0) scale(${l.scale + p * l.grow})`
-      }
-      // Title lifts away and fades out over the first half of the scroll.
-      if (contentRef.current) {
-        contentRef.current.style.opacity = String(1 - smoothstep(p, 0.08, 0.55))
-        contentRef.current.style.transform = reduce ? '' : `translate3d(0, ${p * -80}px, 0)`
-      }
-      // Near the end the whole scene dissolves, handing off to the atlas behind it.
-      if (stageRef.current) stageRef.current.style.opacity = String(1 - smoothstep(p, 0.74, 1))
+    // rAF-smoothed state: `shown` chases raw scroll progress and mx/my chase the
+    // cursor, so wheel steps and pointer moves render as a continuous glide.
+    let raw = 0
+    let shown = reduce ? REDUCED_POSE : 0
+    let mx = 0, my = 0, tmx = 0, tmy = 0
+    let rafId
+    let lastTick = performance.now()
+
+    const readScroll = () => {
+      const max = scroller.scrollHeight - scroller.clientHeight
+      raw = max > 0 ? Math.min(1, scroller.scrollTop / max) : 0
     }
 
     const onScroll = () => {
-      const max = scroller.scrollHeight - scroller.clientHeight
-      const progress = max > 0 ? Math.min(1, scroller.scrollTop / max) : 0
-      apply(progress)
-      if (progress >= 0.98 && !enteredRef.current) {
+      readScroll()
+      // If the rAF loop is stalled (hidden webview, battery-saver throttling),
+      // track scroll directly; smoothing resumes when frames come back.
+      if (!reduce && performance.now() - lastTick > 200) {
+        shown = raw
+        apply()
+      }
+      if (raw >= 0.985 && !enteredRef.current) {
         enteredRef.current = true
         onEnter()
       }
     }
 
-    apply(0)
+    const onMouse = (e) => {
+      tmx = e.clientX / window.innerWidth - 0.5
+      tmy = e.clientY / window.innerHeight - 0.5
+    }
+
+    const apply = () => {
+      const h = scroller.clientHeight
+      const p = reduce ? REDUCED_POSE : shown
+      for (const l of LAYERS) {
+        const el = refs[l.key].current
+        if (!el) continue
+        const y = (l.from + (l.to - l.from) * p) * h - my * l.mouse * 0.6
+        el.style.transform =
+          `translate3d(${(-mx * l.mouse).toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${(l.scale + p * l.grow).toFixed(4)})`
+      }
+      // Sun glow rides with the sky layer so it stays anchored to the sun.
+      if (glowRef.current) {
+        const s = LAYERS[0]
+        glowRef.current.style.transform =
+          `translate3d(${(-mx * s.mouse).toFixed(2)}px, ${((s.from + (s.to - s.from) * p) * h).toFixed(2)}px, 0)`
+      }
+      // Title holds through the opening beat, then lifts away and fades.
+      if (contentRef.current) {
+        const op = 1 - smoothstep(p, 0.06, 0.3)
+        contentRef.current.style.opacity = String(op)
+        contentRef.current.style.pointerEvents = op < 0.05 ? 'none' : 'auto'
+        if (!reduce) contentRef.current.style.transform = `translate3d(0, ${p * -90}px, 0)`
+      }
+      // Final beat: the whole scene dissolves, handing off to the atlas behind it.
+      if (stageRef.current) stageRef.current.style.opacity = String(1 - smoothstep(p, 0.82, 1))
+    }
+
+    const tick = () => {
+      lastTick = performance.now()
+      shown += (raw - shown) * 0.09
+      mx += (tmx - mx) * 0.06
+      my += (tmy - my) * 0.06
+      apply()
+      rafId = requestAnimationFrame(tick)
+    }
+
+    readScroll()
+    apply()
     scroller.addEventListener('scroll', onScroll, { passive: true })
-    return () => scroller.removeEventListener('scroll', onScroll)
+    if (!reduce) {
+      if (finePointer) window.addEventListener('mousemove', onMouse, { passive: true })
+      rafId = requestAnimationFrame(tick)
+    }
+    return () => {
+      scroller.removeEventListener('scroll', onScroll)
+      window.removeEventListener('mousemove', onMouse)
+      if (rafId) cancelAnimationFrame(rafId)
+    }
   }, [onEnter])
 
   const enter = () => {
@@ -88,6 +146,8 @@ export default function HeroLanding({ onEnter }) {
           <div ref={layer1Ref} className="hero-layer hero-layer-1" style={{ backgroundImage: `url(${image1Sky})` }} />
           <div ref={layer2Ref} className="hero-layer hero-layer-2" style={{ backgroundImage: `url(${image2Midground})` }} />
           <div ref={layer3Ref} className="hero-layer hero-layer-3" style={{ backgroundImage: `url(${image3Foreground})` }} />
+          {/* Breathing sunlight, anchored over the sun in the sky layer */}
+          <div ref={glowRef} className="hero-glow" aria-hidden="true" />
 
           {/* Content Overlay — centered title area only */}
           <div className="hero-content" ref={contentRef}>

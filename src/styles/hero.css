@@ -14,19 +14,22 @@
   scroll-behavior: smooth;
 }
 
-/* Tall track = scroll distance. ~2.4 viewports gives ~1.4vh of travel to glide through. */
+/* Tall track = scroll distance. ~5 viewports of travel for a long, immersive glide. */
 .hero-track {
-  height: 240vh;
+  height: 500vh;
   position: relative;
 }
 
-/* Sticky stage pins the scene to the top of the viewport for the length of the track. */
+/* Sticky stage pins the scene to the viewport for the length of the track. The dark
+   backdrop matches the art's ground color so any transient edge sliver reads as
+   shadow, and the whole stage (backdrop included) fades out for the atlas handoff. */
 .hero-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  background: #0a1a12;
 }
 
 /* Base layer styles. Each layer's scale() is overscan: the JS parallax only ever
@@ -43,9 +46,29 @@
   will-change: transform;
 }
 
-.hero-layer-1 { z-index: 1; transform: scale(1.12); } /* sky (furthest) */
-.hero-layer-2 { z-index: 2; transform: scale(1.24); } /* midground: Sea of Galilee */
-.hero-layer-3 { z-index: 3; transform: scale(1.34); } /* foreground hill (nearest) */
+.hero-layer-1 { z-index: 1; transform: scale(1.05); } /* sky (furthest) */
+.hero-layer-2 { z-index: 2; transform: scale(1.12); } /* midground: Sea of Galilee */
+.hero-layer-3 { z-index: 3; transform: translate3d(0, 55vh, 0) scale(1.12); } /* foreground hill — waits below the fold */
+
+/* Breathing sunlight over the sun in the sky layer (JS keeps it riding with layer 1). */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(circle at 83% 48%,
+    rgba(255, 216, 150, 0.30),
+    rgba(255, 196, 110, 0.10) 22%,
+    transparent 46%);
+  mix-blend-mode: screen;
+  animation: heroGlowBreathe 7s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@keyframes heroGlowBreathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
 
 /* ── Content Overlay — centered title area ── */
 .hero-content {
@@ -198,7 +221,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero { scroll-behavior: auto; }
-  .hero-kicker, .hero-title, .hero-sub, .hero-verse, .hero-enter, .hero-chev {
+  .hero-kicker, .hero-title, .hero-sub, .hero-verse, .hero-enter, .hero-chev,
+  .hero-glow {
     animation: none;
   }
 }
