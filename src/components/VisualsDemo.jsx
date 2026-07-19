@@ -4,6 +4,8 @@ import CategoryPeriodHeatmap from "./CategoryPeriodHeatmap.jsx";
 import GospelAttestationUpSet from "./GospelAttestationUpSet.jsx";
 import MinistryDensityStream from "./MinistryDensityStream.jsx";
 import GospelSignatureRadar from "./GospelSignatureRadar.jsx";
+import NavTabs from "./NavTabs.jsx";
+import ThemeToggle from "./ThemeToggle.jsx";
 import "../styles/visuals.css";
 
 const LENSES = ["All", "Synoptics", "Matthew", "Mark", "Luke", "John"];
@@ -11,7 +13,7 @@ const LENSES = ["All", "Synoptics", "Matthew", "Mark", "Luke", "John"];
 // The Gospel Lens is owned by Root and shared with the atlas, so a selection made on
 // the map still holds here. `bands` is still local — the timeline scrubber is App
 // state and isn't reachable from this route yet.
-export default function VisualsDemo({ lens = "All", onLensChange }) {
+export default function VisualsDemo({ lens = "All", onLensChange, theme = "dark", onThemeChange }) {
   const [bands, setBands] = useState([]); // empty = all periods
   const setLens = onLensChange ?? (() => {});
 
@@ -25,45 +27,58 @@ export default function VisualsDemo({ lens = "All", onLensChange }) {
   const radarFilter = useMemo(() => makeFilter({ bands }), [bands]);
   const isolate = lens !== "All" && lens !== "Synoptics" ? lens : null;
 
-  const chip = (on) => ({
-    fontFamily: "var(--jw-display)", fontSize: 10, letterSpacing: 1.5,
-    textTransform: "uppercase", padding: "7px 14px", borderRadius: 18, cursor: "pointer",
-    border: "1px solid " + (on ? "var(--jw-accent)" : "var(--jw-border-lt)"),
-    background: on ? "var(--jw-accent)" : "var(--jw-surface-2)",
-    color: on ? "var(--jw-bg)" : "var(--jw-cream-dim)",
-    fontWeight: on ? 600 : 400,
-  });
-
-  // The atlas shell locks scrolling (html, body, #root { overflow: hidden } in
-  // index.css), so this route scrolls in its own container rather than the document.
-  // IntersectionObserver still resolves against the viewport, so the scroll-triggered
-  // intro animations fire normally.
   return (
-    <div className="jw-viz" style={{ background: "var(--jw-bg)", height: "100%", overflowY: "auto", padding: "32px 20px" }}>
-      <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 22 }}>
-        {/* control bar */}
-        <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--jw-bg)", padding: "10px 0", borderBottom: "1px solid var(--jw-border)" }}>
-          <div style={{ fontFamily: "var(--jw-display)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "var(--jw-accent-dim)", marginBottom: 8 }}>Gospel Lens</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 12 }}>
-            {LENSES.map((l) => (
-              <button key={l} style={chip(lens === l)} onClick={() => setLens(l)}>{l}</button>
-            ))}
-          </div>
-          <div style={{ fontFamily: "var(--jw-display)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "var(--jw-accent-dim)", marginBottom: 8 }}>Period</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-            {BAND_ORDER.map((b) => (
-              <button key={b} style={chip(bands.includes(b))} onClick={() => toggleBand(b)}>{BAND_LABEL[b]}</button>
-            ))}
-            {bands.length > 0 && (
-              <button style={{ ...chip(false), borderStyle: "dashed" }} onClick={() => setBands([])}>Reset</button>
-            )}
-          </div>
-        </div>
+    <div className="jw-page">
+      <header className="app-header">
+        <h1>Jesus's World</h1>
+        <NavTabs current="charts" />
+        <ThemeToggle
+          theme={theme}
+          onToggle={() => onThemeChange?.(theme === "dark" ? "light" : "dark")}
+        />
+      </header>
 
-        <CategoryPeriodHeatmap filter={filter} />
-        <MinistryDensityStream filter={filter} />
-        <GospelAttestationUpSet filter={filter} />
-        <GospelSignatureRadar filter={radarFilter} isolate={isolate} />
+      {/* The atlas shell locks scrolling (html, body, #root { overflow: hidden } in
+          index.css), so this route scrolls in its own container rather than the
+          document. IntersectionObserver still resolves against the viewport, so the
+          scroll-triggered intro animations fire normally. */}
+      <div className="jw-viz jw-scroll">
+        <div className="jw-col">
+          {/* editorial masthead */}
+          <div className="jw-masthead">
+            <div className="jw-kicker">The Patterns</div>
+            <h2 className="jw-title">Four witnesses, one ministry</h2>
+            <p className="jw-stand">
+              Thirty-four miracles and thirty-four parables, cross-read by Gospel,
+              period, and theme. Filter by witness or season of the ministry &mdash;
+              the charts redraw to show what each lens leaves in the light.
+            </p>
+          </div>
+
+          {/* control bar */}
+          <div className="jw-controls">
+            <div className="jw-ctl-lbl">Gospel Lens</div>
+            <div className="jw-ctl-row">
+              {LENSES.map((l) => (
+                <button key={l} className={`jw-chip${lens === l ? " on" : ""}`} onClick={() => setLens(l)}>{l}</button>
+              ))}
+            </div>
+            <div className="jw-ctl-lbl">Period</div>
+            <div className="jw-ctl-row">
+              {BAND_ORDER.map((b) => (
+                <button key={b} className={`jw-chip${bands.includes(b) ? " on" : ""}`} onClick={() => toggleBand(b)}>{BAND_LABEL[b]}</button>
+              ))}
+              {bands.length > 0 && (
+                <button className="jw-chip jw-chip--reset" onClick={() => setBands([])}>Reset</button>
+              )}
+            </div>
+          </div>
+
+          <CategoryPeriodHeatmap filter={filter} />
+          <MinistryDensityStream filter={filter} />
+          <GospelAttestationUpSet filter={filter} />
+          <GospelSignatureRadar filter={radarFilter} isolate={isolate} />
+        </div>
       </div>
     </div>
   );

@@ -77,4 +77,36 @@
   --muted:        #8a8070;
   --border:       #cec5b2;
   --border-lt:    #b8ae9e;
+
+  /* Parchment glass + pills — without these the dark-green pill/lip tokens leak
+     into light mode and nav/chips render dark-on-dark against the light shell. */
+  --glass-bg:      rgba(245, 240, 232, 0.72);
+  --glass-shine:   rgba(255, 255, 255, 0.55);
+  --glass-border:  rgba(90, 80, 60, 0.18);
+  --pill-bg:        linear-gradient(150deg, #f6f0e3 0%, #ece3d2 50%, #e0d6c4 100%);
+  --pill-bg-active: linear-gradient(150deg, #d9d0bf 0%, #e6ddcc 50%, #efe8da 100%);
+  --lip-out:
+    -1px -1px 3px rgba(255,255,255,0.75),
+     1px  1px 6px rgba(90,75,50,0.28),
+    inset 0  1px 0 rgba(255,255,255,0.65),
+    inset 0 -1px 0 rgba(120,100,70,0.18),
+    inset 0  0   0 1px rgba(255,255,255,0.25);
+  --lip-in:
+    inset 0  3px 8px rgba(90,75,50,0.24),
+    inset 0  1px 0 rgba(90,75,50,0.14),
+    inset 0 -1px 0 rgba(255,255,255,0.45),
+     0 1px 3px rgba(90,75,50,0.12);
+  --lip-hover:
+    -1px -1px 5px rgba(255,255,255,0.85),
+     1px  1px 9px rgba(90,75,50,0.32),
+    inset 0  1px 0 rgba(255,255,255,0.75),
+    inset 0 -1px 0 rgba(120,100,70,0.20),
+    inset 0  0   0 1px rgba(255,255,255,0.30),
+    0 0 12px rgba(160,120,40,0.10);
+  --lip-in-gold:
+    inset 0  3px 8px rgba(90,75,50,0.20),
+    inset 0  1px 0 rgba(90,75,50,0.12),
+    inset 0 -1px 0 rgba(160,120,40,0.10),
+     0 0 12px rgba(160,120,40,0.18),
+     0 0  4px rgba(160,120,40,0.10);
 }

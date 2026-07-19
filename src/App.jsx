@@ -7,6 +7,7 @@ import PlayControls from './components/PlayControls'
 import StoryLayer from './components/StoryLayer'
 import SearchBar from './components/SearchBar'
 import ThemeToggle from './components/ThemeToggle'
+import NavTabs from './components/NavTabs'
 import journeyData from './data/gospels-data.json'
 import './index.css'
 
@@ -225,6 +226,7 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
     <div className="app">
       <header className="app-header">
         <h1>Jesus's World</h1>
+        <NavTabs current="atlas" />
         <SearchBar
           onCitySelect={cityId => {
             setHoveredCityId(cityId)

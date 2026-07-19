@@ -122,7 +122,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                 x={cx} y={nameY}
                 textAnchor="middle"
                 fontFamily="Cinzel, serif"
-                fontSize={8.5} letterSpacing={0.5}
+                fontSize={11} letterSpacing={0.5}
                 fill={(hovered || active) ? '#e9c86c' : (major ? '#c9a84c' : '#a09a8e')}
                 fillOpacity={(hovered || active) ? 1 : (major ? 0.85 : 0.7)}
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -136,7 +136,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                 textAnchor="middle"
                 fontFamily="Cormorant Garamond, Georgia, serif"
                 fontStyle="italic"
-                fontSize={9}
+                fontSize={11.5}
                 fill={major ? '#c9a84c' : '#5c6078'}
                 fillOpacity={(hovered || active) ? 0.9 : (major ? 0.7 : 0.55)}
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -151,7 +151,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                   textAnchor="middle"
                   fontFamily="Cormorant Garamond, Georgia, serif"
                   fontStyle="italic"
-                  fontSize={8.5}
+                  fontSize={11}
                   fill="#7a8ab0"
                   fillOpacity={0.85}
                   style={{ pointerEvents: 'none', userSelect: 'none' }}

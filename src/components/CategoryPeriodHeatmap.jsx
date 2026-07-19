@@ -13,6 +13,9 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
 
   const cols = m.cols.length;
   const gridCols = `130px repeat(${cols}, 1fr) 46px`;
+  // Sequential ramp: magnitude is ONE hue (the accent gold), light -> dark.
+  // Category identity lives in the row-label dot, not the cells — so the eye
+  // reads the matrix as intensity, not as seven competing hues.
   const alpha = (v) => (v === 0 ? 0.05 : 0.18 + 0.82 * (v / m.max));
 
   return (
@@ -47,6 +50,7 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
             <React.Fragment key={row.key}>
               <div className="jw-hm-rowlbl" style={hover && hover.r === r ? { color: row.color } : undefined}>
                 {row.label}
+                <span className="jw-hm-dot" style={{ background: row.color }} />
               </div>
               {m.cols.map((col, c) => {
                 const v = m.cells[r][c];
@@ -59,8 +63,8 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
                     className={cls}
                     style={{
                       "--i": r * cols + c,
-                      background: `${row.color}${Math.round(alpha(v) * 255).toString(16).padStart(2, "0")}`,
-                      color: v === 0 ? "var(--jw-muted)" : alpha(v) > 0.5 ? "#0c0f18" : "var(--jw-cream)",
+                      background: `color-mix(in srgb, var(--jw-accent) ${Math.round(alpha(v) * 100)}%, transparent)`,
+                      color: v === 0 ? "var(--jw-muted)" : alpha(v) > 0.5 ? "var(--jw-bg)" : "var(--jw-cream)",
                     }}
                     onMouseEnter={() => setHover({ r, c, v, row, col })}
                     onMouseLeave={() => setHover(null)}

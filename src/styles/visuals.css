@@ -1,6 +1,14 @@
-/* visuals.css — namespaced (jw-) styles for the advanced Jesus's World visuals.
-   All animation is gated by the `.in` class the components add when scrolled
-   into view. Stagger uses the inline --i custom property. */
+/* visuals.css — namespaced (jw-) styles for the Jesus's World charts page.
+   The page shares the atlas's shell: app-header from index.css, glass/lip tokens
+   from tokens.css. All animation is gated by the `.in` class the components add
+   when scrolled into view. Stagger uses the inline --i custom property. */
+
+.jw-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
 
 .jw-viz {
   /* Bound to the app's tokens.css palette, with the drop's original navy values kept
@@ -13,18 +21,78 @@
   --jw-display: var(--font-display, 'Cinzel', serif); --jw-serif: var(--font-serif, 'Cormorant Garamond', Georgia, serif); --jw-body: var(--font-body, 'Lora', Georgia, serif);
   color: var(--jw-cream); font-family: var(--jw-body); position: relative;
 }
-.jw-card { background: var(--jw-surface); border: 1px solid var(--jw-border); border-radius: 12px; padding: 22px 24px; position: relative; }
-.jw-h { font-family: var(--jw-display); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 4px; }
-.jw-cap { font-family: var(--jw-serif); font-style: italic; font-size: 15px; color: var(--jw-cream-dim); margin-bottom: 18px; max-width: 640px; }
-.jw-toggle { display: inline-flex; gap: 2px; background: var(--jw-surface-2); border: 1px solid var(--jw-border); border-radius: 20px; padding: 3px; margin-bottom: 18px; }
-.jw-toggle button { background: none; border: none; cursor: pointer; font-family: var(--jw-display); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--jw-cream-dim); padding: 6px 14px; border-radius: 16px; transition: background .2s, color .2s; }
-.jw-toggle button.on { background: var(--jw-accent); color: #0c0f18; font-weight: 600; }
+
+.jw-scroll { flex: 1; overflow-y: auto; padding: 30px 20px 60px; }
+.jw-col { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+/* ── Editorial masthead ── */
+.jw-masthead { padding: 18px 4px 0; }
+.jw-kicker { font-family: var(--jw-display); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 10px; }
+.jw-title { font-family: var(--jw-display); font-weight: 400; font-size: clamp(26px, 3.4vw, 38px); line-height: 1.12; color: var(--jw-cream); margin: 0 0 12px; }
+.jw-stand { font-family: var(--jw-serif); font-style: italic; font-size: 18px; line-height: 1.55; color: var(--jw-cream-dim); max-width: 620px; margin: 0; }
+
+/* ── Control bar ── */
+.jw-controls {
+  background: var(--glass-bg, var(--jw-bg));
+  backdrop-filter: var(--glass-blur, none);
+  -webkit-backdrop-filter: var(--glass-blur, none);
+  border: 1px solid var(--glass-border, var(--jw-border));
+  border-radius: 14px;
+  box-shadow: var(--lip-out, none);
+  padding: 14px 18px 16px;
+}
+.jw-ctl-lbl { font-family: var(--jw-display); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--jw-accent-dim); margin: 0 0 8px; }
+.jw-ctl-lbl + .jw-ctl-row { margin-bottom: 12px; }
+.jw-ctl-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.jw-ctl-row:last-child { margin-bottom: 0; }
+
+.jw-chip {
+  font-family: var(--jw-display); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 8px 16px; border-radius: 18px; cursor: pointer; border: none;
+  background: var(--pill-bg, var(--jw-surface-2));
+  box-shadow: var(--lip-out, none);
+  color: var(--jw-cream-dim);
+  transition: color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.jw-chip:hover { color: var(--jw-cream); box-shadow: var(--lip-hover, none); transform: translateY(-1px); }
+.jw-chip.on {
+  background: var(--pill-bg-active, var(--jw-accent));
+  box-shadow: var(--lip-in-gold, none);
+  color: var(--jw-accent-lt);
+  font-weight: 600;
+}
+.jw-chip--reset { border: 1px dashed var(--jw-border-lt); background: transparent; box-shadow: none; }
+
+/* ── Glass cards ── */
+.jw-card {
+  background: var(--glass-bg, var(--jw-surface));
+  backdrop-filter: var(--glass-blur, none);
+  -webkit-backdrop-filter: var(--glass-blur, none);
+  border: 1px solid var(--glass-border, var(--jw-border));
+  border-radius: 16px;
+  box-shadow: var(--lip-out, none);
+  padding: 26px 28px;
+  position: relative;
+  overflow: hidden;
+}
+/* top shine — the glass catch-light the atlas panels carry */
+.jw-card::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-shine, rgba(255,255,255,0.06)) 30%, var(--glass-shine, rgba(255,255,255,0.06)) 70%, transparent);
+  pointer-events: none;
+}
+.jw-h { font-family: var(--jw-display); font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 6px; }
+.jw-cap { font-family: var(--jw-serif); font-style: italic; font-size: 16px; line-height: 1.5; color: var(--jw-cream-dim); margin-bottom: 18px; max-width: 660px; }
+.jw-toggle { display: inline-flex; gap: 2px; background: var(--pill-bg-active, var(--jw-surface-2)); box-shadow: var(--lip-in, none); border-radius: 20px; padding: 3px; margin-bottom: 18px; }
+.jw-toggle button { background: none; border: none; cursor: pointer; font-family: var(--jw-display); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--jw-cream-dim); padding: 7px 15px; border-radius: 16px; transition: background .2s, color .2s, box-shadow .2s; }
+.jw-toggle button.on { background: var(--pill-bg, var(--jw-accent)); box-shadow: var(--lip-out, none); color: var(--jw-accent-lt); font-weight: 600; }
 
 .jw-tip { position: absolute; z-index: 40; pointer-events: none; background: var(--jw-surface); border: 1px solid var(--jw-border-lt); border-left: 3px solid var(--jw-accent); border-radius: 6px; padding: 10px 14px; max-width: 250px; box-shadow: 0 10px 34px rgba(0,0,0,.6); opacity: 0; transform: translateY(4px); transition: opacity .14s, transform .14s; }
 .jw-tip.on { opacity: 1; transform: none; }
-.jw-tip .tt { font-family: var(--jw-display); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 4px; }
-.jw-tip .tv { font-size: 13px; color: var(--jw-cream); line-height: 1.45; }
-.jw-tip .tx { font-size: 12px; color: var(--jw-cream-dim); font-style: italic; margin-top: 5px; }
+.jw-tip .tt { font-family: var(--jw-display); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 4px; }
+.jw-tip .tv { font-size: 14px; color: var(--jw-cream); line-height: 1.45; }
+.jw-tip .tx { font-size: 13px; color: var(--jw-cream-dim); font-style: italic; margin-top: 5px; }
 
 /* ---------- generic reveal ---------- */
 .jw-reveal { opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; transition-delay: calc(var(--i, 0) * 45ms); }
@@ -32,20 +100,21 @@
 
 /* ---------- HEATMAP ---------- */
 .jw-hm { display: grid; gap: 4px; }
-.jw-hm-rowlbl { font-size: 12px; color: var(--jw-cream-dim); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; text-align: right; }
-.jw-hm-collbl { font-family: var(--jw-display); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-muted); text-align: center; padding-bottom: 6px; }
-.jw-hm-cell { aspect-ratio: 1 / .62; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: var(--jw-display); font-size: 13px; font-weight: 700; cursor: default; position: relative; transform: scale(.55); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.3,1.2), opacity .4s, box-shadow .15s, outline-color .15s; transition-delay: calc(var(--i,0) * 28ms); outline: 1px solid transparent; }
+.jw-hm-rowlbl { font-size: 13px; color: var(--jw-cream-dim); display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-right: 10px; text-align: right; }
+.jw-hm-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.jw-hm-collbl { font-family: var(--jw-display); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-muted); text-align: center; padding-bottom: 6px; }
+.jw-hm-cell { aspect-ratio: 1 / .62; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: var(--jw-display); font-size: 14px; font-weight: 700; cursor: default; position: relative; transform: scale(.55); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.3,1.2), opacity .4s, box-shadow .15s, outline-color .15s; transition-delay: calc(var(--i,0) * 28ms); outline: 1px solid transparent; }
 .jw-viz.in .jw-hm-cell { transform: scale(1); opacity: 1; }
 .jw-hm-cell.dim { filter: saturate(.35) brightness(.7); }
 .jw-hm-cell.hot { outline-color: var(--jw-accent-lt); box-shadow: 0 0 0 3px rgba(230,171,92,.18); z-index: 2; }
-.jw-hm-totlbl { font-family: var(--jw-display); font-size: 10px; color: var(--jw-accent-dim); display: flex; align-items: center; justify-content: center; }
+.jw-hm-totlbl { font-family: var(--jw-display); font-size: 11px; color: var(--jw-accent-dim); display: flex; align-items: center; justify-content: center; }
 
 /* ---------- UPSET ---------- */
 .jw-up-bars { display: flex; align-items: flex-end; gap: 10px; height: 170px; padding-bottom: 4px; }
 .jw-up-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; cursor: pointer; }
 .jw-up-bar { width: 100%; max-width: 46px; border-radius: 4px 4px 0 0; transform: scaleY(0); transform-origin: bottom; transition: transform .6s cubic-bezier(.2,.8,.3,1), filter .15s; transition-delay: calc(var(--i,0) * 60ms); }
 .jw-viz.in .jw-up-bar { transform: scaleY(1); }
-.jw-up-val { font-family: var(--jw-display); font-size: 12px; font-weight: 700; color: var(--jw-cream); margin-bottom: 5px; opacity: 0; transition: opacity .3s; transition-delay: calc(var(--i,0) * 60ms + 400ms); }
+.jw-up-val { font-family: var(--jw-display); font-size: 13px; font-weight: 700; color: var(--jw-cream); margin-bottom: 5px; opacity: 0; transition: opacity .3s; transition-delay: calc(var(--i,0) * 60ms + 400ms); }
 .jw-viz.in .jw-up-val { opacity: 1; }
 .jw-up-matrix { display: flex; gap: 10px; margin-top: 8px; }
 .jw-up-mcol { flex: 1; max-width: 46px; margin: 0 auto; display: flex; flex-direction: column; gap: 7px; align-items: center; cursor: pointer; }
@@ -53,7 +122,7 @@
 .jw-up-dot.on { background: var(--jw-accent); border-color: var(--jw-accent); }
 .jw-up-col.active .jw-up-bar, .jw-up-mcol.active .jw-up-dot.on { filter: brightness(1.25); }
 .jw-up-gospels { display: flex; flex-direction: column; gap: 7px; justify-content: flex-end; }
-.jw-up-glbl { height: 13px; font-family: var(--jw-display); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-cream-dim); display: flex; align-items: center; }
+.jw-up-glbl { height: 13px; font-family: var(--jw-display); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-cream-dim); display: flex; align-items: center; }
 
 /* ---------- STREAM ---------- */
 .jw-stream-wrap { position: relative; }
@@ -62,10 +131,10 @@
 .jw-stream-clip-rect { transition: width 1.05s cubic-bezier(.4,0,.2,1); }
 .jw-stream-guide { stroke: var(--jw-accent-lt); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; transition: opacity .15s; }
 .jw-stream-guide.on { opacity: .8; }
-.jw-stream-xlbl { font-family: var(--jw-display); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; fill: var(--jw-muted); }
+.jw-stream-xlbl { font-family: var(--jw-display); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; fill: var(--jw-muted); }
 .jw-stream-xlbl.on { fill: var(--jw-accent-lt); }
 .jw-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
-.jw-lg { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--jw-cream-dim); cursor: default; }
+.jw-lg { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--jw-cream-dim); cursor: default; }
 .jw-lg .sw { width: 12px; height: 12px; border-radius: 3px; }
 
 /* ---------- RADAR ---------- */
@@ -79,12 +148,15 @@ svg.jw-radar { width: 100%; height: auto; display: block; overflow: visible; }
 .jw-radar-poly.lifted { fill-opacity: .28; stroke-width: 3; }
 .jw-radar-axis { stroke: var(--jw-border-lt); stroke-width: 1; }
 .jw-radar-ring { fill: none; stroke: var(--jw-border); stroke-width: 1; }
-.jw-radar-axlbl { font-family: var(--jw-display); font-size: 9px; letter-spacing: .5px; text-transform: uppercase; fill: var(--jw-cream-dim); }
+.jw-radar-axlbl { font-family: var(--jw-display); font-size: 11px; letter-spacing: .5px; text-transform: uppercase; fill: var(--jw-cream-dim); }
 .jw-radar-legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.jw-radar-chip { display: flex; align-items: center; gap: 7px; font-family: var(--jw-display); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-cream-dim); background: var(--jw-surface-2); border: 1px solid var(--jw-border); border-radius: 18px; padding: 6px 13px; cursor: pointer; transition: border-color .2s, color .2s; }
-.jw-radar-chip:hover { color: var(--jw-cream); }
-.jw-radar-chip.on { border-color: currentColor; }
+.jw-radar-chip { display: flex; align-items: center; gap: 7px; font-family: var(--jw-display); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-cream-dim); background: var(--pill-bg, var(--jw-surface-2)); box-shadow: var(--lip-out, none); border: none; border-radius: 18px; padding: 7px 14px; cursor: pointer; transition: color .2s, box-shadow .2s; }
+.jw-radar-chip:hover { color: var(--jw-cream); box-shadow: var(--lip-hover, none); }
+.jw-radar-chip.on { color: var(--jw-cream); box-shadow: var(--lip-in-gold, none); }
 .jw-radar-chip .sw { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Light theme: parchment glass/pill values come from tokens.css [data-theme=light] */
+[data-theme="light"] .jw-tip { box-shadow: 0 10px 34px rgba(60,50,30,.25); }
 
 @media (prefers-reduced-motion: reduce) {
   .jw-viz .jw-reveal, .jw-viz .jw-hm-cell, .jw-viz .jw-up-bar, .jw-viz .jw-up-val, .jw-viz .jw-radar-poly { transition: none !important; transform: none !important; opacity: 1 !important; }

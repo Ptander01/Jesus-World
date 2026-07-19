@@ -36,7 +36,7 @@ export default function Root() {
   if (route === '/visuals') {
     return (
       <Suspense fallback={null}>
-        <VisualsDemo lens={lens} onLensChange={setLens} />
+        <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
       </Suspense>
     )
   }
