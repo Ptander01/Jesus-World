@@ -325,6 +325,7 @@ export default function MapView({
   onMapReady,
   theme,
   lens = 'All',
+  initialFocus,
 }) {
   const isLight = theme === 'light'
   const svgRef      = useRef(null)
@@ -473,6 +474,22 @@ export default function MapView({
     svg.call(zoom)
     svg.on('dblclick.zoom', null)
 
+    // Curated first load: settle on the Galilee cluster instead of the full dark
+    // strip with nothing lit. Applied synchronously (no transition) — the app is
+    // mounted behind the hero from the very first paint (see Root.jsx), so by the
+    // time a visitor actually sees the map it should already be sitting still here,
+    // not mid-animation from an intro no one watched.
+    if (initialFocus) {
+      const [ix, iy] = projection([initialFocus.lon, initialFocus.lat])
+      const ik = initialFocus.scale ?? 2
+      // anchorX defaults right-of-center: FilterPanel overlays the left ~18% of the
+      // map, so a true W/2 center reads as off-balance in the space actually visible.
+      const ax = (initialFocus.anchorX ?? 0.58) * W
+      const it = d3.zoomIdentity.translate(ax - ik * ix, H / 2 - ik * iy).scale(ik)
+      kRef.current = ik
+      svg.call(zoom.transform, it)
+    }
+
     // Expose panToCity so App can call it from search
     onMapReady?.((cityId) => {
       const city = cityById[cityId]
@@ -510,21 +527,71 @@ export default function MapView({
       .attr('opacity', 0.4)
 
     // ── Land
+    const landPathD = pathGen(land)
     mapG.append('path')
-      .datum(land)
-      .attr('d', pathGen)
-      .attr('fill', isLight ? '#cbbfa0' : '#15291d')
+      .attr('d', landPathD)
+      .attr('fill', isLight ? '#cbbfa0' : '#21402b')
       .attr('stroke', 'none')
+
+    // ── Terrain relief — impressionistic elevation shading, clipped to the land
+    // silhouette. The Jordan Rift is a real, dramatic feature (the Sea of Galilee
+    // sits ~210m below sea level, the Dead Sea ~430m — the lowest point on Earth)
+    // with Judea's hill country and the Golan/Transjordan plateaus rising around
+    // it; "going up to Jerusalem" is literal. Soft radial gradients stand in for a
+    // proper hillshade — no elevation dataset is bundled — so this is deliberately
+    // impressionistic (a few named highlands + the rift corridor), not a claim of
+    // surveyed contours.
+    mapG.append('clipPath').attr('id', 'map-relief-clip')
+      .append('path').attr('d', landPathD)
+    const reliefG = mapG.append('g')
+      .attr('clip-path', 'url(#map-relief-clip)')
+      .style('pointer-events', 'none')
+
+    const HIGHLAND_COLOR = isLight ? '#fff6df' : '#e9d9a0'
+    // A near-black rift shadow reads as depth on the dark theme's already-dark land,
+    // but the same treatment on parchment reads as a dirty stain — light mode gets a
+    // cooler, lighter slate instead, at a fraction of the dark theme's weight.
+    const RIFT_COLOR = isLight ? '#5b6b74' : '#020608'
+    const RIFT_MULT = isLight ? 0.45 : 1
+    const RELIEF_HIGHLANDS = [
+      // [lon, lat, radiusPx, weight] — named highland masses ringing the rift
+      [35.22, 31.78, 95, 0.16],  // Judean hill country (Jerusalem/Bethlehem ridge)
+      [35.27, 32.75, 68, 0.13],  // Galilee uplands
+      [35.85, 33.15, 100, 0.15], // Golan / Ituraea plateau
+      [35.95, 32.05, 90, 0.12],  // Transjordan plateau (Decapolis / Peraea)
+    ]
+    const RELIEF_RIFT = [
+      // Jordan rift corridor, north to south, deepening toward the Dead Sea
+      [35.60, 33.07, 38, 0.12 * RIFT_MULT],  // Hula basin
+      [35.58, 32.83, 58, 0.20 * RIFT_MULT],  // Sea of Galilee
+      [35.55, 32.20, 42, 0.14 * RIFT_MULT],  // mid Jordan valley
+      [35.49, 31.55, 68, 0.30 * RIFT_MULT],  // Dead Sea — lowest point on Earth
+    ]
+    RELIEF_HIGHLANDS.forEach(([lon, lat, r, op], i) => {
+      const [x, y] = projection([lon, lat])
+      const gid = `relief-hi-${i}`
+      const grad = reliefG.append('radialGradient').attr('id', gid)
+      grad.append('stop').attr('offset', '0%').attr('stop-color', HIGHLAND_COLOR).attr('stop-opacity', op)
+      grad.append('stop').attr('offset', '100%').attr('stop-color', HIGHLAND_COLOR).attr('stop-opacity', 0)
+      reliefG.append('circle').attr('cx', x).attr('cy', y).attr('r', r).attr('fill', `url(#${gid})`)
+    })
+    RELIEF_RIFT.forEach(([lon, lat, r, op], i) => {
+      const [x, y] = projection([lon, lat])
+      const gid = `relief-rift-${i}`
+      const grad = reliefG.append('radialGradient').attr('id', gid)
+      grad.append('stop').attr('offset', '0%').attr('stop-color', RIFT_COLOR).attr('stop-opacity', op)
+      grad.append('stop').attr('offset', '100%').attr('stop-color', RIFT_COLOR).attr('stop-opacity', 0)
+      reliefG.append('circle').attr('cx', x).attr('cy', y).attr('r', r).attr('fill', `url(#${gid})`)
+    })
 
     // ── Coastline stroke — sharpens the sea/land edge
     mapG.append('path')
-      .datum(land)
-      .attr('d', pathGen)
+      .attr('d', landPathD)
       .attr('class', 'map-coast')
       .attr('fill', 'none')
-      .attr('stroke', isLight ? '#8fa4b4' : '#2c4a38')
+      .attr('stroke', isLight ? '#8fa4b4' : '#3a5c46')
       .attr('stroke-width', 0.6)
-      .attr('stroke-opacity', 0.8)
+      .attr('stroke-opacity', 0.85)
 
     // ── Country borders
     mapG.append('path')

@@ -27,8 +27,12 @@ const PLAY_END   = 33.4
 // Passion Week / Resurrection beats live in fractional years, so a year is a lot.
 const SECONDS_PER_YEAR = 6
 
+// Curated first load: settle over the Galilee cluster (Nazareth, Capernaum,
+// Tiberias, Magdala, the lake) rather than the full 200km strip with nothing lit.
+const INITIAL_FOCUS = { lon: 35.48, lat: 32.80, scale: 2 }
+
 export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange }) {
-  const [activeJourneys, setActiveJourneys] = useState(new Set())
+  const [activeJourneys, setActiveJourneys] = useState(() => new Set(['period-1']))
   const [selectedBookId, setSelectedBookId] = useState(null)
   const [viewMode, setViewMode]             = useState('journeys')
   const [timelineYear, setTimelineYear]     = useState(null)
@@ -274,6 +278,7 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
             detailJourneyId={detailJourneyId}
             theme={theme}
             lens={lens}
+            initialFocus={INITIAL_FOCUS}
           />
           <StoryLayer
             timelineYear={timelineYear}
