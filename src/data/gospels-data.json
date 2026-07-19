@@ -3048,53 +3048,53 @@
   "miracleTypes": {
     "healing": {
       "label": "Healings",
-      "color": "#5a9e8a"
+      "color": "#18a07e"
     },
     "exorcism": {
       "label": "Exorcisms",
-      "color": "#9a6b8a"
+      "color": "#b86797"
     },
     "resurrection": {
       "label": "Raising the Dead",
-      "color": "#c98a3c"
+      "color": "#c0851f"
     },
     "nature": {
       "label": "Power over Nature",
-      "color": "#6b8cba"
+      "color": "#5188cd"
     },
     "provision": {
       "label": "Provision",
-      "color": "#a89050"
+      "color": "#a9692e"
     }
   },
   "parableTopics": {
     "kingdom": {
       "label": "The Kingdom",
-      "color": "#c98a3c"
+      "color": "#c0851f"
     },
     "lost": {
       "label": "Grace & the Lost",
-      "color": "#5a9e8a"
+      "color": "#18a07e"
     },
     "prayer": {
       "label": "Prayer",
-      "color": "#6b8cba"
+      "color": "#5188cd"
     },
     "money": {
       "label": "Money & Stewardship",
-      "color": "#a89050"
+      "color": "#a9692e"
     },
     "readiness": {
       "label": "Judgment & Readiness",
-      "color": "#9a6b8a"
+      "color": "#b86797"
     },
     "mercy": {
       "label": "Forgiveness & Mercy",
-      "color": "#8a9a5a"
+      "color": "#809337"
     },
     "cost": {
       "label": "Discipleship & Cost",
-      "color": "#b0705a"
+      "color": "#c16048"
     }
   }
 }

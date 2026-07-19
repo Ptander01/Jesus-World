@@ -77,7 +77,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
         {/* Church name */}
         <text
           x={STOP_MARGIN_X} y={TRACK_Y - 10}
-          fontFamily="Cinzel, serif" fontSize={9}
+          fontFamily="Cinzel, serif" fontSize={11}
           letterSpacing={2} fill="#7a6430"
           style={{ userSelect: 'none', pointerEvents: 'none' }}
         >
@@ -142,7 +142,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
                 textAnchor="middle"
                 fontFamily="Cormorant Garamond, Georgia, serif"
                 fontStyle="italic"
-                fontSize={9}
+                fontSize={11}
                 fill={hovered ? '#ede8dc' : '#a09a8e'}
                 style={{ userSelect: 'none', pointerEvents: 'none' }}
               >
@@ -157,7 +157,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
                   textAnchor="middle"
                   fontFamily="Cormorant Garamond, Georgia, serif"
                   fontStyle="italic"
-                  fontSize={8}
+                  fontSize={10}
                   fill="#7a8ab0"
                   style={{ userSelect: 'none', pointerEvents: 'none' }}
                 >

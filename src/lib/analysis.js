@@ -13,7 +13,7 @@ import {
 import { inLens } from "./attestation.js";
 
 const GOSPEL_ORDER = ["Matthew", "Mark", "Luke", "John"];
-const GOSPEL_COLOR = { Matthew: "#c98a3c", Mark: "#9a6b8a", Luke: "#5a9e8a", John: "#6b8cba" };
+const GOSPEL_COLOR = { Matthew: "#c0851f", Mark: "#b86797", Luke: "#18a07e", John: "#5188cd" };
 
 const PASS = () => true;
 

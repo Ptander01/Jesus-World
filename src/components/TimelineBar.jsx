@@ -19,19 +19,19 @@ const ROUTE_Y = SEP + 4  // horizontal routing level for displaced chip poles
 // Flag dot radius — larger touch targets on coarse pointers (phones/tablets)
 const FDR = (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches) ? 7 : 4
 const CR0_S2 = 88,  CR1_S2 = 113, CH_S2 = 20   // state-2 compact chip rows
-const CR0_S3 = 106, CR1_S3 = 165, CH_S3 = 30   // state-3 expanded chip rows
+const CR0_S3 = 100, CR1_S3 = 152, CR2_S3 = 204, CH_S3 = 30   // state-3 expanded chip rows (3 shelves)
 
 const VIEWBOXES = [
   [0, 0, TW, 78],    // state 0 — journey bars only
   [0, 0, TW, 78],    // state 1 — bars + book flags
   [0, 0, TW, 150],   // state 2 — both rows, compact chips (chips end ~y=133)
-  [0, 75, TW, 123],  // state 3 — books only
+  [0, 75, TW, 168],  // state 3 — books only, three shelves
 ]
 // Card height tracks the viewBox aspect (height = width × vbH/1200) so the
 // overview scales uniformly — no funhouse stretch on the lone timeline.
 // Clamps keep it usable at extreme window widths (mild stretch only there).
-const H_MIN = [64, 64, 104, 96]
-const H_MAX = [112, 112, 190, 160]
+const H_MIN = [72, 72, 112, 150]
+const H_MAX = [126, 126, 206, 244]
 const STATE_LABELS  = ['Periods', 'Events Appear', 'Periods + Events', 'The Events']
 
 const xScale = d3.scaleLinear().domain([29, 33.5]).range([80, 1140])
@@ -58,7 +58,7 @@ const BOOKS = journeyData.books.map((b, i) => ({
 
 // State-3 chip layout — collision-resolved per row (prison epistles cluster at AD 60–62)
 const S3_CHIPS = (() => {
-  const CPX = 6.5, CPAD = 26, GAP = 6
+  const CPX = 7.8, CPAD = 28, GAP = 6
   const chips = BOOKS.map(b => ({
     id: b.id,
     idealCx: xScale(b.dt),
@@ -66,8 +66,20 @@ const S3_CHIPS = (() => {
     w: Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), b.name.length * CPX + CPAD),
     row: b.row,
   }))
-  ;[0, 1].forEach(row => {
-    const rc = chips.filter(c => c.row === row).sort((a, b) => a.idealCx - b.idealCx)
+  // Fifteen full-length event names outgrow two shelves (the Paul engine's 13 short
+  // book names fit; these don't), so state 3 packs onto THREE shelves. Greedy in date
+  // order onto the emptiest shelf keeps each row roughly chronological; `srow` is
+  // state-3-only and leaves the other states' b.row parity untouched.
+  const edges = [-Infinity, -Infinity, -Infinity]
+  chips.slice().sort((a, b) => a.idealCx - b.idealCx).forEach(c => {
+    let best = 0
+    for (let r = 1; r < 3; r++) if (edges[r] < edges[best]) best = r
+    c.srow = best
+    edges[best] = Math.max(edges[best], c.idealCx - c.w / 2) + c.w + GAP
+  })
+  ;[0, 1, 2].forEach(row => {
+    const rc = chips.filter(c => c.srow === row).sort((a, b) => a.idealCx - b.idealCx)
+    if (!rc.length) return
     // push right to clear left neighbors
     for (let k = 1; k < rc.length; k++) {
       const lo = rc[k - 1].cx + rc[k - 1].w / 2 + GAP + rc[k].w / 2
@@ -103,10 +115,17 @@ const S2_OFFSETS = (() => {
   const offsets = {}
   clusters.forEach(ids => {
     if (ids.length < 2) return
-    ids.forEach((id, j) => { offsets[id] = (j - (ids.length - 1) / 2) * 32 })
+    // Spread must clear the abbrev TEXT (~54px at 10.5px Cinzel), which overflows
+    // the 34px min chip — chip gaps alone still let neighboring labels collide.
+    ids.forEach((id, j) => { offsets[id] = (j - (ids.length - 1) / 2) * 56 })
   })
   return offsets
 })()
+
+
+// State-3 shelf y for a book (three rows, assigned in S3_CHIPS)
+const S3_ROW_Y = [CR0_S3, CR1_S3, CR2_S3]
+const s3Y = (b) => S3_ROW_Y[S3_CHIPS[b.id].srow]
 
 // Chip geometry per state — one rounded rect morphs dot → compact chip → full chip.
 // fo = fill-opacity, so = stroke-opacity, sto = flag-stem opacity.
@@ -118,20 +137,20 @@ function getP(b, s) {
              fo: s ? 0.5 : 0, so: s ? 1 : 0, sto: s ? 0.7 : 0 }
   }
   if (s === 2) {
-    const rw = Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), 28)
+    const rw = Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), 34)
     const cy = b.row === 0 ? CR0_S2 : CR1_S2
     const off = S2_OFFSETS[b.id] ?? 0
     return { x: cx - rw / 2 + off, y: cy, w: rw, h: CH_S2, rx: 4, fo: 0.2, so: 0.8, sto: 0 }
   }
   const lay = S3_CHIPS[b.id]
-  const cy  = b.row === 0 ? CR0_S3 : CR1_S3
+  const cy  = s3Y(b)
   return { x: lay.cx - lay.w / 2, y: cy, w: lay.w, h: CH_S3, rx: 6, fo: 0.2, so: 0.85, sto: 0 }
 }
 
 // L-shaped pole routing — no diagonals; displaced chips route via ROUTE_Y
 function polePath(b) {
   const lay  = S3_CHIPS[b.id]
-  const topY = b.row === 0 ? CR0_S3 : CR1_S3
+  const topY = s3Y(b)
   const ax   = xScale(b.dt), cx = lay.cx
   if (Math.abs(cx - ax) < 0.5) return `M ${cx} ${topY} V ${SEP}`
   return `M ${cx} ${topY} V ${ROUTE_Y} H ${ax} V ${SEP}`
@@ -144,7 +163,7 @@ function abbrevAttrs(b, s) {
   }
   if (s === 3) {
     const lay = S3_CHIPS[b.id]
-    return { x: lay.cx, y: (b.row === 0 ? CR0_S3 : CR1_S3) + CH_S3 / 2 + 3, o: 0 }
+    return { x: lay.cx, y: s3Y(b) + CH_S3 / 2 + 3, o: 0 }
   }
   return { x: xScale(b.dt), y: (b.row === 0 ? FAY : FBY) + 2.5, o: 0 }
 }
@@ -152,7 +171,7 @@ function abbrevAttrs(b, s) {
 function nameAttrs(b, s) {
   if (s === 3) {
     const lay = S3_CHIPS[b.id]
-    return { x: lay.cx, y: (b.row === 0 ? CR0_S3 : CR1_S3) + 13, o: 0.95 }
+    return { x: lay.cx, y: s3Y(b) + 13, o: 0.95 }
   }
   if (s === 2) {
     const cy = b.row === 0 ? CR0_S2 : CR1_S2
@@ -163,7 +182,7 @@ function nameAttrs(b, s) {
 
 function dateAttrs(b, s) {
   const na = nameAttrs(b, s)
-  if (s === 3) return { x: na.x, y: (b.row === 0 ? CR0_S3 : CR1_S3) + 25, o: 0.7 }
+  if (s === 3) return { x: na.x, y: s3Y(b) + 25, o: 0.7 }
   return { ...na, o: 0 }
 }
 
@@ -262,7 +281,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
     >
       {/* Section label */}
       <text x={40} y={TRACK_Y + 4} textAnchor="middle"
-        fontFamily="Cinzel, serif" fontSize={7} letterSpacing={1.5} fill="#7a8ab0"
+        fontFamily="Cinzel, serif" fontSize={9} letterSpacing={1.5} fill="#7a8ab0"
       >{cityName.toUpperCase()}</text>
 
       {/* Thread line */}
@@ -283,7 +302,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               fill="none" stroke="#c9a84c" strokeWidth={0.8} strokeOpacity={0.35}
               vectorEffect="non-scaling-stroke" shapeRendering="crispEdges" />
             <text x={(xF + xL) / 2} y={BR_Y - 2.5} textAnchor="middle"
-              fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={7.5}
+              fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={9.5}
               fill="#c9a84c" fillOpacity={0.85}
             >planted AD {Math.round(founding.year)} · letter {gapLabel}</text>
           </g>
@@ -291,7 +310,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
       })()}
       {originNote && (
         <text x={clamp((threadX1 + threadX2) / 2, 200, TW - 200)} y={6.5} textAnchor="middle"
-          fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={7.5}
+          fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={9.5}
           fill="#4A7C6F" fillOpacity={0.9} pointerEvents="none"
         >{originNote}</text>
       )}
@@ -314,7 +333,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               vectorEffect="non-scaling-stroke"
             />
             <text x={x} y={above ? ABOVE_Y : BELOW_Y}
-              textAnchor="middle" fontFamily="Cinzel, serif" fontSize={6.5} letterSpacing={0.5}
+              textAnchor="middle" fontFamily="Cinzel, serif" fontSize={8.5} letterSpacing={0.5}
               fill={v.color} fillOpacity={isH ? 1 : 0.65}
               style={{ pointerEvents: 'none' }}
             >{isH ? v.shortName : `AD ${Math.round(v.year)}`}</text>
@@ -342,7 +361,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
             {isH && (
               <text x={x} y={i % 2 === 0 ? ABOVE_Y : BELOW_Y}
                 textAnchor="middle" fontFamily="Cormorant Garamond, serif"
-                fontStyle="italic" fontSize={8}
+                fontStyle="italic" fontSize={10}
                 fill={col} style={{ pointerEvents: 'none' }}
               >{ev.label}</text>
             )}
@@ -363,7 +382,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               vectorEffect="non-scaling-stroke"
             />
             <text x={x} y={ABOVE_Y - 2}
-              textAnchor="middle" fontFamily="Cinzel, serif" fontSize={8} letterSpacing={0.5}
+              textAnchor="middle" fontFamily="Cinzel, serif" fontSize={10} letterSpacing={0.5}
               fill="#e9c86c" style={{ pointerEvents: 'none' }}
             >{selectedBook.abbrev}</text>
           </g>
@@ -543,7 +562,7 @@ export default function TimelineBar({
       .attr('stroke-width', 0.5).attr('stroke-opacity', 0.55)
     tip.append('text')
       .attr('y', AXIS_Y + 12).attr('text-anchor', 'middle')
-      .attr('font-family', 'Cinzel, serif').attr('font-size', 8.5)
+      .attr('font-family', 'Cinzel, serif').attr('font-size', 10.5)
       .attr('fill', '#c9a84c').attr('fill-opacity', 0.95)
 
     scrubG.append('circle').attr('class', 's-handle')
@@ -681,7 +700,7 @@ export default function TimelineBar({
       g.append('text')
         .attr('x', x).attr('y', AXIS_Y - 8)
         .attr('text-anchor', 'middle')
-        .attr('font-family', 'Cinzel, serif').attr('font-size', 10)
+        .attr('font-family', 'Cinzel, serif').attr('font-size', 12)
         .attr('fill', '#5c6078')
         .text(yr)
     })
@@ -705,13 +724,13 @@ export default function TimelineBar({
       .attr('shape-rendering', 'crispEdges')
     ;[
       { label: 'TIMELINE', cy: (BY + AXIS_Y) / 2,   cls: 'tl-lbl-timeline' },
-      { label: 'EVENTS',   cy: bs === 3 ? 150 : 110, cls: 'tl-lbl-books' },
+      { label: 'EVENTS',   cy: bs === 3 ? 167 : 110, cls: 'tl-lbl-books' },
     ].forEach(({ label, cy, cls }) =>
       g.append('text')
         .attr('class', cls)
         .attr('x', 40).attr('y', cy + 3)
         .attr('text-anchor', 'middle')
-        .attr('font-family', 'Cinzel, serif').attr('font-size', 7)
+        .attr('font-family', 'Cinzel, serif').attr('font-size', 9.5)
         .attr('letter-spacing', 1).attr('fill', '#7a8ab0')
         .attr('pointer-events', 'none')
         .text(label)
@@ -726,7 +745,7 @@ export default function TimelineBar({
       .attr('fill', 'white')
     BOOKS.forEach(b => {
       const lay = S3_CHIPS[b.id]
-      const cy  = b.row === 0 ? CR0_S3 : CR1_S3
+      const cy  = s3Y(b)
       poleMask.append('rect')
         .attr('x', lay.cx - lay.w / 2 + 1).attr('y', cy + 1)
         .attr('width', lay.w - 2).attr('height', CH_S3 - 2)
@@ -750,7 +769,7 @@ export default function TimelineBar({
       .attr('stroke-width', 0.5).attr('stroke-opacity', 0.75)
     const tipText = tipG.append('text')
       .attr('text-anchor', 'middle')
-      .attr('font-family', 'Cinzel, serif').attr('font-size', 9)
+      .attr('font-family', 'Cinzel, serif').attr('font-size', 11)
       .attr('fill', '#c9a84c').attr('fill-opacity', 0.95)
 
     // ── Book chips (4-state system) ────────────────────────────────────
@@ -865,7 +884,7 @@ export default function TimelineBar({
         .attr('data-abbrev', b.id)
         .attr('x', aa.x).attr('y', aa.y)
         .attr('text-anchor', 'middle')
-        .attr('font-family', 'Cinzel, serif').attr('font-size', 9)
+        .attr('font-family', 'Cinzel, serif').attr('font-size', 10.5)
         .attr('font-style', debated ? 'italic' : 'normal')
         .attr('fill', sel ? '#e9c86c' : col)
         .attr('fill-opacity', aa.o)
@@ -878,7 +897,7 @@ export default function TimelineBar({
         .attr('data-name', b.id)
         .attr('x', na.x).attr('y', na.y)
         .attr('text-anchor', 'middle')
-        .attr('font-family', 'Cinzel, serif').attr('font-size', 10.5)
+        .attr('font-family', 'Cinzel, serif').attr('font-size', 12.5)
         .attr('letter-spacing', 0.5)
         .attr('font-style', debated ? 'italic' : 'normal')
         .attr('fill', sel ? '#e9c86c' : col)
@@ -892,7 +911,7 @@ export default function TimelineBar({
         .attr('x', da.x).attr('y', da.y)
         .attr('text-anchor', 'middle')
         .attr('font-family', 'Cormorant Garamond, serif')
-        .attr('font-style', 'italic').attr('font-size', 8.5)
+        .attr('font-style', 'italic').attr('font-size', 10.5)
         .attr('fill', col)
         .attr('fill-opacity', da.o)
         .attr('pointer-events', 'none')
@@ -950,7 +969,7 @@ export default function TimelineBar({
     g.select('.tl-anchor-line').transition('bookState').duration(dur).ease(ease)
       .attr('opacity', bookState === 3 ? 1 : 0)
     g.select('.tl-lbl-books').transition('bookState').duration(dur).ease(ease)
-      .attr('y', (bookState === 3 ? 150 : 110) + 3)
+      .attr('y', (bookState === 3 ? 167 : 110) + 3)
 
     BOOKS.forEach(b => {
       const bookG = g.select(`[data-book-group="${b.id}"]`)
