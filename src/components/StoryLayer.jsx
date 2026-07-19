@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
+import ScriptureReveal from './ScriptureReveal.jsx'
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
@@ -92,6 +93,7 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
           </span>
         )}
       </div>
+      {beat.ref && <ScriptureReveal passageRef={beat.ref} dense className="story-caption__scr" />}
     </div>
   )
 }
