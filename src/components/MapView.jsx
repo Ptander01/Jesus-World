@@ -152,6 +152,8 @@ function applyZoomStyling(mapGEl, k) {
   const g = d3.select(mapGEl)
   // Labels hold constant screen size (1/k); halo width tracks the font
   g.selectAll('.province-label').attr('font-size', 9 / k).attr('stroke-width', 2.4 / k)
+  g.selectAll('.province-sub').attr('font-size', 7 / k).attr('stroke-width', 2 / k)
+    .attr('y', function () { return +this.dataset.y0 + 11 / k })
   g.selectAll('.label-t1').attr('font-size', 13 / k).attr('stroke-width', 3 / k)
   g.selectAll('.label-t2').attr('font-size', 11 / k).attr('stroke-width', 2.6 / k).attr('opacity', k >= 2   ? 0.85 : 0)
   g.selectAll('.label-t3').attr('font-size',  9 / k).attr('stroke-width', 2.2 / k).attr('opacity', k >= 3.5 ? 0.75 : 0)
@@ -171,7 +173,7 @@ function applyZoomStyling(mapGEl, k) {
   g.selectAll('.map-graticule').attr('stroke-width', 0.5 / s)
   g.selectAll('.map-borders').attr('stroke-width', 0.7 / s)
   g.selectAll('.map-coast').attr('stroke-width', 0.6 / s)
-  g.selectAll('.province-border').attr('stroke-width', 0.8 / s)
+  g.selectAll('.province-border').attr('stroke-width', 0.7 / s)
   g.selectAll('.era-road').attr('stroke-width', 0.8 / s)
   g.selectAll('.seg-hit').attr('stroke-width', 12 / k) // hit zone stays screen-constant
 
@@ -541,7 +543,7 @@ export default function MapView({
         .join('path')
         .attr('d', pathGen)
         .attr('fill', d => visitedIds.has(normalizeProvinceName(d.properties.name)) ? '#c9a84c' : (isLight ? '#7a6a50' : '#a09a8e'))
-        .attr('fill-opacity', d => visitedIds.has(normalizeProvinceName(d.properties.name)) ? (isLight ? 0.14 : 0.07) : (isLight ? 0.06 : 0.04))
+        .attr('fill-opacity', d => visitedIds.has(normalizeProvinceName(d.properties.name)) ? (isLight ? 0.11 : 0.055) : (isLight ? 0.045 : 0.028))
         .attr('stroke', 'none')
 
       mapG.append('g')
@@ -552,8 +554,10 @@ export default function MapView({
         .attr('d', pathGen)
         .attr('fill', 'none')
         .attr('stroke', '#c9a84c')
-        .attr('stroke-width', 0.8)
-        .attr('stroke-opacity', 0.25)
+        .attr('stroke-width', 0.7)
+        .attr('stroke-dasharray', '3 2.6')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-opacity', 0.28)
 
       const provLabelG = mapG.append('g').attr('pointer-events', 'none')
       provincesGeo.features.forEach(feature => {
@@ -576,6 +580,26 @@ export default function MapView({
           .attr('stroke-opacity', 0.4)
           .attr('stroke-linejoin', 'round')
           .text(feature.properties.name)
+        // Ruler sublabel — the AD 29–33 political reality under the region name
+        if (feature.properties.ruler) {
+          provLabelG.append('text')
+            .attr('class', 'province-sub')
+            .attr('x', centroid[0])
+            .attr('data-y0', centroid[1])
+            .attr('y', centroid[1] + 11 / kRef.current)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('font-family', 'Cormorant Garamond, serif')
+            .attr('font-style', 'italic')
+            .attr('font-size', 7 / kRef.current)
+            .attr('fill', isLight ? '#6a5830' : '#c9a84c')
+            .attr('fill-opacity', isLight ? 0.36 : 0.24)
+            .attr('paint-order', 'stroke')
+            .attr('stroke', haloColor)
+            .attr('stroke-opacity', 0.35)
+            .attr('stroke-linejoin', 'round')
+            .text(feature.properties.ruler)
+        }
       })
     }
 
