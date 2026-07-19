@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
 import { attestationLabel, inLens } from '../lib/attestation.js'
+import ScriptureReveal from './ScriptureReveal.jsx'
 
 const LENSES = ['All', 'Synoptics', 'Matthew', 'Mark', 'Luke', 'John']
 
@@ -221,16 +222,18 @@ export default function FilterPanel({
                   <span className="fp-evt-count">{list.length}</span>
                 </div>
                 {list.map(e => (
-                  <button
-                    key={e.id}
-                    type="button"
-                    className="fp-evt-row"
-                    onClick={() => onLocate?.(e.cityId)}
-                    title={`${e.label} — ${e.ref}`}
-                  >
-                    <span className="fp-evt-name">{e.label}</span>
-                    <span className="fp-evt-loc">{cityName(e.cityId)}</span>
-                  </button>
+                  <div key={e.id} className="fp-evt-item">
+                    <button
+                      type="button"
+                      className="fp-evt-row"
+                      onClick={() => onLocate?.(e.cityId)}
+                      title={`${e.label} — ${e.ref}`}
+                    >
+                      <span className="fp-evt-name">{e.label}</span>
+                      <span className="fp-evt-loc">{cityName(e.cityId)}</span>
+                    </button>
+                    <ScriptureReveal passageRef={e.ref} dense />
+                  </div>
                 ))}
               </div>
             ))}
@@ -251,16 +254,19 @@ export default function FilterPanel({
                       <span className="fp-parable-ref">{p.ref.split(';')[0]}</span>
                       <span className="fp-parable-gospels">{attestationLabel(p.gospels)}</span>
                     </div>
-                    {p.occasion && (
-                      <button
-                        type="button"
-                        className="fp-parable-occasion"
-                        onClick={() => onLocate?.(p.occasion.cityId)}
-                        title={p.occasion.note}
-                      >
-                        ◎ {cityName(p.occasion.cityId)}
-                      </button>
-                    )}
+                    <div className="fp-parable-actions">
+                      {p.occasion && (
+                        <button
+                          type="button"
+                          className="fp-parable-occasion"
+                          onClick={() => onLocate?.(p.occasion.cityId)}
+                          title={p.occasion.note}
+                        >
+                          ◎ {cityName(p.occasion.cityId)}
+                        </button>
+                      )}
+                      <ScriptureReveal passageRef={p.ref} dense />
+                    </div>
                   </div>
                 ))}
               </div>

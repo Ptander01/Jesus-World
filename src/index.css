@@ -599,6 +599,12 @@ body {
   color: #4a7c6f;
 }
 
+.story-caption__scr { margin-top: 6px; }
+.story-caption__scr .scr-panel {
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
 [data-theme="light"] .story-caption {
   background: linear-gradient(160deg, rgba(240, 234, 222, 0.94) 0%, rgba(228, 221, 208, 0.95) 100%);
   border-color: rgba(160, 120, 40, 0.3);
@@ -1231,6 +1237,12 @@ body {
   line-height: 1.55;
 }
 
+.bdp-ref-full {
+  font-size: 12px;
+  color: var(--cream-dim);
+  line-height: 1.5;
+}
+
 .bdp-verse {
   border-left: 3px solid #4A7C6F;
   padding: 8px 12px;
@@ -1573,6 +1585,8 @@ body {
 }
 .fp-evt-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .fp-evt-count { margin-left: auto; color: var(--muted); letter-spacing: 0; }
+.fp-evt-item { padding: 0 4px; }
+.fp-evt-item .scr { padding-left: 4px; }
 .fp-evt-row {
   display: flex;
   align-items: baseline;
@@ -1654,8 +1668,14 @@ body {
   color: var(--accent-dim);
   white-space: nowrap;
 }
-.fp-parable-occasion {
+.fp-parable-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-top: 5px;
+}
+.fp-parable-actions .scr { margin-top: 0; }
+.fp-parable-occasion {
   padding: 2px 8px;
   font-family: var(--font-body);
   font-size: 10px;
@@ -1679,6 +1699,93 @@ body {
 }
 .fp-attr-credit a { color: var(--accent-dim); text-decoration: none; }
 .fp-attr-credit a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ── ScriptureReveal — click-to-expand verse text, dropped in wherever a `ref`
+   already shows as plain text (FilterPanel rows, BookDetailPanel, StoryLayer). ── */
+.scr { margin-top: 3px; }
+.scr-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 2px 0;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.scr-trigger:hover { color: var(--accent); }
+.scr-trigger-icon { font-size: 10px; line-height: 1; }
+.scr--dense .scr-trigger { font-size: 8.5px; }
+
+.scr-panel {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: var(--glass-bg, var(--surface-2));
+  backdrop-filter: var(--glass-blur, none);
+  -webkit-backdrop-filter: var(--glass-blur, none);
+  border: 1px solid var(--glass-border, var(--border));
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  animation: scrOpen 0.22s ease;
+}
+@keyframes scrOpen {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.scr-passage + .scr-passage { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.scr-passage-ref {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.scr-passage-text {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--cream-dim);
+}
+.scr-vnum {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 9px;
+  color: var(--accent-dim);
+  margin-right: 2px;
+}
+.scr-credit {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.scr-error { font-size: 12px; font-style: italic; color: var(--muted); }
+.scr-loading { display: flex; flex-direction: column; gap: 6px; }
+.scr-loading-bar {
+  height: 9px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border-lt) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: scrPulse 1.3s ease-in-out infinite;
+}
+.scr-loading-bar:last-child { width: 65%; }
+@keyframes scrPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scr-panel { animation: none; }
+  .scr-loading-bar { animation: none; opacity: 0.5; }
+}
 
 /* province toggle */
 .fp-layer-divider {

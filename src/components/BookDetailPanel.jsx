@@ -1,4 +1,5 @@
 import journeyData from '../data/gospels-data.json'
+import ScriptureReveal from './ScriptureReveal.jsx'
 
 export default function BookDetailPanel({ book, onClose }) {
   const writingCity = book
@@ -50,6 +51,7 @@ export default function BookDetailPanel({ book, onClose }) {
             <div className="bdp-verse">
               <div className="bdp-verse-label">Key Verse</div>
               <div className="bdp-verse-ref">{book.keyVerse}</div>
+              <ScriptureReveal passageRef={book.keyVerse} label="Read this verse" />
             </div>
           )}
 
@@ -59,13 +61,18 @@ export default function BookDetailPanel({ book, onClose }) {
             </div>
           )}
 
+          {book.ref && (
+            <div className="bdp-section">
+              <div className="bdp-label">Scripture</div>
+              <div className="bdp-ref-full">{book.ref}</div>
+              <ScriptureReveal passageRef={book.ref} label="Read the full account" />
+            </div>
+          )}
+
           <div className="bdp-study-sep" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
               Study Guide — coming soon
-            </button>
-            <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
-              Maps &amp; Timeline — coming soon
             </button>
           </div>
         </>
