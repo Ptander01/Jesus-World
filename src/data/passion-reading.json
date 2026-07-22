@@ -38,7 +38,8 @@
         "Mark",
         "Luke",
         "John"
-      ]
+      ],
+      "site": "bethphage"
     },
     {
       "id": "temple",
@@ -70,7 +71,8 @@
         "Matthew",
         "Mark",
         "Luke"
-      ]
+      ],
+      "site": "temple-mount"
     },
     {
       "id": "fig-tree",
@@ -97,7 +99,8 @@
       "gospels": [
         "Matthew",
         "Mark"
-      ]
+      ],
+      "site": "temple-mount"
     },
     {
       "id": "lament",
@@ -124,7 +127,8 @@
       "gospels": [
         "Matthew",
         "Luke"
-      ]
+      ],
+      "site": "mount-of-olives"
     },
     {
       "id": "olivet",
@@ -148,7 +152,8 @@
         "Matthew",
         "Mark",
         "Luke"
-      ]
+      ],
+      "site": "mount-of-olives"
     },
     {
       "id": "judas",
@@ -176,7 +181,8 @@
         "Matthew",
         "Mark",
         "Luke"
-      ]
+      ],
+      "site": "bethany"
     },
     {
       "id": "supper",
@@ -201,7 +207,8 @@
         "Mark",
         "Luke",
         "John"
-      ]
+      ],
+      "site": "upper-room"
     },
     {
       "id": "gethsemane",
@@ -237,7 +244,8 @@
         "Matthew",
         "Mark",
         "Luke"
-      ]
+      ],
+      "site": "gethsemane"
     },
     {
       "id": "arrest",
@@ -274,7 +282,8 @@
         "Mark",
         "Luke",
         "John"
-      ]
+      ],
+      "site": "gethsemane"
     },
     {
       "id": "cross",
@@ -315,7 +324,8 @@
         "Mark",
         "Luke",
         "John"
-      ]
+      ],
+      "site": "golgotha"
     },
     {
       "id": "tomb",
@@ -364,7 +374,8 @@
         "Mark",
         "Luke",
         "John"
-      ]
+      ],
+      "site": "garden-tomb"
     },
     {
       "id": "emmaus",
@@ -436,7 +447,8 @@
       "prose": "A week later, the same room. Thomas has become a byword for doubt, which is a little unfair — he asks for exactly what the other ten had already been given, and were not blamed for. When he gets it, John gives him the strongest confession in the book.",
       "gospels": [
         "John"
-      ]
+      ],
+      "site": "upper-room"
     },
     {
       "id": "peter",
@@ -526,7 +538,8 @@
       "prose": "Luke closes where the week had lodged. Forty days after the Passover he leads them out as far as Bethany, lifts his hands, blesses them, and is parted from them. Luke is the only evangelist to narrate it, and he tells it twice — once to end the Gospel, once to begin the Acts.",
       "gospels": [
         "Luke"
-      ]
+      ],
+      "site": "bethany"
     }
   ]
 }

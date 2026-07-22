@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import MapView from './MapView'
+import JerusalemDiagram from './JerusalemDiagram.jsx'
 import reading from '../data/passion-reading.json'
 import journeyData from '../data/gospels-data.json'
 import { attestationLabel } from '../lib/attestation.js'
@@ -7,6 +8,17 @@ import { attestationLabel } from '../lib/attestation.js'
 const SECTIONS = reading.sections
 const PERIODS = new Set(['period-5', 'period-6'])
 const cityName = id => journeyData.cities.find(c => c.id === id)?.name ?? id
+
+// A place line reading "Jerusalem" six different times said nothing about where in
+// the story you were — six of sixteen beats (temple, supper, arrest's aftermath,
+// cross, tomb, Thomas) collapse to that one city. Prose-cased site names (distinct
+// from JerusalemDiagram's all-caps map labels) for the sections that carry a `site`.
+const SITE_PROSE_NAME = {
+  'temple-mount': 'The Temple', 'mount-of-olives': 'Mount of Olives', antonia: 'Antonia Fortress',
+  'upper-room': 'The Upper Room', gethsemane: 'Gethsemane', golgotha: 'Golgotha',
+  'garden-tomb': 'The Garden Tomb', bethphage: 'Bethphage', bethany: 'Bethany',
+}
+const placeName = s => s.site ? (SITE_PROSE_NAME[s.site] ?? cityName(s.cityId)) : cityName(s.cityId)
 
 // Scroll-driven reader: prose is the spine, the map is the illustration. The active
 // section is whichever sits nearest the reading line (35% down the viewport) — a
@@ -48,8 +60,11 @@ export default function ReadingMode({ theme = 'dark', lens = 'All', onExit }) {
   }, [measure])
 
   // Fly the map to the active section's place. Guarded so re-renders don't re-pan to
-  // a city we're already sitting on.
+  // a city we're already sitting on. Kept running even while the close-up diagram is
+  // showing, so the regional map is already framed correctly the moment a section
+  // without a `site` (Emmaus, Galilee) crossfades it back in.
   const section = SECTIONS[active]
+  const isCloseUp = Boolean(section?.site)
   useEffect(() => {
     if (!section || lastPannedRef.current === section.id) return
     lastPannedRef.current = section.id
@@ -59,25 +74,35 @@ export default function ReadingMode({ theme = 'dark', lens = 'All', onExit }) {
   return (
     <div className="rd" data-theme={theme}>
       <div className="rd-map" aria-hidden="true">
-        <MapView
-          activeJourneys={PERIODS}
-          selectedBookId={null}
-          timelineYear={section?.year ?? SECTIONS[0].year}
-          hoveredCityId={section?.cityId ?? null}
-          onCityHover={() => {}}
-          onCityClick={() => {}}
-          provincesGeo={null}
-          showProvinces={false}
-          isPlaying={false}
-          detailJourneyId={null}
-          onMapReady={fn => {
-            panToCityRef.current = fn
-            if (SECTIONS[0]) fn(SECTIONS[0].cityId)
-          }}
-          theme={theme}
-          lens={lens}
-        />
-        <div className="rd-map-scrim" />
+        {/* Regional map — the distant epilogue scenes (Emmaus, the Galilee shore, the
+            mountain of the Commission) genuinely are far from Jerusalem; showing them
+            zoomed out is the right storytelling choice, not a limitation to work around. */}
+        <div className={`rd-map-layer${!isCloseUp ? ' rd-map-layer--on' : ''}`}>
+          <MapView
+            activeJourneys={PERIODS}
+            selectedBookId={null}
+            timelineYear={section?.year ?? SECTIONS[0].year}
+            hoveredCityId={section?.cityId ?? null}
+            onCityHover={() => {}}
+            onCityClick={() => {}}
+            provincesGeo={null}
+            showProvinces={false}
+            isPlaying={false}
+            detailJourneyId={null}
+            onMapReady={fn => {
+              panToCityRef.current = fn
+              if (SECTIONS[0]) fn(SECTIONS[0].cityId)
+            }}
+            theme={theme}
+            lens={lens}
+          />
+        </div>
+        {/* Close-up — the week's Jerusalem-area beats, spread across a schematic city
+            reconstruction instead of sharing one static regional pin. */}
+        <div className={`rd-map-layer${isCloseUp ? ' rd-map-layer--on' : ''}`}>
+          <JerusalemDiagram activeSite={section?.site ?? null} />
+        </div>
+        <div className={`rd-map-scrim${isCloseUp ? ' rd-map-scrim--closeup' : ''}`} />
       </div>
 
       <div className="rd-scroll" ref={scrollerRef}>
@@ -101,7 +126,7 @@ export default function ReadingMode({ theme = 'dark', lens = 'All', onExit }) {
             >
               <div className="rd-sec-head">
                 <span className="rd-day">{s.day}</span>
-                <span className="rd-place">{cityName(s.cityId)}</span>
+                <span className="rd-place">{placeName(s)}</span>
               </div>
               <h2 className="rd-sec-title">{s.title}</h2>
               <p className="rd-prose">{s.prose}</p>
