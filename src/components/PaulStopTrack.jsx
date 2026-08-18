@@ -1,6 +1,10 @@
 import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
 import { buildStopLayout, STOP_MARGIN_X } from '../utils/stopLayout'
+import TimelineDefs from './TimelineDefs'
+import { mat } from '../utils/timelineMaterial'
+
+const P = mat('pst')
 
 const SVG_H   = 130
 const TRACK_Y = 65
@@ -55,6 +59,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
   return (
     <div className="pst-scroll">
       <svg width={totalWidth} height={SVG_H} style={{ display: 'block', overflow: 'visible' }}>
+        <TimelineDefs id="pst" />
         <defs>
           <filter id="pst-glow" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="3.5" result="b" />
@@ -106,7 +111,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                   strokeDasharray="2 2" />
               )}
 
-              {/* City dot */}
+              {/* City dot — coloured core, domed highlight, bevelled rim */}
               <circle
                 cx={cx} cy={TRACK_Y} r={r}
                 fill={dotColor}
@@ -114,7 +119,17 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                 stroke={dotColor}
                 strokeWidth={1.2}
                 strokeOpacity={dotOpacity}
-                filter={(hovered || active) ? 'url(#pst-glow)' : undefined}
+                filter={(hovered || active) ? 'url(#pst-glow)' : P.cast}
+              />
+              <circle
+                cx={cx} cy={TRACK_Y} r={r}
+                fill={P.dome}
+                style={{ pointerEvents: 'none' }}
+              />
+              <circle
+                cx={cx} cy={TRACK_Y} r={Math.max(0.5, r - 0.6)}
+                fill="none" stroke={P.bevel} strokeWidth={1}
+                style={{ pointerEvents: 'none' }}
               />
 
               {/* City name */}
@@ -123,7 +138,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                 textAnchor="middle"
                 fontFamily="Cinzel, serif"
                 fontSize={11} letterSpacing={0.5}
-                fill={(hovered || active) ? '#e9c86c' : (major ? '#c9a84c' : '#a09a8e')}
+                fill={(hovered || active) ? '#e9c86c' : (major ? '#c9a84c' : 'var(--cream-dim)')}
                 fillOpacity={(hovered || active) ? 1 : (major ? 0.85 : 0.7)}
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
               >
@@ -137,7 +152,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                 fontFamily="Cormorant Garamond, Georgia, serif"
                 fontStyle="italic"
                 fontSize={11.5}
-                fill={major ? '#c9a84c' : '#5c6078'}
+                fill={major ? '#c9a84c' : 'var(--muted)'}
                 fillOpacity={(hovered || active) ? 0.9 : (major ? 0.7 : 0.55)}
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
               >
@@ -152,7 +167,7 @@ export default function PaulStopTrack({ journey, timelineYear, onCityHover, hove
                   fontFamily="Cormorant Garamond, Georgia, serif"
                   fontStyle="italic"
                   fontSize={11}
-                  fill="#7a8ab0"
+                  fill="var(--muted)"
                   fillOpacity={0.85}
                   style={{ pointerEvents: 'none', userSelect: 'none' }}
                 >
