@@ -426,3 +426,257 @@ svg.jrs {
   .rd-map-layer { transition: none; }
   .jrs-pin--on .jrs-pin-dot { animation: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GOSPEL READER (/gospels) — the 39-day plan, a day at a time.
+   Shares the .rd shell (map behind, reading column, scrim) with the Passion
+   Week reader; everything below is what a full read-through needs and a
+   curated essay doesn't: a day header, a plan index, a pager, and the
+   orientation timeline pinned to the bottom.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.gr .rd-scroll { padding-bottom: 54px; }
+.gr .rd-col { padding-bottom: 8vh; }
+
+/* ── day header ── */
+.gr-dayhead {
+  padding-top: 7vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gr-dayhead-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gr-daynum { color: var(--muted); letter-spacing: 2px; }
+
+.gr-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  margin: 0;
+}
+
+.gr-subcite {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--accent-dim);
+  margin: 0;
+}
+
+.gr-meta {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.gr-index-btn {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--pill-bg);
+  border: 1px solid rgba(201, 168, 76, 0.32);
+  border-radius: 4px;
+  padding: 4px 11px;
+  cursor: pointer;
+  box-shadow: var(--lip-out);
+  transition: box-shadow 0.15s, border-color 0.15s, color 0.15s;
+}
+.gr-index-btn:hover {
+  color: var(--accent-lt);
+  border-color: rgba(201, 168, 76, 0.55);
+  box-shadow: var(--lip-hover);
+}
+
+/* ── the 39-day index ── */
+.gr-index {
+  margin: 18px 0 6px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  max-height: 46vh;
+  overflow-y: auto;
+  background: var(--well-bg);
+  box-shadow: var(--well-lip);
+}
+
+.gr-index-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  padding: 7px 12px;
+  cursor: pointer;
+  color: var(--cream-dim);
+  transition: background 0.14s, color 0.14s;
+}
+.gr-index-item:last-child { border-bottom: none; }
+.gr-index-item:hover { background: rgba(201, 168, 76, 0.07); color: var(--cream); }
+.gr-index-item--on { background: rgba(201, 168, 76, 0.12); color: var(--accent-lt); }
+
+.gr-index-n {
+  flex-shrink: 0;
+  width: 2.2em;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent-dim);
+}
+.gr-index-item--on .gr-index-n { color: var(--accent); }
+
+.gr-index-cite {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.gr-index-v {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+/* ── reading sections ── */
+.gr-sec { padding: 5vh 0 3vh; }
+
+.gr-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cream-dim);
+  opacity: 0.8;
+  margin: 0 0 14px;
+}
+
+.gr-passage + .gr-passage { margin-top: 20px; }
+
+.gr-passage-cite {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 7px;
+}
+
+/* A chapter turn inside a passage prints "13:1" instead of a bare verse number,
+   so a long reading never loses its place. */
+.rd-vn--chapter {
+  color: var(--accent);
+  opacity: 0.95;
+}
+
+/* ── the disputed passages ── */
+.gr-sec--disputed .rd-verses {
+  border-left-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  opacity: 0.92;
+}
+.gr-disputed-tag {
+  color: var(--accent);
+  letter-spacing: 1.5px;
+}
+
+/* ── pager ── */
+.gr-foot { padding-top: 4vh; }
+
+.gr-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 18px;
+}
+
+.gr-page {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--pill-bg);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 7px 14px;
+  cursor: pointer;
+  box-shadow: var(--lip-out);
+  transition: box-shadow 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+.gr-page:hover:not(:disabled) {
+  color: var(--accent-lt);
+  border-color: rgba(201, 168, 76, 0.55);
+  box-shadow: var(--lip-hover);
+}
+.gr-page:disabled { opacity: 0.3; cursor: default; }
+
+.gr-page-of {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.gr-loading,
+.gr-error {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+  padding: 6vh 0;
+}
+.gr-error { color: #c97a7a; }
+
+/* ── orientation timeline ── */
+.gr-timeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 54px;
+  z-index: 6;
+  background: var(--rail-bg), var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--border-lt);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 -4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.gr-tl-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gr-tl-tick { cursor: pointer; }
+.gr-tl-tick:hover line { stroke: var(--accent); stroke-opacity: 1; }
+
+@media (max-width: 768px) {
+  .gr-dayhead { padding-top: 5vh; }
+  .gr-title { font-size: 20px; }
+  .gr-timeline { height: 44px; }
+  .gr .rd-scroll { padding-bottom: 44px; }
+  .gr-pager { flex-wrap: wrap; }
+}
