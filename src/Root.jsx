@@ -7,6 +7,7 @@ import HeroLanding from './components/HeroLanding.jsx'
 // main map bundle.
 const VisualsDemo = lazy(() => import('./components/VisualsDemo.jsx'))
 const ReadingMode = lazy(() => import('./components/ReadingMode.jsx'))
+const GospelReader = lazy(() => import('./components/GospelReader.jsx'))
 
 const routeOf = () => window.location.hash.replace(/^#/, '')
 
@@ -44,6 +45,14 @@ export default function Root() {
     return (
       <Suspense fallback={null}>
         <ReadingMode theme={theme} lens={lens} onExit={() => { window.location.hash = '' }} />
+      </Suspense>
+    )
+  }
+  // The whole-Gospels plan, distinct from /read's curated Passion Week essay.
+  if (route === '/gospels') {
+    return (
+      <Suspense fallback={null}>
+        <GospelReader theme={theme} lens={lens} onExit={() => { window.location.hash = '' }} />
       </Suspense>
     )
   }

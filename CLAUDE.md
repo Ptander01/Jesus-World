@@ -216,6 +216,27 @@ Where it's applied: capsule-bar tracks get `groove` (empty track reads as a cut 
 
 **Raised vs recessed (CSS side):** `--rail-bg` + `inset 0 1px 0 var(--glass-shine)` marks raised chrome (`.timeline-bar`, `.tl-state-nav`, `.tl-mini-header`, `.tld-label-col`, `.ct-pills`, `.jstat-bar`); `--well-bg` + `--well-lip` marks recessed track wells (`.pst-scroll`, `.pet-scroll`, `.ct-track-scroll`, `.bt-scroll`, `.tl-story-wrap`). `.timeline-bar::after` lays a tiled `feTurbulence` grain (`--grain`, 140px, opacity 0.05) over the console — straight alpha, no blend mode, since `overlay`/`soft-light` cancel out against a surface this dark.
 
+### Gospel reader (`/gospels`) + `scripts/build-reading-plan.mjs`
+
+The whole four Gospels as a 39-day chronological read-through, a day at a time. Sibling to `/read` (the curated Passion Week essay) rather than a replacement — that one has hand-written prose and site-level pins, this one has the complete text. They share the `.rd-*` reading shell and the map-follows-the-reading machinery and nothing else.
+
+**The data is generated, never hand-edited.** `scripts/build-reading-plan.mjs` holds the plan table verbatim and emits `src/data/reading-plan/`: `index.json` (39 days — citations, year, city ids; imported eagerly) plus `day-NNN.json` per day (verse text; lazy). Re-run it after any change to the table or the location spine; `--refetch` bypasses the HTTP cache in `scripts/.chapter-cache.json`.
+
+Plan-table conventions, all load-bearing:
+- `|` separates readings within a day — this is the section unit the reader scrolls and the map tracks
+- `;` **continues the same book** when the next segment has no book name (day 292's `Luke 5:1-11; 4:31-37` is still Luke)
+- `,` separates disjoint loci sharing a chapter (`Matthew 8:18, 23-27`; `John 12:1, 9-50`; `Luke 22:7-16, 21-30`)
+- `[additional reading: …]` marks a disputed passage; kept and flagged, never dropped
+- half-verse markers (`3:23b`) are stripped for fetching but kept in the displayed citation
+
+**Why chapter-at-a-time fetching:** bible-api.com caps a request at two chapters, and every open-ended form (`Matthew 5:1-6:999`, `Matthew 5:3-`, `Matthew 5-6`) 404s or errors. The only reliable primitive is a whole chapter (`Matthew 5`), so the script fetches each of the 89 Gospel chapters once and slices passages locally — exact, and it needs no table of chapter lengths.
+
+**Integrity check** (worth re-running after edits): the plan covers all 89 chapters and 3,779 verse instances = 3,778 unique + Luke 3:23 twice, which is the plan's own `23a`/`23b` split. **Mark 11:26 is absent** — day 311 ends at 11:25 and day 312 resumes at 11:27. That is a third disputed passage (omitted in critical texts), silent in the source table where the other two are bracketed. Left faithful to the plan rather than silently "corrected".
+
+**Location + year spine.** Every section needs a place (drives the map) and a year (drives the timeline). 36 of 62 derive automatically by overlapping the passage range against refs already carried by `gospels-data.json`'s `churchEvents` and `parables`; the other 26 are declared in `LOCATION_OVERRIDES` keyed `"day:readingIndex"`. A declared `null` means "no atlas pin for this scene" and is honoured rather than auto-filled — day 300's Machaerus execution is the one such case, since the atlas has no Machaerus. Years are then clamped non-decreasing and gaps interpolated, so the timeline marker never jumps backwards where a parallel account carries an earlier atlas year.
+
+`GospelReader.jsx` lazy-loads days via `import.meta.glob` (39 chunks, 2–4 kB gzipped each) and prefetches the next day. `ReaderTimeline.jsx` is the bottom orientation strip: the six period bands plus one tick per day, built from `TimelineDefs`/`mat` so it is the same material as the atlas console; ticks are click targets, so it doubles as a day picker.
+
 ### PlayControls
 
 Collapsible panel rendered below `TimelineBar` as a sibling of `.app-body`. Default state is **collapsed** — only a small `.pc-toggle` tab is visible (18px pill with `border-radius: 0 0 8px 8px`, hanging below the timeline border). Clicking the tab expands the full card via a `max-height` CSS transition (`0 → 80px`, 0.28s cubic-bezier).
