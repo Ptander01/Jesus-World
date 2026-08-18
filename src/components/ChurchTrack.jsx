@@ -1,6 +1,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import journeyData from '../data/gospels-data.json'
 import { buildStopLayout, STOP_MARGIN_X } from '../utils/stopLayout'
+import TimelineDefs from './TimelineDefs'
+import { mat } from '../utils/timelineMaterial'
 
 const TRACK_Y = 28   // vertical center of SVG
 const SVG_H   = 56
@@ -25,6 +27,11 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
     () => buildStopLayout(journey),
     [journey]
   )
+
+  // Several church tracks are on screen at once, so the material defs need a
+  // per-instance id — SVG ids are document-scoped and would otherwise collide.
+  const defsId = `ct-${churchId}`
+  const P = useMemo(() => mat(defsId), [defsId])
 
   useEffect(() => {
     if (timelineYear === null || timelineYear === undefined) {
@@ -67,6 +74,8 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
   return (
     <div className="ct-track-scroll">
       <svg width={totalWidth} height={SVG_H} style={{ display: 'block' }}>
+        <TimelineDefs id={defsId} />
+
         {/* Track line */}
         <line
           x1={STOP_MARGIN_X} x2={totalWidth - STOP_MARGIN_X}
@@ -113,27 +122,39 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
                 style={{ pointerEvents: 'none' }}
               />
 
-              {/* Marker shape */}
+              {/* Marker shape — coloured body under a sheen/bevel pass */}
               {cfg.shape === 'diamond' ? (
-                <polygon
-                  points={`${cx},${TRACK_Y - cfg.size} ${cx + cfg.size},${TRACK_Y} ${cx},${TRACK_Y + cfg.size} ${cx - cfg.size},${TRACK_Y}`}
-                  className={pulsing.has(ev.id) ? 'ct-marker-pulse' : undefined}
-                  fill={cfg.color}
-                  fillOpacity={hovered ? 0.45 : 0.18}
-                  stroke={cfg.color}
-                  strokeWidth={1.2}
-                  strokeOpacity={hovered ? 1 : 0.8}
-                />
+                <g className={pulsing.has(ev.id) ? 'ct-marker-pulse' : undefined} filter={P.cast}>
+                  <polygon
+                    points={`${cx},${TRACK_Y - cfg.size} ${cx + cfg.size},${TRACK_Y} ${cx},${TRACK_Y + cfg.size} ${cx - cfg.size},${TRACK_Y}`}
+                    fill={cfg.color}
+                    fillOpacity={hovered ? 0.45 : 0.18}
+                    stroke={cfg.color}
+                    strokeWidth={1.2}
+                    strokeOpacity={hovered ? 1 : 0.8}
+                  />
+                  <polygon
+                    points={`${cx},${TRACK_Y - cfg.size} ${cx + cfg.size},${TRACK_Y} ${cx},${TRACK_Y + cfg.size} ${cx - cfg.size},${TRACK_Y}`}
+                    fill={P.sheen} stroke={P.bevel} strokeWidth={0.9}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </g>
               ) : (
-                <circle
-                  cx={cx} cy={TRACK_Y} r={cfg.size}
-                  className={pulsing.has(ev.id) ? 'ct-marker-pulse' : undefined}
-                  fill={cfg.color}
-                  fillOpacity={hovered ? 0.45 : 0.18}
-                  stroke={cfg.color}
-                  strokeWidth={1.2}
-                  strokeOpacity={hovered ? 1 : 0.8}
-                />
+                <g className={pulsing.has(ev.id) ? 'ct-marker-pulse' : undefined} filter={P.cast}>
+                  <circle
+                    cx={cx} cy={TRACK_Y} r={cfg.size}
+                    fill={cfg.color}
+                    fillOpacity={hovered ? 0.45 : 0.18}
+                    stroke={cfg.color}
+                    strokeWidth={1.2}
+                    strokeOpacity={hovered ? 1 : 0.8}
+                  />
+                  <circle cx={cx} cy={TRACK_Y} r={cfg.size} fill={P.dome}
+                    style={{ pointerEvents: 'none' }} />
+                  <circle cx={cx} cy={TRACK_Y} r={Math.max(0.5, cfg.size - 0.6)}
+                    fill="none" stroke={P.bevel} strokeWidth={1}
+                    style={{ pointerEvents: 'none' }} />
+                </g>
               )}
 
               {/* Primary label */}
@@ -143,7 +164,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
                 fontFamily="Cormorant Garamond, Georgia, serif"
                 fontStyle="italic"
                 fontSize={11}
-                fill={hovered ? '#ede8dc' : '#a09a8e'}
+                fill={hovered ? 'var(--cream)' : 'var(--cream-dim)'}
                 style={{ userSelect: 'none', pointerEvents: 'none' }}
               >
                 {ev.label}
@@ -158,7 +179,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
                   fontFamily="Cormorant Garamond, Georgia, serif"
                   fontStyle="italic"
                   fontSize={10}
-                  fill="#7a8ab0"
+                  fill="var(--muted)"
                   style={{ userSelect: 'none', pointerEvents: 'none' }}
                 >
                   {ev.sublabel}

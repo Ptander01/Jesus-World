@@ -1,6 +1,10 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
 import { buildStopLayout } from '../utils/stopLayout'
+import TimelineDefs from './TimelineDefs'
+import { mat } from '../utils/timelineMaterial'
+
+const P = mat('pet')
 
 const SVG_H    = 130
 const TRACK_Y  = 78   // horizontal track line
@@ -73,6 +77,7 @@ export default function PaulEventTrack({ journey, timelineYear, onCityHover, hov
   return (
     <div className="pet-scroll">
       <svg width={totalWidth} height={SVG_H} style={{ display: 'block', overflow: 'visible' }}>
+        <TimelineDefs id="pet" />
         <defs>
           <filter id="pet-glow" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="3.5" result="b" />
@@ -93,16 +98,16 @@ export default function PaulEventTrack({ journey, timelineYear, onCityHover, hov
           const mx = (x0 + x1) / 2
           return (
             <g key={i}>
-              <line x1={x0 + 2} y1={ERA_Y + 4} x2={mx - 42} y2={ERA_Y + 4} stroke="#2e3858" strokeWidth={0.5} />
+              <line x1={x0 + 2} y1={ERA_Y + 4} x2={mx - 42} y2={ERA_Y + 4} stroke="var(--border)" strokeWidth={0.5} />
               <text
                 x={mx} y={ERA_Y}
                 textAnchor="middle"
                 fontFamily="Cinzel, serif" fontSize={8} letterSpacing={2.5}
-                fill="#4a5578"
+                fill="var(--muted)"
               >
                 {era.label}
               </text>
-              <line x1={mx + 42} y1={ERA_Y + 4} x2={x1 - 2} y2={ERA_Y + 4} stroke="#2e3858" strokeWidth={0.5} />
+              <line x1={mx + 42} y1={ERA_Y + 4} x2={x1 - 2} y2={ERA_Y + 4} stroke="var(--border)" strokeWidth={0.5} />
             </g>
           )
         })}
@@ -148,17 +153,38 @@ export default function PaulEventTrack({ journey, timelineYear, onCityHover, hov
                     fillOpacity={isHovered ? 1 : 0.85}
                     className={isPulsing ? 'pet-pulse' : ''}
                   />
+                  {/* Sheen rides the 45° rotation, so the diamond reads as lit
+                      from the upper-left facet rather than dead flat */}
+                  <rect
+                    x={-s.size / 2} y={-s.size / 2}
+                    width={s.size} height={s.size}
+                    fill={P.sheen} stroke={P.bevel} strokeWidth={0.8}
+                    style={{ pointerEvents: 'none' }}
+                  />
                 </g>
               ) : (
-                <circle
-                  cx={x} cy={TRACK_Y} r={isPulsing ? s.r * 1.6 : s.r}
-                  fill={s.fill}
-                  fillOpacity={isHovered ? 1 : 0.85}
-                  stroke={s.stroke}
-                  strokeWidth={s.stroke ? 1.5 : 0}
-                  filter={s.glow ? 'url(#pet-glow)' : undefined}
-                  className={isPulsing ? 'pet-pulse' : ''}
-                />
+                <g filter={s.glow ? 'url(#pet-glow)' : P.cast}>
+                  <circle
+                    cx={x} cy={TRACK_Y} r={isPulsing ? s.r * 1.6 : s.r}
+                    fill={s.fill}
+                    fillOpacity={isHovered ? 1 : 0.85}
+                    stroke={s.stroke}
+                    strokeWidth={s.stroke ? 1.5 : 0}
+                    className={isPulsing ? 'pet-pulse' : ''}
+                  />
+                  <circle
+                    cx={x} cy={TRACK_Y} r={isPulsing ? s.r * 1.6 : s.r}
+                    fill={P.dome}
+                    className={isPulsing ? 'pet-pulse' : ''}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                  <circle
+                    cx={x} cy={TRACK_Y} r={Math.max(0.5, (isPulsing ? s.r * 1.6 : s.r) - 0.6)}
+                    fill="none" stroke={P.bevel} strokeWidth={1}
+                    className={isPulsing ? 'pet-pulse' : ''}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </g>
               )}
 
               {/* Labels (always shown, fade slightly when not hovered) */}
@@ -166,7 +192,7 @@ export default function PaulEventTrack({ journey, timelineYear, onCityHover, hov
                 x={x} y={above ? labelY - SUB_OFF : labelY}
                 textAnchor="middle"
                 fontFamily="Cinzel, serif" fontSize={8.5} letterSpacing={0.5}
-                fill={isHovered ? '#e9c86c' : '#a09a8e'}
+                fill={isHovered ? '#e9c86c' : 'var(--cream-dim)'}
                 fillOpacity={isHovered ? 1 : 0.75}
               >
                 {evt.label}
@@ -175,7 +201,7 @@ export default function PaulEventTrack({ journey, timelineYear, onCityHover, hov
                 x={x} y={above ? labelY : labelY + SUB_OFF}
                 textAnchor="middle"
                 fontFamily="Cormorant Garamond, serif" fontSize={9} fontStyle="italic"
-                fill="#5c6078"
+                fill="var(--muted)"
                 fillOpacity={isHovered ? 0.9 : 0.6}
               >
                 {evt.sublabel}

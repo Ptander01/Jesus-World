@@ -2,6 +2,12 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import journeyData from '../data/gospels-data.json'
 import TimelineDetail from './TimelineDetail'
+import TimelineDefs from './TimelineDefs'
+import { mat, bevelRect } from '../utils/timelineMaterial'
+
+const M  = mat('pbw')    // main overview SVG
+const MS = mat('tls')    // city story row
+const MM = mat('tlm')    // detail-mode mini strip
 
 const TW = 1200
 const TH = 210
@@ -279,9 +285,11 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
       preserveAspectRatio="none"
       style={{ width: '100%', height: '100%', display: 'block' }}
     >
+      <TimelineDefs id="tls" />
+
       {/* Section label */}
       <text x={40} y={TRACK_Y + 4} textAnchor="middle"
-        fontFamily="Cinzel, serif" fontSize={9} letterSpacing={1.5} fill="#7a8ab0"
+        fontFamily="Cinzel, serif" fontSize={9} letterSpacing={1.5} fill="var(--muted)"
       >{cityName.toUpperCase()}</text>
 
       {/* Thread line */}
@@ -331,7 +339,13 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               fill={v.color} fillOpacity={isH ? 0.55 : 0.3}
               stroke={v.color} strokeWidth={1.2} strokeOpacity={isH ? 1 : 0.7}
               vectorEffect="non-scaling-stroke"
+              filter={MS.cast}
             />
+            <circle cx={x} cy={TRACK_Y} r={isH ? r + 2 : r}
+              fill={MS.dome} pointerEvents="none" />
+            <circle cx={x} cy={TRACK_Y} r={(isH ? r + 2 : r) - 0.55}
+              fill="none" stroke={MS.bevel} strokeWidth={1}
+              vectorEffect="non-scaling-stroke" pointerEvents="none" />
             <text x={x} y={above ? ABOVE_Y : BELOW_Y}
               textAnchor="middle" fontFamily="Cinzel, serif" fontSize={8.5} letterSpacing={0.5}
               fill={v.color} fillOpacity={isH ? 1 : 0.65}
@@ -344,7 +358,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
       {/* Church event markers */}
       {churchEvts.map((ev, i) => {
         const x    = xScale(ev.year)
-        const col  = EVENT_COLOR[ev.type] ?? '#a09a8e'
+        const col  = EVENT_COLOR[ev.type] ?? 'var(--cream-dim)'
         const isH  = hovered === ev.id
         const sz   = 6
         return (
@@ -357,6 +371,11 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               fill={col} fillOpacity={isH ? 0.5 : 0.25}
               stroke={col} strokeWidth={1} strokeOpacity={isH ? 1 : 0.7}
               vectorEffect="non-scaling-stroke"
+              filter={MS.cast}
+            />
+            <polygon
+              points={`${x},${TRACK_Y-sz} ${x+sz},${TRACK_Y} ${x},${TRACK_Y+sz} ${x-sz},${TRACK_Y}`}
+              fill={MS.sheen} pointerEvents="none"
             />
             {isH && (
               <text x={x} y={i % 2 === 0 ? ABOVE_Y : BELOW_Y}
@@ -380,6 +399,11 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
               fill="#c9a84c" fillOpacity={0.55}
               stroke="#c9a84c" strokeWidth={1.5} strokeOpacity={0.9}
               vectorEffect="non-scaling-stroke"
+              filter={MS.cast}
+            />
+            <polygon
+              points={`${x},${TRACK_Y-sz} ${x+sz},${TRACK_Y} ${x},${TRACK_Y+sz} ${x-sz},${TRACK_Y}`}
+              fill={MS.sheen} pointerEvents="none"
             />
             <text x={x} y={ABOVE_Y - 2}
               textAnchor="middle" fontFamily="Cinzel, serif" fontSize={10} letterSpacing={0.5}
@@ -397,6 +421,28 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)) }
 function getSvgYear(clientX, svgEl) {
   const r = svgEl.getBoundingClientRect()
   return clamp(xScale.invert(((clientX - r.left) / r.width) * TW), 29, 33.5)
+}
+
+/**
+ * Positions the scrubber (line, tooltip pill, knob) for a year, or hides the
+ * whole group when there isn't one. Shared by the position effect and the
+ * mount effect — the latter rebuilds this DOM, and without re-placing it the
+ * scrubber would sit blank at x=0 until the next year change.
+ */
+function placeScrubber(node, year) {
+  if (!node) return
+  const g = d3.select(node)
+  if (year === null || year === undefined) {
+    g.style('display', 'none')
+    return
+  }
+  const x    = xScale(year)
+  const tipX = clamp(x, 58, TW - 58)
+  g.style('display', null)
+  g.select('.s-line').attr('x1', x).attr('x2', x)
+  g.select('.s-handle').attr('transform', `translate(${x},0)`)
+  g.select('.s-tip').attr('transform', `translate(${tipX},0)`)
+  g.select('.s-tip text').text(paulNote(year))
 }
 
 function paulNote(year) {
@@ -471,18 +517,7 @@ export default function TimelineBar({
 
   // ── Scrubber position — fast imperative update ─────────────────────────
   useEffect(() => {
-    const g = d3.select(scrubGRef.current)
-    if (timelineYear === null) {
-      g.style('display', 'none')
-      return
-    }
-    const x    = xScale(timelineYear)
-    const tipX = clamp(x, 58, TW - 58)
-    g.style('display', null)
-    g.select('.s-line').attr('x1', x).attr('x2', x)
-    g.select('.s-handle').attr('cx', x)
-    g.select('.s-tip').attr('transform', `translate(${tipX},0)`)
-    g.select('.s-tip text').text(paulNote(timelineYear))
+    placeScrubber(scrubGRef.current, timelineYear)
   }, [timelineYear])
 
   // ── Capsule bar reveal — synchronized clipPath widths ─────────────────
@@ -545,6 +580,10 @@ export default function TimelineBar({
     const svg    = d3.select(svgRef.current)
     const scrubG = d3.select(scrubGRef.current)
 
+    // This effect re-runs whenever `onYearChange`'s identity changes, so clear
+    // first — otherwise each run stacks another line/tip/knob on the last, and
+    // the semi-transparent gold knob compounds toward opaque.
+    scrubG.selectAll('*').remove()
     scrubG.style('display', 'none')
 
     scrubG.append('line').attr('class', 's-line')
@@ -558,18 +597,41 @@ export default function TimelineBar({
     const tip = scrubG.append('g').attr('class', 's-tip').attr('pointer-events', 'none')
     tip.append('rect')
       .attr('x', -54).attr('y', AXIS_Y + 2).attr('width', 108).attr('height', 14).attr('rx', 3)
-      .attr('fill', '#0c0f18').attr('stroke', '#c9a84c')
+      .attr('fill', 'var(--tip-bg)').attr('stroke', '#c9a84c')
       .attr('stroke-width', 0.5).attr('stroke-opacity', 0.55)
+      .attr('filter', M.cast)
+    tip.append('rect')
+      .attr('x', -53.4).attr('y', AXIS_Y + 2.6).attr('width', 106.8).attr('height', 12.8).attr('rx', 2.4)
+      .attr('fill', M.sheen)
+      .attr('stroke', M.bevel).attr('stroke-width', 1)
+      .attr('vector-effect', 'non-scaling-stroke')
     tip.append('text')
       .attr('y', AXIS_Y + 12).attr('text-anchor', 'middle')
       .attr('font-family', 'Cinzel, serif').attr('font-size', 10.5)
       .attr('fill', '#c9a84c').attr('fill-opacity', 0.95)
 
-    scrubG.append('circle').attr('class', 's-handle')
+    // Scrub knob — gold core under a domed highlight and a bevelled rim, so the
+    // one thing you actually grab reads as a physical control
+    const knob = scrubG.append('g').attr('class', 's-handle')
+    knob.append('circle')
       .attr('cy', AXIS_Y).attr('r', 5.5)
       .attr('fill', '#c9a84c').attr('fill-opacity', 0.9)
-      .attr('stroke', '#060d1a').attr('stroke-width', 1.5)
+      .attr('stroke', 'var(--bg)').attr('stroke-width', 1.5)
+      .attr('filter', M.cast)
       .attr('pointer-events', 'all').style('cursor', 'ew-resize')
+    knob.append('circle')
+      .attr('cy', AXIS_Y).attr('r', 5.5)
+      .attr('fill', M.dome).attr('pointer-events', 'none')
+    knob.append('circle')
+      .attr('cy', AXIS_Y).attr('r', 4.9)
+      .attr('fill', 'none')
+      .attr('stroke', M.bevel).attr('stroke-width', 1)
+      .attr('vector-effect', 'non-scaling-stroke')
+      .attr('pointer-events', 'none')
+
+    // Re-place immediately: a rebuild mid-session would otherwise leave a live
+    // scrubber blank until the next year change.
+    placeScrubber(scrubGRef.current, yearRef.current)
 
     let startClientX = 0
 
@@ -655,21 +717,33 @@ export default function TimelineBar({
           .attr('vector-effect', 'non-scaling-stroke')
           .attr('clip-path', `url(#pbw-bar-clip-${bar.id})`)
       } else {
-        // Background track
+        // Empty track, cut into the console — inner shadow reads as a groove the
+        // filled portion then sits inside
         barsG.append('rect')
           .attr('x', x1).attr('y', BY).attr('width', x2 - x1).attr('height', BH).attr('rx', 5)
           .attr('fill', bar.color).attr('fill-opacity', active ? 0.12 : 0.06)
+          .attr('filter', M.groove)
         // Clipped foreground
         barsG.append('rect')
           .attr('x', x1).attr('y', BY).attr('width', x2 - x1).attr('height', BH).attr('rx', 5)
           .attr('fill', bar.color).attr('fill-opacity', active ? 0.72 : 0.18)
           .attr('clip-path', `url(#pbw-bar-clip-${bar.id})`)
-          .attr('filter', active ? 'url(#pbw-chip-shadow)' : null)
-        // Glass sheen overlay (luminance only — journey hue stays true)
+          .attr('filter', active ? M.cast : null)
+        // Glass face + bevelled edge (luminance only — journey hue stays true)
+        const bev = bevelRect({ x: x1, y: BY, w: x2 - x1, h: BH, rx: 5 })
         barsG.append('rect')
           .attr('x', x1).attr('y', BY).attr('width', x2 - x1).attr('height', BH).attr('rx', 5)
-          .attr('fill', 'url(#pbw-chip-sheen)')
+          .attr('fill', M.sheen)
           .attr('opacity', active ? 1 : 0.4)
+          .attr('clip-path', `url(#pbw-bar-clip-${bar.id})`)
+          .attr('pointer-events', 'none')
+        barsG.append('rect')
+          .attr('x', bev.x).attr('y', bev.y).attr('width', bev.w).attr('height', bev.h)
+          .attr('rx', bev.rx)
+          .attr('fill', 'none')
+          .attr('stroke', M.bevel).attr('stroke-width', 1)
+          .attr('opacity', active ? 1 : 0.45)
+          .attr('vector-effect', 'non-scaling-stroke')
           .attr('clip-path', `url(#pbw-bar-clip-${bar.id})`)
           .attr('pointer-events', 'none')
       }
@@ -686,7 +760,7 @@ export default function TimelineBar({
     // ── Axis line + ticks + year labels ───────────────────────────────
     g.append('line')
       .attr('x1', 74).attr('x2', TW - 48).attr('y1', AXIS_Y).attr('y2', AXIS_Y)
-      .attr('stroke', '#232a42').attr('stroke-width', 1)
+      .attr('stroke', 'var(--border)').attr('stroke-width', 1)
       .attr('vector-effect', 'non-scaling-stroke')
       .attr('shape-rendering', 'crispEdges')
 
@@ -694,14 +768,16 @@ export default function TimelineBar({
       const x = xScale(yr)
       g.append('line')
         .attr('x1', x).attr('x2', x).attr('y1', AXIS_Y - 3).attr('y2', AXIS_Y + 3)
-        .attr('stroke', '#2e3858').attr('stroke-width', 1)
+        .attr('stroke', 'var(--border-lt)').attr('stroke-width', 1)
         .attr('vector-effect', 'non-scaling-stroke')
         .attr('shape-rendering', 'crispEdges')
+      // Below the axis, not above it: the state-0/1 lower flag-dot row sits at
+      // y=44–52, which swallowed the year labels entirely at the old y=54.
       g.append('text')
-        .attr('x', x).attr('y', AXIS_Y - 8)
+        .attr('x', x).attr('y', AXIS_Y + 12)
         .attr('text-anchor', 'middle')
         .attr('font-family', 'Cinzel, serif').attr('font-size', 12)
-        .attr('fill', '#5c6078')
+        .attr('fill', 'var(--muted)')
         .text(yr)
     })
 
@@ -719,7 +795,7 @@ export default function TimelineBar({
     // ── Left-side section labels ───────────────────────────────────────
     g.append('line')
       .attr('x1', 4).attr('x2', 76).attr('y1', SEP).attr('y2', SEP)
-      .attr('stroke', '#2e3a58').attr('stroke-width', 1)
+      .attr('stroke', 'var(--border)').attr('stroke-width', 1)
       .attr('vector-effect', 'non-scaling-stroke')
       .attr('shape-rendering', 'crispEdges')
     ;[
@@ -731,7 +807,7 @@ export default function TimelineBar({
         .attr('x', 40).attr('y', cy + 3)
         .attr('text-anchor', 'middle')
         .attr('font-family', 'Cinzel, serif').attr('font-size', 9.5)
-        .attr('letter-spacing', 1).attr('fill', '#7a8ab0')
+        .attr('letter-spacing', 1).attr('fill', 'var(--muted)')
         .attr('pointer-events', 'none')
         .text(label)
     )
@@ -756,7 +832,7 @@ export default function TimelineBar({
     g.append('line')
       .attr('class', 'tl-anchor-line')
       .attr('x1', 74).attr('x2', TW - 48).attr('y1', SEP).attr('y2', SEP)
-      .attr('stroke', '#232a42').attr('stroke-width', 1)
+      .attr('stroke', 'var(--border)').attr('stroke-width', 1)
       .attr('vector-effect', 'non-scaling-stroke')
       .attr('shape-rendering', 'crispEdges')
       .attr('opacity', bs === 3 ? 1 : 0)
@@ -765,8 +841,9 @@ export default function TimelineBar({
     // ── Shared hover tooltip ───────────────────────────────────────────
     const tipG = g.append('g').attr('pointer-events', 'none').style('display', 'none')
     const tipRect = tipG.append('rect').attr('rx', 3)
-      .attr('fill', '#0c0f18').attr('stroke', '#c9a84c')
+      .attr('fill', 'var(--tip-bg)').attr('stroke', '#c9a84c')
       .attr('stroke-width', 0.5).attr('stroke-opacity', 0.75)
+      .attr('filter', M.cast)
     const tipText = tipG.append('text')
       .attr('text-anchor', 'middle')
       .attr('font-family', 'Cinzel, serif').attr('font-size', 11)
@@ -774,7 +851,7 @@ export default function TimelineBar({
 
     // ── Book chips (4-state system) ────────────────────────────────────
     BOOKS.forEach(b => {
-      const col     = jColor[b.journeyId] ?? '#a09a8e'
+      const col     = jColor[b.journeyId] ?? 'var(--cream-dim)'
       const sel     = selectedBookId === b.id
       const debated = b.attribution === 'debated'
       const cx      = xScale(b.dt)
@@ -847,7 +924,7 @@ export default function TimelineBar({
         .attr('stroke-width', sel ? 1.8 : 1.25)
         .attr('stroke-opacity', sel ? Math.min(p.so + 0.3, 1) : p.so)
         .attr('vector-effect', 'non-scaling-stroke')
-        .attr('filter', sel ? 'url(#pbw-chip-glow)' : 'url(#pbw-chip-shadow)')
+        .attr('filter', sel ? 'url(#pbw-chip-glow)' : M.cast)
         .style('cursor', 'pointer')
         .style('pointer-events', bs === 0 ? 'none' : 'all')
         .on('click', ev => { ev.stopPropagation(); onBookClick(b.id) })
@@ -869,12 +946,17 @@ export default function TimelineBar({
         })
         .on('mouseleave', () => tipG.style('display', 'none'))
 
-      // Glass sheen overlay — luminance-only gradient, doesn't tint the journey color
+      // Glass face + bevelled edge — one rect carries both so the dock and state
+      // transitions only have to morph a single extra element. Luminance-only, so
+      // the journey hue underneath stays true.
+      const bp = bevelRect(p)
       bookG.append('rect')
         .attr('data-sheen', b.id)
-        .attr('x', p.x).attr('y', p.y)
-        .attr('width', p.w).attr('height', p.h).attr('rx', p.rx)
-        .attr('fill', 'url(#pbw-chip-sheen)')
+        .attr('x', bp.x).attr('y', bp.y)
+        .attr('width', bp.w).attr('height', bp.h).attr('rx', bp.rx)
+        .attr('fill', M.sheen)
+        .attr('stroke', M.bevel).attr('stroke-width', 1)
+        .attr('vector-effect', 'non-scaling-stroke')
         .attr('opacity', p.so)
         .attr('pointer-events', 'none')
 
@@ -930,17 +1012,19 @@ export default function TimelineBar({
         const r  = FDR * (1 + 1.5 * Math.exp(-(((cx - mx) / 45) ** 2)))
         const dy = b.row === 0 ? FAY : FBY
         const x = cx - r, y = dy - r, wh = 2 * r
+        const bp = bevelRect({ x, y, w: wh, h: wh, rx: r })
         g.select(`[data-chip="${b.id}"]`).attr('x', x).attr('y', y).attr('width', wh).attr('height', wh).attr('rx', r)
-        g.select(`[data-sheen="${b.id}"]`).attr('x', x).attr('y', y).attr('width', wh).attr('height', wh).attr('rx', r)
+        g.select(`[data-sheen="${b.id}"]`).attr('x', bp.x).attr('y', bp.y).attr('width', bp.w).attr('height', bp.h).attr('rx', bp.rx)
         g.select(`[data-ring="${b.id}"]`).attr('r', r + 2.4)
       })
     })
     svgSel.on('mouseleave.dock', () => {
       if (bookStateRef.current !== 1) return
       BOOKS.forEach(b => {
-        const q = getP(b, 1)
+        const q  = getP(b, 1)
+        const bp = bevelRect(q)
         g.select(`[data-chip="${b.id}"]`).attr('x', q.x).attr('y', q.y).attr('width', q.w).attr('height', q.h).attr('rx', q.rx)
-        g.select(`[data-sheen="${b.id}"]`).attr('x', q.x).attr('y', q.y).attr('width', q.w).attr('height', q.h).attr('rx', q.rx)
+        g.select(`[data-sheen="${b.id}"]`).attr('x', bp.x).attr('y', bp.y).attr('width', bp.w).attr('height', bp.h).attr('rx', bp.rx)
         g.select(`[data-ring="${b.id}"]`).attr('r', FDR + 2.4)
       })
     })
@@ -985,9 +1069,10 @@ export default function TimelineBar({
         .attr('fill-opacity', sel ? Math.min(p.fo + 0.2, 1) : p.fo)
         .attr('stroke-opacity', sel ? Math.min(p.so + 0.3, 1) : p.so)
 
+      const bp = bevelRect(p)
       bookG.select('[data-sheen]').transition('bookState').duration(dur).ease(ease)
-        .attr('x', p.x).attr('y', p.y)
-        .attr('width', p.w).attr('height', p.h).attr('rx', p.rx)
+        .attr('x', bp.x).attr('y', bp.y)
+        .attr('width', bp.w).attr('height', bp.h).attr('rx', bp.rx)
         .attr('opacity', p.so)
 
       bookG.select('[data-stem]').transition('bookState').duration(dur).ease(ease)
@@ -1100,26 +1185,18 @@ export default function TimelineBar({
           preserveAspectRatio="none"
           style={{ width: '100%', flex: 1, cursor: 'crosshair', minHeight: 0 }}
         >
+          <TimelineDefs id="pbw" />
           <defs>
-            {/* Soft elevation shadow — gives bars/chips a lifted, glassmorphic feel */}
-            <filter id="pbw-chip-shadow" x="-40%" y="-60%" width="180%" height="260%">
-              <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000" floodOpacity="0.5" />
-            </filter>
             {/* Soft gold glow for the selected book chip */}
             <filter id="pbw-chip-glow" x="-100%" y="-100%" width="300%" height="300%">
-              <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000" floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="1.5" stdDeviation="2"
+                style={{ floodColor: 'var(--cast-shadow)' }} />
               <feGaussianBlur stdDeviation="2.5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            {/* Luminance-only sheen — top highlight fading to a faint base shadow */}
-            <linearGradient id="pbw-chip-sheen" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.16" />
-              <stop offset="45%"  stopColor="#ffffff" stopOpacity="0.02" />
-              <stop offset="100%" stopColor="#000000" stopOpacity="0.12" />
-            </linearGradient>
           </defs>
           <defs ref={defsRef} />
           <g ref={mainGRef} />
@@ -1152,21 +1229,33 @@ export default function TimelineBar({
               viewBox={`0 0 ${TW} 30`}
               preserveAspectRatio="none"
             >
+              <TimelineDefs id="tlm" />
               {CAPSULE_BARS.map(bar => {
                 const x1 = xScale(Math.max(xScale.domain()[0], bar.dr[0])) + 1.5
                 const x2 = Math.max(xScale(Math.min(xScale.domain()[1], bar.dr[1])) - 1.5, x1 + MIN_BAR_W)
                 if (x2 <= x1) return null
                 const isSelected = bar.id === detailJourneyId
+                const bev = bevelRect({ x: x1, y: 8, w: x2 - x1, h: 14, rx: 5 })
                 return (
-                  <rect
-                    key={bar.id}
-                    x={x1} y={8} width={x2 - x1} height={14} rx={5}
-                    fill={bar.color}
-                    fillOpacity={isSelected ? 0.75 : 0.18}
-                    stroke={isSelected ? bar.color : 'none'}
-                    strokeOpacity={0.5}
-                    strokeWidth={isSelected ? 1 : 0}
-                  />
+                  <g key={bar.id}>
+                    <rect
+                      x={x1} y={8} width={x2 - x1} height={14} rx={5}
+                      fill={bar.color}
+                      fillOpacity={isSelected ? 0.75 : 0.18}
+                      stroke={isSelected ? bar.color : 'none'}
+                      strokeOpacity={0.5}
+                      strokeWidth={isSelected ? 1 : 0}
+                      filter={isSelected ? MM.cast : MM.groove}
+                    />
+                    <rect
+                      x={bev.x} y={bev.y} width={bev.w} height={bev.h} rx={bev.rx}
+                      fill={MM.sheen}
+                      stroke={MM.bevel} strokeWidth={1}
+                      vectorEffect="non-scaling-stroke"
+                      opacity={isSelected ? 1 : 0.4}
+                      pointerEvents="none"
+                    />
+                  </g>
                 )
               })}
             </svg>

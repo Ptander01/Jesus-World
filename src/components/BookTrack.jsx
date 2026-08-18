@@ -1,6 +1,10 @@
 import { useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
 import { buildStopLayout } from '../utils/stopLayout'
+import TimelineDefs from './TimelineDefs'
+import { mat, bevelRect } from '../utils/timelineMaterial'
+
+const P = mat('bt')
 
 const ROW_H    = 22
 const BAR_H    = 14
@@ -53,12 +57,14 @@ export default function BookTrack({ journey, selectedBookId, onBookSelect }) {
     <div className="bt-scroll">
       <div className="bt-label">LETTERS</div>
       <svg width={totalWidth} height={svgH} style={{ display: 'block', overflow: 'visible' }}>
+        <TimelineDefs id="bt" />
         {placed.map(({ book, x0, x1, row }) => {
           const isSelected = book.id === selectedBookId
           const barW = x1 - x0
           const barY = PAD_TOP + row * ROW_H
           const cx   = x0 + barW / 2
           const showAbbrev = barW >= 22
+          const bev  = bevelRect({ x: x0, y: barY, w: barW, h: BAR_H, rx: 3 })
 
           return (
             <g
@@ -76,6 +82,16 @@ export default function BookTrack({ journey, selectedBookId, onBookSelect }) {
                 stroke={isSelected ? '#c9a84c' : '#7a6430'}
                 strokeWidth={isSelected ? 1.5 : 1}
                 strokeOpacity={isSelected ? 0.9 : 0.5}
+                filter={isSelected ? P.cast : undefined}
+              />
+              {/* Glass face + bevelled edge */}
+              <rect
+                x={bev.x} y={bev.y}
+                width={bev.w} height={bev.h} rx={bev.rx}
+                fill={P.sheen}
+                stroke={P.bevel} strokeWidth={1}
+                opacity={isSelected ? 1 : 0.55}
+                style={{ pointerEvents: 'none' }}
               />
 
               {/* Abbreviation inside bar */}
@@ -101,7 +117,7 @@ export default function BookTrack({ journey, selectedBookId, onBookSelect }) {
                   textAnchor="end"
                   fontFamily="Cinzel, serif"
                   fontSize={6}
-                  fill="#a09a8e"
+                  fill="var(--cream-dim)"
                   fillOpacity={0.6}
                   style={{ pointerEvents: 'none' }}
                 >

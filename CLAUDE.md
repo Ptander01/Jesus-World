@@ -130,7 +130,8 @@ Via Egnatia road layer: rendered between the province group and the journey line
 
 Six `useEffect` hooks:
 
-1. **Mount-only** — builds scrubber DOM (line, tooltip pill, handle circle) inside `scrubGRef`; attaches `d3.drag()` to the SVG. Drag filter: `!event.target.closest('[data-book]')` so chip clicks don't start a drag. Click-without-drag (dx < 4px) toggles the scrubber on/off.
+1. **Mount-only** — builds scrubber DOM inside `scrubGRef`: the dashed line, the tooltip pill (base rect + sheen/bevel overlay), and `.s-handle`, now a `<g>` holding the gold core, a domed highlight and a bevelled rim — so it is positioned by `transform: translate(x,0)`, not `cx`. Attaches `d3.drag()` to the SVG. Drag filter: `!event.target.closest('[data-book]')` so chip clicks don't start a drag. Click-without-drag (dx < 4px) toggles the scrubber on/off.
+   This effect re-runs whenever `onYearChange`'s identity changes, so it **clears `scrubG` first** (it used to stack a fresh line/pill/handle on every run — 5 copies on a cold load) and then calls the shared `placeScrubber(node, year)` helper, which effect 2 also uses; without that re-place a rebuild would leave a live scrubber blank at x=0 until the next year change.
 2. **`[timelineYear]`** — fast imperative update: moves the scrubber line/handle/tooltip without re-rendering everything.
 3. **`[timelineYear]` clipPath effect** — updates each `<rect data-bar-clip={id}>` width inside the `<defs>` to `fullWidth × progress`, making capsule bars expand in real-time in sync with timelineYear.
 4. **`[timelineYear, isPlaying]` book reveal effect** — hides/shows `<g data-book-group={id}>` wrappers. When a book's `dateRange[0]` is first crossed, triggers a D3 `transition('reveal')` (420 ms, easeCubicOut) animating `opacity 0→1` and `transform translate(0,-10)→translate(0,0)`. Uses `revealedBooks` ref to only animate newly-revealed books.
@@ -143,7 +144,9 @@ ViewBox per state (`VIEWBOXES`): `[0,0,1200,78]` for states 0/1, `[0,0,1200,150]
 
 `S3_CHIPS` (module-level IIFE): state-3 chip layout with per-row collision resolution — chip width `max(dateRange px, name.length×6.5+26)`, then a forward push-right pass, right-boundary clamp + backward push-left pass, left-boundary clamp + final push-right pass (the boundary clamps are interleaved with the passes deliberately; clamping after both passes reintroduces overlap at the right edge — 1 Ti/2 Ti). Prison epistles (Phil/Eph at AD 60–62 row 0, Col/Phm row 1) are the main cluster this resolves.
 
-Left-side section labels "TIMELINE" (centered over the bars/axis band) and "BOOKS" (centered in `y=78–210`) at `x=40` in Cinzel 7px `#7a8ab0`, separated by a `1px` rule at `y=SEP`.
+Left-side section labels "TIMELINE" (centered over the bars/axis band) and "EVENTS" (centered in `y=78–210`) at `x=40` in Cinzel, `var(--muted)`, separated by a `1px` rule at `y=SEP`.
+
+Year labels sit **below** the axis (`y = AXIS_Y + 12`), not above it: the state-0/1 lower flag-dot row occupies `y=44–52` and completely covered them at the old `y=54`. The scrub tooltip pill (`AXIS_Y+2 … +16`) does overlap them while scrubbing, which is fine — it shows the same year more precisely.
 
 Chip hover shows `name · date` in a pill tooltip (flips below the chip when the state's viewBox would clip it above). Chips are click targets for `onBookClick`; selection styling = gold stroke `#e9c86c` + boosted fill/stroke opacity.
 
@@ -195,6 +198,24 @@ Shared by PaulStopTrack and ChurchTrack. `buildStopLayout(journey)` returns:
 
 Constants: `STOP_MIN_W=24`, `STOP_GAP=2`, `STOP_MARGIN_X=8`, scale factor `1100`.
 
+### Timeline material system (`TimelineDefs.jsx` + `utils/timelineMaterial.js`)
+
+The panels get their tactility from CSS (`--glass-bg`, `--lip-out`), but SVG can't take a `box-shadow`, so the timeline's SVG surfaces rebuild the same ideas as paint servers and filters. `<TimelineDefs id="…" />` emits five, all keyed off the `id` prefix:
+
+- `{id}-sheen` — vertical face gradient, lit at the top falling to a base shadow (the glass)
+- `{id}-bevel` — vertical *stroke* gradient: bright top lip, dark bottom lip, two transparent stops at the midpoint (44%/56%) so the fade doesn't interpolate through a grey band
+- `{id}-dome` — radial sheen with an off-centre highlight, for round marks
+- `{id}-cast` — `feDropShadow`, lifts a mark off its track
+- `{id}-groove` — inner shadow (offset alpha → blur → `out` composite → flood), for tracks a raised mark sits in
+
+`mat(id)` returns the matching `url(#…)` ref strings; `bevelRect(rect)` shrinks a rect by `BEVEL_INSET` (0.6) so a bevel stroke sits *inside* the shape's own outline instead of doubling it. Both live in `src/utils/timelineMaterial.js` — keeping them out of the component file is what satisfies `react-refresh/only-export-components`.
+
+All light values come from CSS custom properties (`--sheen-hi/-mid/-lo`, `--bevel-hi/-hi-0/-lo-0/-lo`, `--groove-shadow`, `--cast-shadow`) read through `var()` inside gradient stops and `style={{ floodColor }}`, so the bevels invert for the parchment theme rather than staying dark. **Ids are document-scoped**: each SVG needs its own prefix (`pbw` overview, `tls` story row, `tlm` mini strip, `pst`, `pet`, `bt`), and ChurchTrack — which renders several instances at once — uses a per-instance `ct-${churchId}`.
+
+Where it's applied: capsule-bar tracks get `groove` (empty track reads as a cut groove, the clipped fill as a raised inlay); the overview's `[data-sheen]` rect carries *both* the sheen fill and the bevel stroke on `bevelRect(p)` geometry, so the dock magnification and the 4-state transition only morph one extra element; stop dots, event markers, church markers, letter bars, the mini strip, and the scrub knob all get sheen/dome + bevel + cast.
+
+**Raised vs recessed (CSS side):** `--rail-bg` + `inset 0 1px 0 var(--glass-shine)` marks raised chrome (`.timeline-bar`, `.tl-state-nav`, `.tl-mini-header`, `.tld-label-col`, `.ct-pills`, `.jstat-bar`); `--well-bg` + `--well-lip` marks recessed track wells (`.pst-scroll`, `.pet-scroll`, `.ct-track-scroll`, `.bt-scroll`, `.tl-story-wrap`). `.timeline-bar::after` lays a tiled `feTurbulence` grain (`--grain`, 140px, opacity 0.05) over the console — straight alpha, no blend mode, since `overlay`/`soft-light` cancel out against a surface this dark.
+
 ### PlayControls
 
 Collapsible panel rendered below `TimelineBar` as a sibling of `.app-body`. Default state is **collapsed** — only a small `.pc-toggle` tab is visible (18px pill with `border-radius: 0 0 8px 8px`, hanging below the timeline border). Clicking the tab expands the full card via a `max-height` CSS transition (`0 → 80px`, 0.28s cubic-bezier).
@@ -224,7 +245,8 @@ Below both view-mode sections, always visible: a thin `fp-layer-divider` border 
 
 ### Styles
 
-- `src/styles/tokens.css` — CSS custom properties for colors, fonts, journey colors (`--j1`–`--j-pst`), city colors
+- `src/styles/tokens.css` — CSS custom properties for colors, fonts, journey colors (`--j1`–`--j-pst`), city colors, the glass/lip system (`--glass-*`, `--pill-bg*`, `--lip-*`), and the timeline material tokens (`--well-bg`, `--well-lip`, `--rail-bg`, `--tip-bg`, `--sheen-*`, `--bevel-*`, `--groove-shadow`, `--cast-shadow`, `--grain`). Every one has a parchment counterpart under `[data-theme="light"]`
+- `src/utils/timelineMaterial.js` — `mat(id)` / `bevelRect(rect)` for the SVG material (see the Timeline material system section)
 - `src/index.css` — imports tokens, base reset, layout (`.app`, `.app-header`, `.app-body`, `.map-container`, `.timeline-bar`), all `fp-*` FilterPanel styles, all `bdp-*` BookDetailPanel styles, all `pc-*` PlayControls styles, all `tl-*` timeline detail styles, all `ct-*` church track styles including `@keyframes ctMarkerPulse` and `.ct-marker-pulse` (scale 1→1.8→1 over 600ms, `transform-box: fill-box`), `.city-tooltip` and child classes (`.city-tooltip__name`, `__modern`, `__desc`, `__ref`) for city and segment distance tooltips. `.map-container > div` and `.map-container > div > svg` replace the old `> svg` selectors since MapView now wraps its SVG in a container div.
 - `src/utils/stopLayout.js` — `buildStopLayout(journey)` shared utility for duration-proportional x layout
 - Google Fonts: Cinzel (display/headings), Cormorant Garamond (serif), Lora (body) — linked in `index.html`
