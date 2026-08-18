@@ -435,7 +435,7 @@ svg.jrs {
    orientation timeline pinned to the bottom.
    ══════════════════════════════════════════════════════════════════════════ */
 
-.gr .rd-scroll { padding-bottom: 54px; }
+.gr .rd-scroll { padding-bottom: 58px; }
 .gr .rd-col { padding-bottom: 8vh; }
 
 /* ── day header ── */
@@ -560,6 +560,10 @@ svg.jrs {
 /* ── reading sections ── */
 .gr-sec { padding: 5vh 0 3vh; }
 
+/* A four-Gospel citation can run to two lines; let the place name drop below it
+   instead of being squeezed into the remaining sliver. */
+.gr-sec .rd-sec-head { flex-wrap: wrap; gap: 4px 10px; }
+
 .gr-note {
   font-family: var(--font-serif);
   font-style: italic;
@@ -647,13 +651,15 @@ svg.jrs {
 }
 .gr-error { color: #c97a7a; }
 
-/* ── orientation timeline ── */
+/* ── orientation timeline ──
+   Two rows: AD is the true chronological axis, DAYS is an evenly spaced picker.
+   See ReaderTimeline.jsx for why they can't be the same row. */
 .gr-timeline {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 54px;
+  height: 58px;
   z-index: 6;
   background: var(--rail-bg), var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -671,12 +677,87 @@ svg.jrs {
 }
 
 .gr-tl-tick { cursor: pointer; }
-.gr-tl-tick:hover line { stroke: var(--accent); stroke-opacity: 1; }
+.gr-tl-tick:hover line { stroke: var(--accent); }
+
+.gr-tl-rowlabel {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  letter-spacing: 1px;
+  fill: var(--muted);
+  pointer-events: none;
+}
+
+.gr-tl-year {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  fill: var(--muted);
+  pointer-events: none;
+}
+
+/* Hover pill for the day rail — sits above the strip, glass like the panels */
+.gr-tl-tip {
+  position: absolute;
+  bottom: calc(100% - 2px);
+  transform: translateX(-50%);
+  max-width: min(46ch, 60vw);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 11px;
+  background: var(--tip-bg);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: 5px;
+  box-shadow: var(--lip-out), 0 6px 18px rgba(0, 0, 0, 0.4);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 2;
+}
+
+.gr-tl-tip-n {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.gr-tl-tip-cite {
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  color: var(--cream-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Shown until the reader uses the rail once, then gone for good. Floats above
+   the strip rather than inside it — at the right-hand end it would otherwise
+   sit on top of the last few day ticks. */
+.gr-tl-hint {
+  position: absolute;
+  right: 14px;
+  bottom: calc(100% + 5px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--accent-dim);
+  pointer-events: none;
+  animation: grHintIn 0.5s ease both 0.6s;
+}
+
+@keyframes grHintIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 0.9; transform: translateY(0); }
+}
 
 @media (max-width: 768px) {
   .gr-dayhead { padding-top: 5vh; }
   .gr-title { font-size: 20px; }
-  .gr-timeline { height: 44px; }
-  .gr .rd-scroll { padding-bottom: 44px; }
+  .gr-timeline { height: 50px; }
+  .gr .rd-scroll { padding-bottom: 50px; }
   .gr-pager { flex-wrap: wrap; }
 }
