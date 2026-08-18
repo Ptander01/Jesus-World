@@ -43,7 +43,11 @@ const HINT_KEY = 'jw-gospels-tl-hint'
  * every day an equal, reachable target.
  */
 export default function ReaderTimeline({ days, activeDay, year, onPickDay }) {
-  const [hover, setHover] = useState(null)
+  // One tip for both rows. Note there are no <title> elements anywhere in this
+  // SVG: <title> is what draws the browser's own unstyled tooltip, which either
+  // duplicated this pill or replaced it entirely depending on the row.
+  // Accessible names come from aria-label instead, which is silent visually.
+  const [tip, setTip] = useState(null)   // { x, label, sub, dayIdx }
   const [hintDone, setHintDone] = useState(
     () => typeof localStorage !== 'undefined' && localStorage.getItem(HINT_KEY) === '1'
   )
@@ -63,21 +67,22 @@ export default function ReaderTimeline({ days, activeDay, year, onPickDay }) {
     onPickDay?.(days[i].day)
   }
 
-  const hovered = hover == null ? null : days[hover]
+  const clear = key => setTip(t => (t && t.key === key ? null : t))
 
   return (
     <div className="gr-timeline">
       {/* Tooltip is HTML, not SVG: the strip stretches with preserveAspectRatio
           ="none", which would squash proportional text, and this way the pill
-          reuses the same glass/lip tokens as the rest of the chrome. */}
-      {hovered && (
+          reuses the same glass/lip tokens as the rest of the chrome. Clamped off
+          the edges so a long citation near either end stays on screen. */}
+      {tip && (
         <div
           className="gr-tl-tip"
-          style={{ left: `${(dayX(hover) / TW) * 100}%` }}
+          style={{ left: `${Math.min(Math.max((tip.x / TW) * 100, 12), 88)}%` }}
           role="presentation"
         >
-          <span className="gr-tl-tip-n">Day {hover + 1}</span>
-          <span className="gr-tl-tip-cite">{hovered.cite.replace(/ \| /g, ' · ')}</span>
+          <span className="gr-tl-tip-n">{tip.label}</span>
+          <span className="gr-tl-tip-cite">{tip.sub}</span>
         </div>
       )}
 
@@ -94,8 +99,16 @@ export default function ReaderTimeline({ days, activeDay, year, onPickDay }) {
           const on = year != null && year >= p.dr[0] && year <= p.dr[1]
           const bev = bevelRect({ x: x1, y: BAND_Y, w: x2 - x1, h: BAND_H, rx: 4 })
           return (
-            <g key={p.id}>
-              <title>{p.name} · AD {p.dr[0]}–{p.dr[1]}</title>
+            <g key={p.id}
+              aria-label={`${p.name}, AD ${p.dr[0]} to ${p.dr[1]}`}
+              onMouseEnter={() => setTip({
+                key: p.id,
+                x: (x1 + x2) / 2,
+                label: p.name,
+                sub: `AD ${p.dr[0]}–${p.dr[1]}`,
+              })}
+              onMouseLeave={() => clear(p.id)}
+            >
               <rect x={x1} y={BAND_Y} width={x2 - x1} height={BAND_H} rx={4}
                 fill={p.color} fillOpacity={on ? 0.62 : 0.16}
                 stroke={p.dashed ? p.color : 'none'}
@@ -144,15 +157,17 @@ export default function ReaderTimeline({ days, activeDay, year, onPickDay }) {
         {days.map((d, i) => {
           const x = dayX(i)
           const on = i === activeIdx
-          const hot = i === hover
+          const hot = tip?.key === d.day
+          const cite = d.cite.replace(/ \| /g, ' · ')
           return (
             <g key={d.day}
               className="gr-tl-tick"
+              role="button"
+              aria-label={`Day ${i + 1}: ${cite}`}
               onClick={() => pick(i)}
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(h => (h === i ? null : h))}
+              onMouseEnter={() => setTip({ key: d.day, x, label: `Day ${i + 1}`, sub: cite })}
+              onMouseLeave={() => clear(d.day)}
             >
-              <title>Day {i + 1} · {d.cite.replace(/ \| /g, ' · ')}</title>
               {/* Full-height hit target — the tick itself is 1px wide */}
               <rect x={x - step / 2} y={DAY_Y - 3} width={step} height={DAY_H + 6} fill="transparent" />
               <line x1={x} x2={x} y1={DAY_Y + 2} y2={DAY_Y + DAY_H - 2}
