@@ -2608,3 +2608,13 @@ body {
 }
 
 [data-theme="light"] .app-header h1 { color: var(--accent); }
+
+/* Place track lit from the other end of the hover link — the map's city dot, a
+   stop in the STOPS row, or the place's own pill. */
+.ct-track-scroll--on {
+  background: color-mix(in srgb, var(--accent) 7%, var(--well-bg));
+}
+.ct-pill--hot:not(.ct-pill--active) {
+  border-color: rgba(201, 168, 76, 0.45);
+  color: var(--cream);
+}

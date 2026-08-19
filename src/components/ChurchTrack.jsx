@@ -10,7 +10,7 @@ const SVG_H   = 56
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
-export default function ChurchTrack({ journey, churchId, events, timelineYear }) {
+export default function ChurchTrack({ journey, churchId, events, timelineYear, onCityHover, hoveredCityId }) {
   const [hoveredId, setHoveredId]   = useState(null)
   const [pulsing, setPulsing]       = useState(new Set())
   const prevYearRef                  = useRef(null)
@@ -64,8 +64,18 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
   const churchName = cityById[churchId]?.name
     ?? (churchId.charAt(0).toUpperCase() + churchId.slice(1))
 
+  // Every event on this track is at the same place (all 55 churchEvents have
+  // cityId === churchId), so the hover target is the whole row rather than each
+  // marker. Reciprocal: hovering the city on the map, or its stop in the STOPS
+  // row, lights this track back.
+  const cityHot = Boolean(hoveredCityId) && hoveredCityId === churchId
+
   return (
-    <div className="ct-track-scroll">
+    <div
+      className={`ct-track-scroll${cityHot ? ' ct-track-scroll--on' : ''}`}
+      onMouseEnter={() => onCityHover?.(churchId)}
+      onMouseLeave={() => onCityHover?.(null)}
+    >
       <svg width={totalWidth} height={SVG_H} style={{ display: 'block' }}>
         <TimelineDefs id={defsId} />
 
@@ -73,14 +83,15 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
         <line
           x1={STOP_MARGIN_X} x2={totalWidth - STOP_MARGIN_X}
           y1={TRACK_Y} y2={TRACK_Y}
-          stroke="#c9a84c" strokeWidth={1} strokeOpacity={0.15} strokeDasharray="4 4"
+          stroke="#c9a84c" strokeWidth={1} strokeOpacity={cityHot ? 0.4 : 0.15}
+          strokeDasharray="4 4"
         />
 
         {/* Church name */}
         <text
           x={STOP_MARGIN_X} y={TRACK_Y - 10}
           fontFamily="Cinzel, serif" fontSize={11}
-          letterSpacing={2} fill="#7a6430"
+          letterSpacing={2} fill={cityHot ? 'var(--accent)' : 'var(--accent-dim)'}
           style={{ userSelect: 'none', pointerEvents: 'none' }}
         >
           {churchName.toUpperCase()}
