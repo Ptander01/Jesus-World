@@ -3,17 +3,10 @@ import journeyData from '../data/gospels-data.json'
 import { buildStopLayout, STOP_MARGIN_X } from '../utils/stopLayout'
 import TimelineDefs from './TimelineDefs'
 import { mat } from '../utils/timelineMaterial'
+import { categoryOf } from '../lib/eventCategory.js'
 
 const TRACK_Y = 28   // vertical center of SVG
 const SVG_H   = 56
-
-// founding → gold diamond; letter-received → teal diamond; support → gold circle; leadership → purple circle
-const EVENT_CFG = {
-  founding:          { shape: 'diamond', color: '#c9a84c', size: 8  },
-  'letter-received': { shape: 'diamond', color: '#4A7C6F', size: 7  },
-  support:           { shape: 'circle',  color: '#c9a84c', size: 5  },
-  leadership:        { shape: 'circle',  color: '#7B6FA0', size: 5  },
-}
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
@@ -96,7 +89,7 @@ export default function ChurchTrack({ journey, churchId, events, timelineYear })
         {/* Event markers */}
         {events.map((ev, i) => {
           const cx  = xFromYear(ev.year)
-          const cfg = EVENT_CFG[ev.type] ?? EVENT_CFG['letter-received']
+          const cfg = categoryOf(ev)
           const above   = i % 2 === 0
           const hovered = hoveredId === ev.id
 
