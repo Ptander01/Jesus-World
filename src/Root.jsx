@@ -6,7 +6,6 @@ import HeroLanding from './components/HeroLanding.jsx'
 // hash check rather than a router dependency. Lazy, to keep the charts out of the
 // main map bundle.
 const VisualsDemo = lazy(() => import('./components/VisualsDemo.jsx'))
-const ReadingMode = lazy(() => import('./components/ReadingMode.jsx'))
 const GospelReader = lazy(() => import('./components/GospelReader.jsx'))
 
 const routeOf = () => window.location.hash.replace(/^#/, '')
@@ -41,18 +40,20 @@ export default function Root() {
       </Suspense>
     )
   }
-  if (route === '/read') {
+  // The reader: the whole plan, with the curated Passion Week scenes folded into
+  // the days they belong to. `/read` was that material's own route before the
+  // merge; it now lands on the day the week opens so old links still work.
+  const gospels = /^\/(?:gospels(?:\/(\d+))?|read)$/.exec(route)
+  if (gospels) {
+    const day = gospels[1] ? Number(gospels[1]) : (route === '/read' ? 311 : null)
     return (
       <Suspense fallback={null}>
-        <ReadingMode theme={theme} lens={lens} onExit={() => { window.location.hash = '' }} />
-      </Suspense>
-    )
-  }
-  // The whole-Gospels plan, distinct from /read's curated Passion Week essay.
-  if (route === '/gospels') {
-    return (
-      <Suspense fallback={null}>
-        <GospelReader theme={theme} lens={lens} onExit={() => { window.location.hash = '' }} />
+        <GospelReader
+          theme={theme}
+          lens={lens}
+          initialDay={day}
+          onExit={() => { window.location.hash = '' }}
+        />
       </Suspense>
     )
   }

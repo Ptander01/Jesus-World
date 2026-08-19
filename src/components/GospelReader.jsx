@@ -4,6 +4,7 @@ import JerusalemDiagram from './JerusalemDiagram.jsx'
 import ReaderTimeline from './ReaderTimeline.jsx'
 import planIndex from '../data/reading-plan/index.json'
 import journeyData from '../data/gospels-data.json'
+import { attestationLabel } from '../lib/attestation.js'
 
 // Per-day verse text is lazy — the whole plan is ~400KB of scripture and you read
 // one day at a time. Vite turns this glob into 39 separate chunks.
@@ -18,8 +19,8 @@ const SITE_PROSE_NAME = {
   'upper-room': 'The Upper Room', gethsemane: 'Gethsemane', golgotha: 'Golgotha',
   'garden-tomb': 'The Garden Tomb', bethphage: 'Bethphage', bethany: 'Bethany',
 }
-const placeName = s =>
-  s.site ? (SITE_PROSE_NAME[s.site] ?? cityName(s.cityId)) : (s.cityId ? cityName(s.cityId) : null)
+const placeOf = o =>
+  o?.site ? (SITE_PROSE_NAME[o.site] ?? cityName(o.cityId)) : (o?.cityId ? cityName(o.cityId) : null)
 
 function loadDay(day) {
   const loader = DAY_FILES[`../data/reading-plan/day-${day}.json`]
@@ -27,37 +28,82 @@ function loadDay(day) {
   return loader().then(m => m.default ?? m)
 }
 
+const verseKey = (book, v) => `${book} ${v.c}:${v.v}`
+
+/**
+ * A curated scene — the hand-written prose that used to live in its own reader
+ * at /read, now set inside the full text at the verse it belongs to. Reads as
+ * commentary, deliberately not as scripture: no verse numbers, its own rule.
+ */
+function Scene({ scene, on, refCb }) {
+  return (
+    <aside className={`gr-scene${on ? ' gr-scene--on' : ''}`} ref={refCb}>
+      <div className="gr-scene-head">
+        {scene.day && <span className="gr-scene-day">{scene.day}</span>}
+        <h3 className="gr-scene-title">{scene.title}</h3>
+      </div>
+      <p className="gr-scene-prose">{scene.prose}</p>
+      <div className="gr-scene-foot">
+        <span className="gr-scene-ref">{scene.ref}</span>
+        {scene.gospels?.length > 0 && (
+          <span className="rd-attest" title={scene.gospels.join(', ')}>
+            Told in {attestationLabel(scene.gospels)}
+          </span>
+        )}
+      </div>
+    </aside>
+  )
+}
+
 /** Verse numbers show the chapter too whenever the chapter turns mid-passage. */
-function Passage({ passage, showCite }) {
+function Passage({ passage, showCite, sceneAt, sectionId, register, activeKey }) {
   const rows = passage.verses.map((v, i) => ({
     ...v,
     turned: i === 0 || v.c !== passage.verses[i - 1].c,
+    scene: sceneAt.get(`${sectionId}|${verseKey(passage.book, v)}`) ?? null,
   }))
   return (
     <div className="gr-passage">
       {showCite && <div className="gr-passage-cite">{passage.cite}</div>}
       {rows.map(v => (
-        <p className="rd-v" key={`${v.c}:${v.v}`}>
-          <span className={`rd-vn${v.turned ? ' rd-vn--chapter' : ''}`}>
-            {v.turned ? `${v.c}:${v.v}` : v.v}
-          </span>
-          {v.t}
-        </p>
+        <div key={`${v.c}:${v.v}`}>
+          {v.scene && (
+            <Scene
+              scene={v.scene.scene}
+              on={v.scene.key === activeKey}
+              refCb={el => register(v.scene.key, el)}
+            />
+          )}
+          <p className="rd-v">
+            <span className={`rd-vn${v.turned ? ' rd-vn--chapter' : ''}`}>
+              {v.turned ? `${v.c}:${v.v}` : v.v}
+            </span>
+            {v.t}
+          </p>
+        </div>
       ))}
     </div>
   )
 }
 
 /**
- * The whole-Gospels reader: the 39-day chronological plan, a day at a time.
+ * The reader: the whole four Gospels as a 39-day chronological plan, a day at a
+ * time, with the map and timeline tracking where you are.
  *
- * Sibling to ReadingMode rather than a replacement for it — that one is a
- * curated essay on the last week with written prose and site-level pins; this
- * one is the full text. They share the reading-pane shell (`rd-*`) and the
- * map-follows-the-reading machinery, and nothing else.
+ * The curated Passion Week material is folded in rather than living at its own
+ * route — its scenes are attached at build time to the reading they fall inside
+ * (see scripts/build-reading-plan.mjs) and rendered inline here. That also makes
+ * the map finer-grained exactly where it used to be worst: day 324 runs 103
+ * verses through Emmaus, Thomas, the shore, the commission and the ascension,
+ * and now moves through all five instead of sitting on one "Jerusalem" pin.
  */
-export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
-  const [dayIdx, setDayIdx] = useState(0)
+export default function GospelReader({ theme = 'dark', lens = 'All', initialDay = null, onExit }) {
+  const startIdx = useMemo(() => {
+    const i = DAYS.findIndex(d => d.day === initialDay)
+    return i >= 0 ? i : 0
+  }, [initialDay])
+
+  const [dayIdx, setDayIdx] = useState(startIdx)
   // Day data is stamped with the day it belongs to, so switching days derives an
   // empty pane instead of needing a synchronous reset inside the loading effect.
   const [loaded, setLoaded] = useState(null)
@@ -65,7 +111,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
   const [indexOpen, setIndexOpen] = useState(false)
 
   const scrollerRef = useRef(null)
-  const sectionRefs = useRef([])
+  const stopRefs = useRef([])
   const panToCityRef = useRef(null)
   const lastPannedRef = useRef(null)
 
@@ -73,6 +119,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
   const fresh = loaded?.day === meta.day
   const day = fresh ? loaded.data : null
   const error = fresh ? loaded.error : null
+  const sections = useMemo(() => day?.sections ?? [], [day])
 
   // Load the active day, and prefetch the next one so paging forward is instant.
   useEffect(() => {
@@ -85,11 +132,52 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
     return () => { cancelled = true }
   }, [meta.day, dayIdx])
 
-  // New day starts at the top.
+  // Keep the URL shareable. replaceState doesn't fire hashchange, so this can't
+  // loop back through the router.
   useEffect(() => {
-    sectionRefs.current = []
+    window.history.replaceState(null, '', `#/gospels/${meta.day}`)
+  }, [meta.day])
+
+  useEffect(() => {
+    stopRefs.current = []
     scrollerRef.current?.scrollTo({ top: 0 })
   }, [meta.day])
+
+  /**
+   * Every place the reading can "be": each section, plus each curated scene, in
+   * document order. Scene order has to come from walking the passages — on day
+   * 324 the scenes' own order (Emmaus, Thomas, shore, commission, ascension) is
+   * narrative, while the text runs Matthew, then Luke, then John.
+   */
+  const { stops, sceneAt, indexOfKey } = useMemo(() => {
+    const stops = []
+    const sceneAt = new Map()
+    sections.forEach((s, si) => {
+      stops.push({ key: `sec-${s.id}`, si, cityId: s.cityId, site: s.site, year: s.year })
+      const pending = new Map()
+      for (const sc of s.scenes ?? []) {
+        if (sc.anchor) pending.set(verseKey(sc.anchor.book, { c: sc.anchor.c, v: sc.anchor.v }), sc)
+      }
+      for (const p of s.passages) {
+        for (const v of p.verses) {
+          const k = verseKey(p.book, v)
+          const sc = pending.get(k)
+          if (!sc) continue
+          const key = `scene-${s.id}-${sc.id}`
+          stops.push({ key, si, cityId: sc.cityId, site: sc.site, year: s.year, scene: sc })
+          sceneAt.set(`${s.id}|${k}`, { scene: sc, key })
+          pending.delete(k)
+        }
+      }
+    })
+    const indexOfKey = new Map(stops.map((s, i) => [s.key, i]))
+    return { stops, sceneAt, indexOfKey }
+  }, [sections])
+
+  const register = useCallback((key, el) => {
+    const i = indexOfKey.get(key)
+    if (i != null) stopRefs.current[i] = el
+  }, [indexOfKey])
 
   const measure = useCallback(() => {
     const scroller = scrollerRef.current
@@ -97,10 +185,13 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
     const line = scroller.getBoundingClientRect().top + scroller.clientHeight * 0.35
     let best = 0
     let bestDist = Infinity
-    sectionRefs.current.forEach((el, i) => {
+    stopRefs.current.forEach((el, i) => {
       if (!el) return
       const r = el.getBoundingClientRect()
-      const dist = Math.abs(r.top + r.height / 2 - line)
+      // A scene is a short block and a section is a long one, so compare against
+      // the top edge rather than the centre — otherwise a tall section always
+      // wins on proximity and the scenes never become active.
+      const dist = Math.abs(r.top - line)
       if (dist < bestDist) { bestDist = dist; best = i }
     })
     setActive(prev => (prev === best ? prev : best))
@@ -118,26 +209,29 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
     }
   }, [measure, day])
 
-  const sections = day?.sections ?? []
-  const section = sections[active]
-  const isCloseUp = Boolean(section?.site)
+  const stop = stops[active] ?? stops[0] ?? null
+  const isCloseUp = Boolean(stop?.site)
+  // The active stop is often a scene *inside* a section, so "which section is lit"
+  // is its parent, not a key match — otherwise reading a scene dims the very
+  // block you are reading down to .34.
+  const activeSi = stop?.si ?? -1
+  const activeKey = stop?.key ?? null
 
-  // Hold the last real position: several sections legitimately have no atlas pin
+  // Hold the last real position: several readings legitimately have no atlas pin
   // (the prologue, the Machaerus execution), and jumping the map to nowhere is
   // worse than leaving it where the story last was.
   useEffect(() => {
-    const cityId = section?.cityId
+    const cityId = stop?.cityId
     if (!cityId || lastPannedRef.current === cityId) return
     lastPannedRef.current = cityId
     panToCityRef.current?.(cityId)
-  }, [section])
+  }, [stop])
 
   const goDay = useCallback(d => {
     const i = DAYS.findIndex(x => x.day === d)
     if (i >= 0) { setDayIdx(i); setIndexOpen(false) }
   }, [])
 
-  // ← / → page between days when focus isn't in a control
   useEffect(() => {
     const onKey = e => {
       if (e.target.closest?.('input, textarea, button')) return
@@ -148,8 +242,9 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [dayIdx])
 
-  const mapYear = section?.year ?? meta.year
+  const mapYear = stop?.year ?? meta.year
   const totalVerses = useMemo(() => DAYS.reduce((a, d) => a + d.verseCount, 0), [])
+  const sceneCount = sections.reduce((a, s) => a + (s.scenes?.length ?? 0), 0)
 
   return (
     <div className="rd gr" data-theme={theme}>
@@ -159,7 +254,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
             activeJourneys={ALL_PERIODS}
             selectedBookId={null}
             timelineYear={mapYear}
-            hoveredCityId={section?.cityId ?? null}
+            hoveredCityId={stop?.cityId ?? null}
             onCityHover={() => {}}
             onCityClick={() => {}}
             provincesGeo={null}
@@ -168,7 +263,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
             detailJourneyId={null}
             onMapReady={fn => {
               panToCityRef.current = fn
-              const first = DAYS[0].cityIds[0]
+              const first = DAYS[startIdx].cityIds[0]
               if (first) fn(first)
             }}
             theme={theme}
@@ -176,7 +271,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
           />
         </div>
         <div className={`rd-map-layer${isCloseUp ? ' rd-map-layer--on' : ''}`}>
-          <JerusalemDiagram activeSite={section?.site ?? null} />
+          <JerusalemDiagram activeSite={stop?.site ?? null} />
         </div>
         <div className={`rd-map-scrim${isCloseUp ? ' rd-map-scrim--closeup' : ''}`} />
       </div>
@@ -201,6 +296,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
             <p className="gr-meta">
               {meta.verseCount} verses
               {meta.cityIds.length > 0 && <> · {meta.cityIds.map(cityName).join(' · ')}</>}
+              {sceneCount > 0 && <> · {sceneCount} annotated {sceneCount === 1 ? 'scene' : 'scenes'}</>}
             </p>
           </header>
 
@@ -224,27 +320,37 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
           {error && <p className="gr-error">Couldn’t load day {meta.day}: {error}</p>}
           {!day && !error && <p className="gr-loading">Loading day {meta.day}…</p>}
 
-          {sections.map((s, i) => (
-            <section
-              key={s.id}
-              ref={el => { sectionRefs.current[i] = el }}
-              className={`rd-sec gr-sec${i === active ? ' rd-sec--on' : ''}`}
-            >
-              <div className="rd-sec-head">
-                <span className="rd-day">{s.cite}</span>
-                {placeName(s) && <span className="rd-place">{placeName(s)}</span>}
-              </div>
-              {s.note && <p className="gr-note">{s.note}</p>}
-              <blockquote className="rd-verses">
-                {s.passages.map(p => (
-                  <Passage key={p.cite} passage={p} showCite={s.passages.length > 1} />
-                ))}
-              </blockquote>
-            </section>
-          ))}
+          {sections.map((s, si) => {
+            return (
+              <section
+                key={s.id}
+                ref={el => register(`sec-${s.id}`, el)}
+                className={`rd-sec gr-sec${si === activeSi ? ' rd-sec--on' : ''}`}
+              >
+                <div className="rd-sec-head">
+                  <span className="rd-day">{s.cite}</span>
+                  {placeOf(s) && <span className="rd-place">{placeOf(s)}</span>}
+                </div>
+                {s.note && <p className="gr-note">{s.note}</p>}
+                <blockquote className="rd-verses">
+                  {s.passages.map(p => (
+                    <Passage
+                      key={p.cite}
+                      passage={p}
+                      showCite={s.passages.length > 1}
+                      sceneAt={sceneAt}
+                      sectionId={s.id}
+                      register={register}
+                      activeKey={activeKey}
+                    />
+                  ))}
+                </blockquote>
+              </section>
+            )
+          })}
 
           {day?.extra && (
-            <section className="rd-sec gr-sec gr-sec--disputed">
+            <section className="rd-sec gr-sec gr-sec--disputed rd-sec--on">
               <div className="rd-sec-head">
                 <span className="rd-day">{day.extra.cite}</span>
                 <span className="rd-place gr-disputed-tag">Disputed text</span>
@@ -256,7 +362,15 @@ export default function GospelReader({ theme = 'dark', lens = 'All', onExit }) {
               </p>
               <blockquote className="rd-verses">
                 {day.extra.passages.map(p => (
-                  <Passage key={p.cite} passage={p} showCite={day.extra.passages.length > 1} />
+                  <Passage
+                    key={p.cite}
+                    passage={p}
+                    showCite={day.extra.passages.length > 1}
+                    sceneAt={sceneAt}
+                    sectionId="extra"
+                    register={register}
+                    activeKey={activeKey}
+                  />
                 ))}
               </blockquote>
             </section>
