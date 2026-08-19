@@ -342,14 +342,23 @@ export default function MapView({
   const [segmentTip,    setSegmentTip]    = useState(null)  // { from, to, km, x, y }
 
 
-  // 50m atlas ships in the bundle for first paint; 10m (~3MB) lazy-loads
-  // during idle and swaps in for crisper Aegean coastlines.
-  const [hiAtlas, setHiAtlas] = useState(null)
+  // 50m atlas ships in the bundle for first paint; a Levant-cropped 10m basemap
+  // lazy-loads during idle and swaps in for crisper coastlines.
+  //
+  // The crop matters for more than filesize. The full 10m land set draws as a
+  // path of ~8.1 million characters whose bbox is 78540 × 75387 against a
+  // 1200 × 680 viewBox — ~99.99% of it off-frame. Because `land`/`borders` are
+  // in the render effect's deps and that effect opens with selectAll('*').remove(),
+  // the swap tore down and rebuilt the entire map, and rasterising that path made
+  // the rebuild visible for seconds: bare sea colour where the land should be,
+  // which read as land and sea inverted. Cropped, the swap is imperceptible.
+  // See scripts/crop-basemap.mjs; regenerate with `node scripts/crop-basemap.mjs`.
+  const [hiBasemap, setHiBasemap] = useState(null)
   useEffect(() => {
     let cancelled = false
     const load = () =>
-      import('world-atlas/countries-10m.json')
-        .then(m => { if (!cancelled) setHiAtlas(m.default) })
+      import('../data/basemap-levant.json')
+        .then(m => { if (!cancelled) setHiBasemap(m.default ?? m) })
         .catch(() => {}) // 50m stays if the fetch fails
     const ric = window.requestIdleCallback
     const id = ric ? ric(load, { timeout: 8000 }) : setTimeout(load, 3000)
@@ -359,14 +368,17 @@ export default function MapView({
     }
   }, [])
 
-  const atlas = hiAtlas ?? countries50m
+  // The cropped basemap ships as plain GeoJSON, already rewound at build time —
+  // no topojson.feature/mesh and no runtime rewind on that path.
   const land = useMemo(
-    () => rewindRings(topojson.feature(atlas, atlas.objects.land)),
-    [atlas]
+    () => hiBasemap?.land
+      ?? rewindRings(topojson.feature(countries50m, countries50m.objects.land)),
+    [hiBasemap]
   )
   const borders = useMemo(
-    () => topojson.mesh(atlas, atlas.objects.countries, (a, b) => a !== b),
-    [atlas]
+    () => hiBasemap?.borders
+      ?? topojson.mesh(countries50m, countries50m.objects.countries, (a, b) => a !== b),
+    [hiBasemap]
   )
   // Gospels theatre: from Sidon down to Bethlehem, Emmaus across to Mt Hermon —
   // a tall, narrow ~200 km strip, so the scale is far higher than Paul's basin.
