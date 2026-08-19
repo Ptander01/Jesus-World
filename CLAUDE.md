@@ -99,7 +99,7 @@ Four separate `useEffect` hooks:
 4. **`[hoveredCityId]` glow effect** — imperatively finds the `.city-dot[data-city=hoveredCityId]`, raises it, applies `filter: url(#city-glow)` and gold stroke; clears glow on all other dots. Driven by `hoveredCityId` from App state, which is set by PaulStopTrack stop hover (timeline → map link).
 
 `applyZoomStyling` is a module-level function shared by both effects. All labels scale inversely with k so they hold a constant screen size:
-- Province labels: `font-size = 9/k`
+- Province labels: `font-size = 15/k`, `letter-spacing 1.6/k`, ruler sublabel `11/k` at `y0 + 16/k`. They were 9px/7px at 0.3/0.24 fill-opacity, rendering ~6.8 screen px — *smaller* than the tier-1 city labels sitting inside them. Region names now sit above the city labels and are letterspaced, the usual treatment for an area label; opacity and halo went up too, since low contrast was hurting as much as the size.
 - Tier-1 city labels: `font-size = 13/k` (base 13px)
 - Tier-2 city labels: `font-size = 11/k`, visible at k ≥ 2
 - Tier-3 city labels: `font-size = 9/k`, visible at k ≥ 3.5
@@ -170,8 +170,6 @@ A fourth row, **LETTERS**, was removed: it rendered `journeyData.books`, which i
 The row was called **CHURCHES**; all 16 ids are city ids, and several (Mount Hermon, Gethsemane, Bethany-beyond-Jordan) are not cities at all, so **PLACES** is the honest label. The EVENTS legend also advertised "Letter written by Paul" and "Arrest or imprisonment" — `paulEvents` only carries `major` and `minor`, so neither marker could ever render.
 
 Receives `timelineYear`, `onCityHover` and `hoveredCityId` from `TimelineBar` and passes all three to `PaulStopTrack`, `PaulEventTrack` and `ChurchTrack`, driving the stop highlight, the event pulse animations, and the place-track highlight. Hovering a stop, an event, a place pill or a place track sets `hoveredCityId` in App; a `hoveredCityId` arriving from anywhere else lights the matching place track (`.ct-track-scroll--on`) and pill (`.ct-pill--hot`) back. All 55 `churchEvents` have `cityId === churchId`, so a place track hovers as one row rather than per marker.
-
-> **Known break (pre-existing):** the *map* end of that link does not fire. MapView's `[hoveredCityId]` effect (`.city-dot` → `filter: url(#city-glow)` + gold stroke) never runs — verified by setting a `filter` attribute on a dot by hand and watching it survive a full hover cycle, which is impossible if the effect had executed, since its `else` branch nulls `filter` on every non-hovered dot. This affects every source equally, including `PaulStopTrack`, and predates the place-track wiring. The map's own dot `mouseover` still shows the `.city-tooltip` (that is local `tooltipCity` state), which is why the break is easy to miss.
 
 **Scroll sync:** `TimelineDetail` holds `bodyRef` on `.tl-detail-body` and a `syncingRef` flag. A `useEffect` (dependency: `activeChurchTracks`) queries `body.querySelectorAll('.pst-scroll, .ct-track-scroll')` after each render, attaches `scroll` listeners to all matched containers, and syncs `scrollLeft` across the rest on each event. `requestAnimationFrame` resets `syncingRef` after each sync batch to prevent feedback loops without blocking natural scroll events.
 

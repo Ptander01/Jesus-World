@@ -151,9 +151,10 @@ function normalizeProvinceName(rawName) {
 function applyZoomStyling(mapGEl, k) {
   const g = d3.select(mapGEl)
   // Labels hold constant screen size (1/k); halo width tracks the font
-  g.selectAll('.province-label').attr('font-size', 9 / k).attr('stroke-width', 2.4 / k)
-  g.selectAll('.province-sub').attr('font-size', 7 / k).attr('stroke-width', 2 / k)
-    .attr('y', function () { return +this.dataset.y0 + 11 / k })
+  g.selectAll('.province-label').attr('font-size', 15 / k).attr('stroke-width', 3.4 / k)
+    .attr('letter-spacing', 1.6 / k)
+  g.selectAll('.province-sub').attr('font-size', 11 / k).attr('stroke-width', 2.8 / k)
+    .attr('y', function () { return +this.dataset.y0 + 16 / k })
   g.selectAll('.label-t1').attr('font-size', 13 / k).attr('stroke-width', 3 / k)
   g.selectAll('.label-t2').attr('font-size', 11 / k).attr('stroke-width', 2.6 / k).attr('opacity', k >= 2   ? 0.85 : 0)
   g.selectAll('.label-t3').attr('font-size',  9 / k).attr('stroke-width', 2.2 / k).attr('opacity', k >= 3.5 ? 0.75 : 0)
@@ -639,12 +640,17 @@ export default function MapView({
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
           .attr('font-family', 'Cinzel, serif')
-          .attr('font-size', 9 / kRef.current)
+          .attr('font-size', 15 / kRef.current)
+          .attr('letter-spacing', 1.6 / kRef.current)
           .attr('fill', isLight ? '#6a5830' : '#c9a84c')
-          .attr('fill-opacity', isLight ? 0.45 : 0.3)
+          // Region names were 9px at 0.3 fill-opacity, rendering ~6.8 screen px —
+          // smaller than the city labels sitting inside them, which is backwards.
+          // Now set above tier-1 cities and letterspaced, the usual treatment for
+          // an area label; the opacity was hurting as much as the size.
+          .attr('fill-opacity', isLight ? 0.66 : 0.6)
           .attr('paint-order', 'stroke')
           .attr('stroke', haloColor)
-          .attr('stroke-opacity', 0.4)
+          .attr('stroke-opacity', 0.6)
           .attr('stroke-linejoin', 'round')
           .text(feature.properties.name)
         // Ruler sublabel — the AD 29–33 political reality under the region name
@@ -653,17 +659,17 @@ export default function MapView({
             .attr('class', 'province-sub')
             .attr('x', centroid[0])
             .attr('data-y0', centroid[1])
-            .attr('y', centroid[1] + 11 / kRef.current)
+            .attr('y', centroid[1] + 16 / kRef.current)
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'middle')
             .attr('font-family', 'Cormorant Garamond, serif')
             .attr('font-style', 'italic')
-            .attr('font-size', 7 / kRef.current)
+            .attr('font-size', 11 / kRef.current)
             .attr('fill', isLight ? '#6a5830' : '#c9a84c')
-            .attr('fill-opacity', isLight ? 0.36 : 0.24)
+            .attr('fill-opacity', isLight ? 0.52 : 0.46)
             .attr('paint-order', 'stroke')
             .attr('stroke', haloColor)
-            .attr('stroke-opacity', 0.35)
+            .attr('stroke-opacity', 0.55)
             .attr('stroke-linejoin', 'round')
             .text(feature.properties.ruler)
         }
