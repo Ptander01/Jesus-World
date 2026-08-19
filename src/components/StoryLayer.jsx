@@ -65,7 +65,7 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
         </button>
         {/* The reader is a mode, not a chart — offered here beside the tour rather
             than buried behind a URL. */}
-        <a className="story-read" href="#/read">
+        <a className="story-read" href="#/gospels/311">
           <span>Read the Last Week</span>
           <span className="story-btn__sub">Scripture</span>
         </a>

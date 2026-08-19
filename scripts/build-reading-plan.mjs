@@ -268,6 +268,25 @@ function parseAtlasRef(ref) {
   return out
 }
 
+// ── Curated Passion Week scenes ─────────────────────────────────────────────
+// The hand-written prose from passion-reading.json — formerly its own reader at
+// /read. Rather than duplicating the last week as a second surface, each scene
+// is attached to the plan section its ref falls inside, anchored to the verse it
+// begins at, so the prose and its Jerusalem site land inside the full text.
+// This is a real gain over the old split: day 324 runs 103 verses through
+// Emmaus, Thomas, the shore, the commission and the ascension under a single
+// "Jerusalem" pin — the same frozen-map problem the site diagram was built for.
+const passion = JSON.parse(readFileSync(join(ROOT, 'src/data/passion-reading.json'), 'utf8'))
+const SCENES = passion.sections.map(s => {
+  const [first] = parseAtlasRef(s.ref)
+  return {
+    id: s.id, title: s.title, prose: s.prose, site: s.site ?? null,
+    cityId: s.cityId, ref: s.ref, gospels: s.gospels ?? [], day: s.day ?? null,
+    match: first ?? null,
+    anchor: first ? { book: first.book, c: first.range[0], v: first.range[1] } : null,
+  }
+})
+
 // Everything in the atlas that carries both a ref and a place
 const LOCATED = []
 for (const e of gospels.churchEvents) {
@@ -321,6 +340,7 @@ for (const d of days) {
       note: override?.note ?? auto?.via ?? null,
       year: auto?.year ?? null,
       located: Boolean(override) ? 'declared' : (auto ? 'derived' : 'none'),
+      scenes: SCENES.filter(sc => sc.match && passages.some(p => overlaps(p, sc.match))),
     }
   })
 }
@@ -365,6 +385,11 @@ for (const d of days) {
     dayOut.sections.push({
       id: s.id, cite: s.cite, cityId: s.cityId, site: s.site,
       note: s.note, year: s.year, verseCount: n, passages: verses,
+      scenes: s.scenes.map(sc => ({
+        id: sc.id, title: sc.title, prose: sc.prose, site: sc.site,
+        cityId: sc.cityId, ref: sc.ref, gospels: sc.gospels, day: sc.day,
+        anchor: sc.anchor,
+      })),
     })
   }
   if (d.extra) {

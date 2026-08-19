@@ -761,3 +761,80 @@ svg.jrs {
   .gr .rd-scroll { padding-bottom: 50px; }
   .gr-pager { flex-wrap: wrap; }
 }
+
+/* ── curated scenes, set inside the full text ──
+   The hand-written Passion Week prose, folded in from what used to be its own
+   reader. Styled as commentary against scripture: raised off the page, gold
+   rule, no verse numbers — so the eye can tell at a glance which voice it is. */
+.gr-scene {
+  margin: 34px 0 26px -22px;
+  padding: 16px 18px 14px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 5px 5px 0;
+  background: var(--rail-bg), var(--glass-bg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 4px 16px rgba(0, 0, 0, 0.28);
+}
+
+.gr-scene-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+}
+
+.gr-scene-day {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+}
+
+.gr-scene-title {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--accent);
+  margin: 0;
+}
+
+.gr-scene-prose {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.68;
+  color: var(--cream-dim);
+  margin: 0 0 12px;
+}
+
+.gr-scene-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gr-scene-ref {
+  font-family: var(--font-display);
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+}
+
+@media (max-width: 820px) {
+  .gr-scene { margin-left: -12px; padding: 14px 14px 12px; }
+}
+
+/* The scene you're reading — the section around it is lit by rd-sec--on, this
+   just brings the card itself forward. */
+.gr-scene--on {
+  border-left-color: var(--accent-lt);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 6px 20px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(201, 168, 76, 0.18);
+}
