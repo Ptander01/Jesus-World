@@ -4,6 +4,7 @@ import journeyData from '../data/gospels-data.json'
 import TimelineDetail from './TimelineDetail'
 import TimelineDefs from './TimelineDefs'
 import { mat, bevelRect } from '../utils/timelineMaterial'
+import { categoryOf } from '../lib/eventCategory.js'
 
 const M  = mat('pbw')    // main overview SVG
 const MS = mat('tls')    // city story row
@@ -233,12 +234,8 @@ function stopR(days) {
   return 11
 }
 
-const EVENT_COLOR = {
-  founding:          '#c9a84c',
-  'letter-received': '#4A7C6F',
-  support:           '#c9a84c',
-  leadership:        '#7B6FA0',
-}
+// Same events as the detail view's PLACES threads — coloured from the same
+// category vocabulary so a marker means the same thing in both places.
 
 function CityStoryRow({ selectedBook, onJourneyDrill }) {
   const [hovered, setHovered] = useState(null)
@@ -358,7 +355,7 @@ function CityStoryRow({ selectedBook, onJourneyDrill }) {
       {/* Church event markers */}
       {churchEvts.map((ev, i) => {
         const x    = xScale(ev.year)
-        const col  = EVENT_COLOR[ev.type] ?? 'var(--cream-dim)'
+        const col  = categoryOf(ev).color
         const isH  = hovered === ev.id
         const sz   = 6
         return (
@@ -1271,8 +1268,6 @@ export default function TimelineBar({
             timelineYear={timelineYear}
             onCityHover={onCityHover}
             hoveredCityId={hoveredCityId}
-            selectedBookId={selectedBookId}
-            onBookSelect={onBookClick}
           />
         </div>
       )}

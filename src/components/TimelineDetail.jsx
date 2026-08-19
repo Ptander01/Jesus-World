@@ -1,9 +1,9 @@
 import { useMemo, useRef, useEffect, useState } from 'react'
 import PaulStopTrack from './PaulStopTrack'
 import PaulEventTrack from './PaulEventTrack'
-import BookTrack from './BookTrack'
 import ChurchTrack from './ChurchTrack'
 import journeyData from '../data/gospels-data.json'
+import { CATEGORY_LEGEND } from '../lib/eventCategory.js'
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
@@ -126,8 +126,6 @@ export default function TimelineDetail({
   timelineYear,
   onCityHover,
   hoveredCityId,
-  selectedBookId,
-  onBookSelect,
 }) {
   const journeyChurchEvents = useMemo(
     () => (journey ? churchEvents.filter(e => e.journeyId === journey.id) : []),
@@ -183,18 +181,16 @@ export default function TimelineDetail({
             name: 'STOPS',
             height: 130,
             items: [
-              { shape: 'circle', color: jColor,    size: 3,   label: 'City stop (dot size = length of stay)' },
-              { shape: 'circle', color: '#c9a84c', size: 5,   label: 'Major base (>3 months) — gold glow when active' },
+              { shape: 'circle', color: jColor,    size: 3,   label: 'Stop (dot size = length of stay)' },
+              { shape: 'circle', color: '#c9a84c', size: 5,   label: 'Extended stay (>3 months) — gold glow when active' },
             ],
           },
           {
             name: 'EVENTS',
             flex: 1,
             items: [
-              { shape: 'circle',  color: '#c9a84c', size: 5,   label: 'Major event' },
-              { shape: 'diamond', color: '#c9a84c', size: 5,   label: 'Letter written by Paul' },
-              { shape: 'circle',  color: '#7a3030', size: 4,   label: 'Arrest or imprisonment' },
-              { shape: 'circle',  color: '#7a6430', size: 3,   label: 'Minor event' },
+              { shape: 'circle',  color: '#c9a84c', size: 5,   label: 'Major moment in the ministry' },
+              { shape: 'circle',  color: '#7a6430', size: 3,   label: 'Lesser moment' },
             ],
           },
         ]} />
@@ -204,32 +200,17 @@ export default function TimelineDetail({
         </div>
       </div>
 
-      {/* Row 2: letters + church tracks */}
+      {/* Row 2: one thread per place touched in this period */}
       {churchIds.length > 0 && (
         <div className="tld-letters-scroll">
           <LabelCol sections={[
             {
-              name: 'LETTERS',
-              height: undefined,
-              flex: undefined,
-              items: [
-                { shape: 'bar',    color: '#c9a84c', label: 'Epistle — bar width = probable date range; click to open' },
-              ],
-            },
-            {
-              name: 'CHURCHES',
+              name: 'PLACES',
               flex: 1,
-              items: [
-                { shape: 'diamond', color: '#c9a84c', size: 5, label: 'Church founded' },
-                { shape: 'diamond', color: '#4A7C6F', size: 4, label: 'Letter received by church' },
-                { shape: 'circle',  color: '#c9a84c', size: 3, label: 'Financial or material support' },
-                { shape: 'circle',  color: '#7B6FA0', size: 3, label: 'Leadership transition' },
-              ],
+              items: CATEGORY_LEGEND,
             },
           ]} />
           <div className="tld-track-area tld-track-area--letters">
-            <BookTrack journey={journey} selectedBookId={selectedBookId} onBookSelect={onBookSelect} />
-
             <div className="tld-church-section">
               <div className="ct-pills">
                 {churchIds.map(churchId => {

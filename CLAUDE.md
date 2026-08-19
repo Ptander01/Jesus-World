@@ -160,10 +160,14 @@ Activated by clicking any capsule bar in the overview (`data-bar-hit` hit area).
 - `.tl-mini-header` (30px) — "← Overview" breadcrumb + compressed mini overview strip (5 colored capsule rects) + journey name badge
 - `TimelineDetail` (flex: 1) — contains all scrollable track content
 
-`TimelineDetail` renders:
-1. `PaulStopTrack` — duration-proportional stop segments inside `.pst-scroll` (70px fixed height, `overflow-x: auto`)
-2. `.ct-pills` (32px) — toggle pills for each church that has `churchEvents` filtered to the active journey; pill color uses `--pill-color` CSS var set to `journey.color`
-3. `.ct-tracks-area` (flex: 1, `overflow-y: auto`) — one `ChurchTrack` per active church ID
+`TimelineDetail` renders three labelled rows — **STOPS**, **EVENTS**, **PLACES**:
+1. `PaulStopTrack` + `PaulEventTrack` — duration-proportional stops, then the period's events
+2. `.ct-pills` (32px) — toggle pills for each place that has `churchEvents` in the active period; pill color uses `--pill-color` set to `journey.color`
+3. one `ChurchTrack` per active place id
+
+A fourth row, **LETTERS**, was removed: it rendered `journeyData.books`, which in the Gospels data are the 15 marquee *events* (Baptism, Cana, the Temple…), not epistles — 8 of the 15 duplicated entries already in the EVENTS row by name, and their click-to-open behaviour is already on the overview timeline's flag chips. `BookTrack.jsx` and the `.bt-*` styles are the leftovers of that row and are now unreferenced.
+
+The row was called **CHURCHES**; all 16 ids are city ids, and several (Mount Hermon, Gethsemane, Bethany-beyond-Jordan) are not cities at all, so **PLACES** is the honest label. The EVENTS legend also advertised "Letter written by Paul" and "Arrest or imprisonment" — `paulEvents` only carries `major` and `minor`, so neither marker could ever render.
 
 Receives `timelineYear` and `onCityHover` from `TimelineBar` and passes them through to `PaulStopTrack` and `ChurchTrack` respectively to drive the stop highlight, event pulse animations, and map city glow.
 
@@ -179,11 +183,9 @@ Accepts `timelineYear` and `onCityHover` props. Computes `currentStopIdx` (via `
 
 ### ChurchTrack
 
-One SVG track (56px tall) per active church. Track line at y=28 in `#2e3858`. Church name in Cinzel 9px letter-spacing 2 at `#7a6430` above the track. Event marker types:
-- `founding` — gold diamond, size 8
-- `letter-received` — teal (`#4A7C6F`) diamond, size 7
-- `support` — gold circle, size 5
-- `leadership` — purple (`#7B6FA0`) circle, size 5
+One SVG track (56px tall) per active place. Track line at y=28; place name in Cinzel above the track.
+
+**Markers are coloured by `category`, not `type`.** `churchEvents` carry both: an inherited Paul's-World `type` (`founding` / `letter-received` / `support` / `leadership`) and a purpose-built Gospels `category` (`miracle` 34 / `encounter` 9 / `teaching` 7 / `event` 5). The types are leftovers whose names describe planting churches and receiving epistles — the legend used to render "Letter received by church" against *"Living water · The Samaritan woman"*. `src/lib/eventCategory.js` owns the mapping (`categoryOf`, `CATEGORY_LEGEND`) and is shared by ChurchTrack, TimelineDetail's legend and TimelineBar's story row so a marker means the same thing everywhere. `type` still sits in the data and drives nothing.
 
 Labels alternate above/below by event index. Sublabel shown on hover. X positions derived from `buildStopLayout(journey).xFromYear(event.year)` — same function used by PaulStopTrack, so markers align temporally with Paul's stops above.
 
