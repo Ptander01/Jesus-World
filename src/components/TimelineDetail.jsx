@@ -218,9 +218,11 @@ export default function TimelineDetail({
                   return (
                     <button
                       key={churchId}
-                      className={`ct-pill${active ? ' ct-pill--active' : ''}`}
+                      className={`ct-pill${active ? ' ct-pill--active' : ''}${hoveredCityId === churchId ? ' ct-pill--hot' : ''}`}
                       style={{ '--pill-color': journey.color }}
                       onClick={() => onChurchTrackToggle(churchId)}
+                      onMouseEnter={() => onCityHover?.(churchId)}
+                      onMouseLeave={() => onCityHover?.(null)}
                     >
                       <span
                         className="ct-pill-dot"
@@ -242,6 +244,8 @@ export default function TimelineDetail({
                       churchId={churchId}
                       events={journeyChurchEvents.filter(e => e.churchId === churchId)}
                       timelineYear={timelineYear}
+                      onCityHover={onCityHover}
+                      hoveredCityId={hoveredCityId}
                     />
                   ))
               }
