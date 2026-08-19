@@ -26,26 +26,6 @@ const JOURNEY_MAP = {
   'period-6': journeyData.colorSystem.period6,
 }
 
-// d3-geo treats polygon rings spherically: a ring wound the "wrong" way fills
-// everything OUTSIDE it (the 10m land rings sum to 41 steradians — sea renders
-// as land). Rewind any ring that claims more than half the sphere. Note
-// topojson.feature returns a FeatureCollection for world-atlas land (it's a
-// GeometryCollection object), so walk that shape too.
-function rewindRings(node) {
-  if (node.type === 'FeatureCollection') {
-    node.features.forEach(rewindRings)
-    return node
-  }
-  const fixPoly = polyCoords => polyCoords.map(ring =>
-    d3.geoArea({ type: 'Polygon', coordinates: [ring] }) > 2 * Math.PI
-      ? ring.slice().reverse()
-      : ring
-  )
-  const geom = node.geometry ?? node
-  if (geom.type === 'Polygon') geom.coordinates = fixPoly(geom.coordinates)
-  else if (geom.type === 'MultiPolygon') geom.coordinates = geom.coordinates.map(fixPoly)
-  return node
-}
 
 // ── Journey segment helpers (sea/land split rendering + progressive reveal) ──
 
@@ -372,7 +352,7 @@ export default function MapView({
   // no topojson.feature/mesh and no runtime rewind on that path.
   const land = useMemo(
     () => hiBasemap?.land
-      ?? rewindRings(topojson.feature(countries50m, countries50m.objects.land)),
+      ?? topojson.feature(countries50m, countries50m.objects.land),
     [hiBasemap]
   )
   const borders = useMemo(
@@ -400,9 +380,8 @@ export default function MapView({
   const paulMarkerRef = useRef(null)
 
   // Sea vs land per journey segment — sampled with spherical point-in-polygon
-  // against the 50m land (always bundled; independent of the lazy 10m swap).
-  // NOTE: use the PRISTINE feature here — rewindRings fixes geoPath *rendering*
-  // of the 10m data but breaks d3.geoContains (verified empirically both ways).
+  // against the 50m land (always bundled; independent of the lazy basemap swap),
+  // so the classification never shifts when the crisper basemap arrives.
   const segModes = useMemo(() => {
     const landTest = topojson.feature(countries50m, countries50m.objects.land)
     const onLand = pt => landTest.features.some(f => d3.geoContains(f, pt))
