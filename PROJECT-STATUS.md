@@ -1,216 +1,106 @@
 # Project Status — Jesus's World
 
-**Last updated:** 2026-07-21, at commit `a19b9f5` (main, pushed, deployed).
-**For:** picking this project back up in a fresh context — a new Claude session, a
-different tool, or a human collaborator. Pairs with `CLAUDE.md` (architecture
-reference, keep that as the source of truth for how the code works) and
-`HANDOFF-TEMPLATE.md` (the original Paul's-World-to-Gospels bootstrap spec — historical,
-not a status doc). This file is the "what happened and what's next" layer.
+**Last updated:** 2026-08-21, at commit `d5430a1` (main, pushed, deployed).
+**For:** picking this project back up in a fresh context. Pairs with `CLAUDE.md`
+(the maintained architecture reference — read that first; it is current as of this
+commit). `HANDOFF-TEMPLATE.md` is the original Paul's-World-to-Gospels bootstrap
+spec — historical, not a status doc.
 
 ## What this project is
 
-A single-page React 19 + Vite atlas of the Gospels: a D3 map of the ministry (AD
-29–33), a timeline with a 4-state progressive-disclosure events system, a Play mode
-that narrates the whole arc, a data-visualization page ("Charts" in the nav, route is
-`/visuals`), and a scroll-driven
-Passion Week reader (`/read`). Deployed on Vercel, auto-builds on every push to `main`
-(`vercel.json` is `{}` — no custom config, default Vite build). No test suite; verify
-changes by running `npm run dev` and looking.
+A single-page React 19 + Vite atlas of the Gospels, AD 29–33, in three linked
+surfaces:
 
-## How this session's work started
+- **Atlas** (`#`) — D3 map, 26 places, 7 Herodian regions, 6 periods, a 4-state
+  timeline, and a Play mode that narrates the whole arc.
+- **Charts** (`#/visuals`) — where the 34 miracles and 34 parables cluster, and
+  which Gospels attest which events.
+- **Reader** (`#/gospels`) — all four Gospels as a 39-day chronological
+  read-through, 3,779 verses, with the map and timeline tracking where you are.
 
-The user asked for a critique of the whole app "as if seeing it for the first time,"
-wearing a designer/historian/researcher/pastor hat. That critique became a roadmap; this
-session worked through it top to bottom, plus one more feature added afterward (the
-Jerusalem diagram) in response to direct feedback on the reader. Everything below is
-merged to `main` and live.
+Deployed on Vercel, auto-builds on push to `main` (`vercel.json` is `{}`). No test
+suite; verify by running it and looking.
 
-## What shipped this session, in order
+**It began as an atlas of Paul's journeys and was reskinned.** Much of the recent
+work has been removing inherited assumptions. Expect more of them.
 
-### 1. Hero landing page — parallax fixes + full rebuild
-*(`fix/hero-parallax-transparency`, `feat/hero-depth-glide`, all merged)*
+## What shipped this session
 
-- The hero's background layers had a real bug: the source PNGs had the *editor's
-  transparency-preview checkerboard* baked in as opaque pixels, not real alpha — so
-  scrolling revealed a literal checkerboard. Rekeyed to true transparency, moved the
-  assets from `public/` into `src/assets/hero/` so Vite content-hashes the filenames
-  (cache-proof against future edits), converted to WebP (~90% smaller).
-- Also fixed: the scroll handler was overwriting each layer's CSS `scale()` with a bare
-  `translateY()`, popping every layer to scale 1.0 on the first scroll tick.
-- Reworked from a plain scroll-away hero into a **pinned depth-glide parallax**: a
-  sticky stage holds the scene in view while foreground/midground/sky drift at
-  different rates, then the whole thing dissolves into the live atlas underneath.
-  Extended the source images vertically (mirror+blur, no real DEM/extra art) so the
-  full width shows at real screen aspect ratios instead of being center-cropped.
-- Added ambient life: sweeping sun rays (conic gradient, seamless loop), a brighter
-  breathing glow, drifting lake mist, and a small bird flock — all CSS-animated
-  children of the parallax layers, no JS cost.
+Seven merges, `571b035..d5430a1`. In order:
 
-### 2. App-wide design critique → roadmap
-No code — a structured review (nav/discoverability, charts-page polish, timeline type
-scale, region-boundary quality, flag-event curation, plus a "what else" list covering
-terrain, performance, scripture depth, a11y, meta). Everything below is that roadmap
-being worked.
-
-### 3. Nav shell + charts-page overhaul + timeline type scale
-*(`feat/shell-visuals-type`, merged)*
-
-- New `NavTabs` component (Atlas / Charts / Reader) in both the atlas header and the
-  charts page header — the charts page (route is still `/visuals`, nav label reads
-  "Charts") was previously only reachable by typing the URL.
-- The charts page redesigned: editorial masthead with a stated takeaway, glass/lip cards
-  matching the atlas's existing token system, and a **validated** dataviz palette (ran
-  the project's color validator — the original chart hues failed the colorblind-safety
-  check; refit in OKLCH until they passed). The heatmap changed from a per-row rainbow
-  to one sequential gold ramp + category-identity dots, which is what it was trying to
-  say all along.
-- Light theme got its own parchment glass/pill/lip tokens in `tokens.css` — previously
-  the dark-mode glass tokens leaked into light mode everywhere.
-- Every timeline label (6.5–10.5px Cinzel) raised to a legible floor (~9–12.5px). This
-  surfaced a real layout bug: the 4-state books system's "state 3" (full event names)
-  was built on 2 shelves inherited from Paul's World's 13 short book abbreviations —
-  15 full-length Gospel event names didn't fit, and **The Last Supper and The
-  Resurrection were being clipped off the timeline entirely**. Rebuilt state 3 onto
-  3 width-balanced shelves; all 15 now render.
-
-### 4. Region boundaries v2
-*(`feat/region-boundaries-v2`, merged)*
-
-- The Herodian tetrarchy polygons (Galilee, Judea, Samaria, Perea, Decapolis, Ituraea,
-  Phoenicia) were ~50%-confidence hand contours (Perea was 6 vertices). Rebuilt all 7
-  from real geography: coastline, Jordan River, Yarmuk, and Dead Sea lines extracted
-  from the same `world-atlas` 10m data the basemap already renders, inland borders
-  hand-anchored and Chaikin-smoothed. Every border is defined once and shared by both
-  neighboring regions, so adjacency is exact.
-- Committed as a **reproducible generator**, `scripts/generate_regions.py` — rerun it
-  any time the borders need adjusting; it re-validates that all 26 cities still fall
-  inside their declared region before writing.
-- Hit and fixed a real d3-geo gotcha: rings must be wound planar-clockwise or the
-  fill floods the entire map (the sphere's complement). First run did this; documented
-  in the script's own comments so it doesn't get relitigated.
-- Styling: dashed hairline borders (was solid fill), added per-region ruler sublabels
-  ("Herod Antipas," "Roman prefect," "League of ten cities"), quieter default fills.
-
-### 5. Scripture everywhere + map beauty pass
-*(`feat/scripture-everywhere`, `feat/map-beauty-pass`, merged together)*
-
-- `src/lib/scripture.js` + `ScriptureReveal` component: click-to-expand verse text
-  fetched from `bible-api.com` (World English Bible, public domain — same source as the
-  existing Passion Week reader's verses), cached in-memory + sessionStorage. Wired into
-  FilterPanel's Events and Parables lists, BookDetailPanel's key verse and full
-  account, and the Play-mode story caption. Multi-Gospel refs
-  (`"Matt 3:13-17; Mark 1:9-11; ..."`) render every attesting passage, not just the
-  first.
-- Map contrast: **measured** the land/sea fill contrast (WCAG formula) at 1.27:1 —
-  nearly invisible, which was most of why the map read as a flat dark void. Bumped to
-  1.7:1, brightened the coastline stroke.
-- Added an impressionistic terrain relief layer (soft radial gradients, clipped to the
-  land silhouette): warm highland glows over Judea, Galilee, and the
-  Golan/Transjordan plateaus; a cool shadow deepening south along the Jordan rift to
-  the Dead Sea. Explicitly not a claim of surveyed elevation — said so in the code
-  comment — but it makes "going up to Jerusalem" visually true.
-- Curated first load: the map used to open fully dark with nothing active. Now seeds
-  `Early Ministry` as active and settles the initial zoom on the Galilee cluster
-  (Nazareth/Capernaum/the lake) instead of the full 200km strip.
-
-### 6. Jerusalem city diagram
-*(`feat/jerusalem-city-diagram`, merged — done in response to direct user feedback
-after seeing a reference screenshot from a sibling project)*
-
-- The Passion Week reader (`/read`) had a real problem: **7 of its 16 scroll sections
-  shared one `cityId`** ("jerusalem" — temple, fig-tree, lament, supper, cross, tomb,
-  Thomas), so the map pin sat frozen through the story's most dramatic stretch.
-- Built `JerusalemDiagram.jsx`: a hand-placed *schematic* reconstruction (not a
-  geographic projection like `MapView`) — city wall with corner posts, the Temple
-  Mount, Antonia Fortress, the Upper Room, Gethsemane and Golgotha as dashed
-  "dramatic-site" markers, the Garden Tomb, Olivet, the Kidron Valley, with Bethphage
-  and Bethany flagged at the frame's edge. 13 of 16 reader sections now resolve to a
-  distinct site (`passion-reading.json`'s new `site` field) and glow-pulse when active.
-  The remaining 3 (Emmaus, the Galilee shore, the mountain of the Commission) keep the
-  regional `MapView` — those really are far away, and showing them zoomed out is the
-  right choice, not a gap.
-- Real bug caught mid-build: the reading pane's scrim (`.rd-map-scrim`) is *fully
-  opaque* for roughly the first third of its width, by design, so prose stays legible.
-  The first layout pass put Golgotha and the Garden Tomb inside that dead zone —
-  literally unrenderable regardless of active/glow state, not just dim. Rebuilt the
-  whole composition to live inside the readable band; gave close-up mode its own
-  slightly gentler scrim variant.
-- `ReadingMode` crossfades between the regional map and the close-up diagram; both stay
-  mounted so neither cold-starts mid-scroll.
+1. **Timeline material** (`1415162`) — the panels' glass/lip system rebuilt for SVG
+   in `TimelineDefs.jsx` + `utils/timelineMaterial.js`: sheen, bevel stroke, dome,
+   cast shadow, inner-shadow groove, all driven by CSS custom properties so they
+   invert for the parchment theme. Also fixed year labels that were painted
+   underneath the flag-dot row, and a scrubber that re-appended its DOM on every
+   prop change (5 stacked copies on a cold load).
+2. **The Reader** (`7a82935`) — `scripts/build-reading-plan.mjs` turns Patrick's
+   39-day plan table into `src/data/reading-plan/`. Fetches all 89 Gospel chapters
+   once and slices locally. Verified complete: 3,779 verse instances.
+3. **Reader timeline day rail** (`1033217`) — day ticks positioned by year were
+   unclickable in the last third of the plan (days 311–324 all sit at AD 33.25).
+   Split into a true AD axis plus an evenly spaced picker rail.
+4. **One themed tooltip** (`3c63bb6`) — SVG `<title>` draws the browser's native
+   tooltip; removing it fixed both a duplicate and an unstyled one.
+5. **Passion Week folded in** (`b404105`) — the curated reader is gone as a
+   separate tab. Its 16 scenes attach at build time to the plan section
+   containing their `ref` and render inline at the anchor verse.
+6. **Drill-down vocabulary** (`4efc93d`) — dropped the LETTERS row, renamed
+   CHURCHES → PLACES, and keyed markers to `category` instead of the inherited
+   `type`.
+7. **Basemap** (`49dec1f`, `d5430a1`) — cropped the 10m atlas to the Levant
+   (3.49 MB → 290 KB) and removed the `rewindRings` helper that was inverting
+   land and sea on first paint.
 
 ## Current state
 
-- **Deployed:** `main` is pushed to `origin/main` and matches it exactly; Vercel
-  auto-builds on push. Everything above is live.
+- **Deployed:** `main` == `origin/main` == `d5430a1`. Everything above is live.
 - **Working tree:** clean.
-- **Branches:** every `feat/*` and `fix/*` branch used this session (`feat/hero-depth-glide`,
-  `feat/map-beauty-pass`, `feat/region-boundaries-v2`, `feat/scripture-everywhere`,
-  `feat/shell-visuals-type`, `fix/hero-parallax-transparency`,
-  `feat/jerusalem-city-diagram`) is **fully merged (0 commits ahead of main)** — safe to
-  delete. Two other local branches, `backup/hero-golden-hour` and
-  `visuals-integration`, also show 0 ahead of main; confirm their purpose before
-  deleting in case they're intentional snapshots from before this session.
-- **Lint:** `npx eslint src/` reports **4 pre-existing errors + 2 warnings**, all
-  present before this session started (verified against `main`'s prior state) and
-  untouched by any of the above work:
-  - `src/App.jsx:215` — `setState` called synchronously in an effect
-    (`react-hooks/set-state-in-effect`)
-  - `src/components/SearchBar.jsx:49` — same pattern
-  - `src/components/MapView.jsx:320` — `onCityClick` prop defined but never used
-  - `src/components/PaulEventTrack.jsx:120` — `subY` assigned but never used
-  - Plus 2 `exhaustive-deps` warnings in `MapView.jsx` on intentionally mount-only
-    effects (`initialFocus`, `cityById`, `onMapReady`, `projection` — pattern already
-    established elsewhere in that file, safe to leave, but worth a comment if it
-    starts causing confusion).
-  A cleanup task for the 4 errors was spawned mid-session but never landed — still
-  open.
-- **Build:** `npm run build` passes clean.
+- **Lint:** `npx eslint src/` reports **4 errors + 2 warnings, all pre-existing**
+  and unchanged since before this session:
+  - `src/App.jsx:215` and `src/components/SearchBar.jsx:49` — `setState` in an
+    effect (`react-hooks/set-state-in-effect`)
+  - `src/components/MapView.jsx:320` — `onCityClick` defined but never used
+  - `src/components/PaulEventTrack.jsx:125` — `subY` assigned but never used
+  - plus 2 `exhaustive-deps` warnings on intentionally mount-only effects
+- **Build:** clean.
+- **Dev port:** `.claude/launch.json` pins 5199 because 5173 is occupied by
+  another project on this machine. Untracked by git.
 
-## Next steps (not yet started — pick from here)
+## Next steps
 
-Roughly in the order they'd matter most, but nothing here is blocking:
+1. **Two dead files** — `src/components/ReadingMode.jsx` and
+   `src/components/BookTrack.jsx` (plus the `.bt-*` styles in `index.css`) are
+   unreferenced and out of the bundle but still on disk. Patrick was asked and
+   hasn't decided; don't delete without confirming.
+2. **Review the 26 declared reading locations** in `LOCATION_OVERRIDES`
+   (`scripts/build-reading-plan.mjs`). They drive the reader's map and were
+   assigned by Claude, not by Patrick. e.g. the Sermon on the Mount → Capernaum.
+3. **No prose in the reader** — deliberate, by Patrick's choice ("ship without
+   prose first"). The `gr-scene` styling already exists if day-level notes get
+   written later.
+4. **Machaerus is missing from the atlas.** Day 300's execution of John is
+   declared `null` rather than pinned somewhere the text doesn't claim. Adding
+   the city would fix it properly.
+5. **Flag-event curation** — the 15 marquee events are inherited picks. No
+   Gethsemane, no Ascension. Worth explicit criteria, or making the flag row
+   respond to the Gospel Lens.
+6. **Accessibility** — keyboard access to the D3 surfaces is unaudited.
+7. **Meta basics** — favicon, OG image, per-route titles are still Vite defaults.
+8. **Mobile** — spot-checked, never audited holistically.
 
-1. **Lint cleanup** — the 4 pre-existing errors above. Small, isolated, good first
-   task for a fresh session to warm up on.
-2. **Flag-event curation** — the timeline's 15 flag events (Baptism → Resurrection)
-   are inherited picks from Paul's World's 13-epistle structure, not chosen against
-   explicit criteria for the Gospels. Notable gaps: no Gethsemane flag, no Ascension
-   flag (both are now visible as *sites* in the new Jerusalem diagram, but neither is
-   a timeline flag event). Worth either writing explicit selection criteria and
-   re-picking, or making the flag row respond to the Gospel Lens (Matthew's landmarks
-   vs. John's genuinely differ — could be a feature, not just a fix).
-3. **Content gap in the reader** — the Passion Week reader jumps from `arrest` straight
-   to `cross`; there's no section for the Sanhedrin/Caiaphas or Pilate trial scenes.
-   The new Jerusalem diagram already has an `antonia` (Antonia Fortress / Praetorium)
-   pin sitting unused as scenery — a `trial` section would slot in naturally.
-4. **Bundle size** — `countries-10m.json` is a ~3.5MB lazy-loaded chunk for an app
-   whose entire theater of action is a ~200km strip of the Levant. Cropping it to the
-   relevant bounding box would be a large, cheap win. (Noted in the original critique,
-   not yet touched.)
-5. **Accessibility pass** — contrast on the dark map (partially addressed via the
-   land/sea contrast fix, but not audited end-to-end), keyboard access to the D3
-   surfaces (map, timeline, charts).
-6. **Meta basics** — favicon, an OG image (the hero art would work well), per-route
-   page titles. Still default Vite scaffold values.
-7. **Mobile pass** — spot-checked during this session (hero at phone widths, the
-   reader's close-up diagram correctly recedes to ambient texture under the existing
-   mobile scrim rule) but not audited holistically. Worth a dedicated look at panel
-   overlap and touch targets across all three surfaces.
-8. **Possible extension** — if the Jerusalem diagram lands well with the user, the same
-   schematic-city approach could extend to other single-location clusters if any
-   future content warrants it (none currently do — the other 15 journeys/events are
-   already well spread across the regional map).
+## Working notes
 
-## Quick orientation for a fresh session
-
-- Read `CLAUDE.md` first — it's the maintained architecture reference and describes
-  patterns (D3 render-effect conventions, the 4-state timeline system, the glass/lip
-  design tokens, MapView's zoom/reveal machinery) that this file intentionally doesn't
-  repeat.
-- Data lives in `src/data/gospels-data.json` (15 flag events, 55 church/site events,
-  34 parables, 26 cities) and `src/data/passion-reading.json` (the reader's 16
-  sections, 13 of which now carry a `site` field into `JerusalemDiagram`).
-- `npm run dev` for HMR, `npm run build` to verify, `npx eslint src/` before
-  committing anything new.
-- This user reviews on localhost before merging, then says "merge" / "deploy"
-  explicitly — don't push to `main` unprompted.
+- **Patrick reviews on localhost, then says "merge"/"deploy" explicitly.** He did
+  authorise pushing this session; that authorisation was per-request, not standing.
+- **Verification through the Claude Code browser pane has a trap.** It runs with
+  `document.hidden === true`, so `requestAnimationFrame` never fires and d3
+  transitions never complete. Missing animation there is *not* evidence of a bug —
+  this produced one wrong bug report and a retraction this session. Inspect CSS and
+  attribute state freely; to check transition-driven behaviour, assert on the
+  inputs or bypass the animation.
+- **Generated data is never hand-edited.** Three generators, listed in CLAUDE.md's
+  Commands block. Re-run them; don't patch their output.
+- **Check the data before trusting a label.** Several bugs this session were fields
+  whose names lied — a "LETTERS" row rendering events, a legend keyed to a
+  vestigial taxonomy. `gospels-data.json` still carries Paul's-World field names.
