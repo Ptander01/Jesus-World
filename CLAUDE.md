@@ -5,13 +5,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev       # start dev server with HMR (localhost:5173)
+npm run dev       # start dev server with HMR (5173, or next free port)
 npm run build     # production build to dist/
 npm run preview   # preview production build locally
 npm run lint      # run ESLint
 ```
 
-There is no test suite configured.
+There is no test suite configured. Verify by running the app and looking.
+
+Generators (re-run after editing their inputs, never hand-edit their output):
+
+```bash
+node scripts/build-reading-plan.mjs   # src/data/reading-plan/  (--refetch to bypass the HTTP cache)
+node scripts/crop-basemap.mjs         # src/data/basemap-levant.json
+python3 scripts/generate_regions.py   # public/provinces.geojson
+```
 
 ## Architecture
 
@@ -22,33 +30,33 @@ Key dependencies: `d3` v7, `topojson-client`, `world-atlas` (Natural Earth 50m l
 ### Component tree
 
 ```
-App.jsx                     — root state: activeJourneys, selectedBookId, selectedBook,
-                              viewMode, timelineYear, hoveredCityId, provincesGeo,
-                              showProvinces, isPlaying, playSpeed, detailJourneyId,
-                              activeChurchTracks
-└── .map-container (div)    — position:relative; contains all overlays + map
-    ├── FilterPanel.jsx     — floating overlay top-left; journey toggles + book pill selector
-    ├── MapView.jsx         — D3 SVG map; fills map-container
-    ├── StoryLayer.jsx      — bottom-center map overlay: "▶ Paul's Story" entry button when
-    │                         timelineYear is null, else a glass caption card tracking Paul's
-    │                         current waypoint (journey badge, city, note, ref, "✍ books being
-    │                         written"). Beats = all waypoints flattened+sorted (module-level
-    │                         BEATS); INTRO_BEAT covers AD 44 until the first waypoint. Card
-    │                         remounts per beat (React key) to replay the storyBeatIn CSS
-    │                         animation. onStoryPlay → App.handleStoryPlay (clears detail/book
-    │                         focus incl. detailJourneyIdRef, then handlePlay from AD 44)
-    └── BookDetailPanel.jsx — slide-in panel from right when a book is selected
-TimelineBar.jsx             — D3 SVG timeline below the map (sibling of .app-body);
-                              clicking a capsule bar enters detail mode (detailJourneyId)
-└── TimelineDetail.jsx      — rendered in place of overview SVG when detailJourneyId is set;
-                              contains PaulStopTrack + church toggle pills + ChurchTracks
-    ├── PaulStopTrack.jsx   — duration-proportional stop segments; horizontally scrollable
-    └── ChurchTrack.jsx     — thin SVG track with event markers per church; one per active
-                              church in activeChurchTracks
-PlayControls.jsx            — collapsible play controls below timeline; collapsed by default,
-                              expands via a caret tab; contains rewind, play/pause, speed pills
-```
+Root.jsx                    — hash router + shared state above the routes:
+                              lens (Gospel Lens), theme, hero-seen flag
+├── HeroLanding.jsx         — pinned depth-glide parallax; once per session
+├── App.jsx           (#)   — the Atlas
+│   ├── NavTabs.jsx         — Atlas / Charts / Reader, in every surface's header
+│   ├── SearchBar.jsx · ThemeToggle.jsx
+│   ├── .map-container
+│   │   ├── FilterPanel.jsx — Gospel Lens, period toggles, Events/Parables lists
+│   │   ├── MapView.jsx     — D3 SVG map; basemap, regions, routes, city dots
+│   │   ├── StoryLayer.jsx  — play-mode caption card over the map
+│   │   └── BookDetailPanel.jsx
+│   ├── TimelineBar.jsx     — 4-state overview; click a capsule to drill in
+│   │   └── TimelineDetail.jsx — rows: STOPS · EVENTS · PLACES
+│   │       ├── PaulStopTrack.jsx · PaulEventTrack.jsx
+│   │       └── ChurchTrack.jsx    — one thread per place
+│   └── PlayControls.jsx
+├── VisualsDemo.jsx   (#/visuals) — the Charts page
+│   ├── CategoryPeriodHeatmap.jsx · GospelAttestationUpSet.jsx
+│   └── GospelSignatureRadar.jsx · MinistryDensityStream.jsx
+└── GospelReader.jsx  (#/gospels, #/gospels/<planDay>, #/read) — the Reader
+    ├── MapView.jsx         — reused; pans to the active stop
+    ├── JerusalemDiagram.jsx— schematic close-up for city-scale scenes
+    └── ReaderTimeline.jsx  — AD axis + evenly spaced DAYS picker
 
+Shared:  TimelineDefs.jsx (SVG material) · ScriptureReveal.jsx (click-to-read verses)
+Unused:  ReadingMode.jsx, BookTrack.jsx — out of the bundle, still on disk
+```
 ### State flow
 
 - `activeJourneys` — `Set<string>` of journey IDs currently shown; toggled by FilterPanel and passed to MapView + TimelineBar
@@ -76,16 +84,19 @@ PlayControls.jsx            — collapsible play controls below timeline; collap
 
 ### Data
 
-All map/journey/book/city data lives in `src/data/pauline-journeys-data.json`. The spec is `src/data/PAULS-WORLD-APP-SPEC.md`.
+All map/period/event/city data lives in `src/data/gospels-data.json`. **This app began as an atlas of Paul's journeys and was reskinned for the Gospels**, so some field names still carry the old vocabulary — `journeys` are periods, `books` are marquee events, `churchEvents` are things that happened at a place, `paulEvents` are per-period events. The names are load-bearing in code; the meanings are not what they say.
 
-- `journeys` — 5 entries with `id`, `shortName`, `dateRange`, `color`, `waypoints[]`; each waypoint has `cityId`, `year`, `durationDays`, `note`, `ref`
-- `books` — 13 entries with `id`, `abbrev`, `dateRange`, `attribution` (`"undisputed"` | `"debated"`), `dateDebated` (bool), `journeyId`
-- `cities` — 57 entries with `id`, `coords [lon, lat]`, `tier` (1/2/3), `name`, `fullName`, `modernName`, `province`, `description`, `ref`
-- `churchEvents` — 11 entries with `id`, `churchId`, `cityId`, `year`, `journeyId`, `label`, `sublabel`, `type`, `ref`; types: `"founding"`, `"letter-received"`, `"support"`, `"leadership"`
-- `colorSystem` — journey color objects (`primary`, `dim`, `light`)
-- `mapConfig` — projection center `[26, 37]`, scale `950`
+- `journeys` — 6 **periods**: Early Ministry, Galilean Ministry, Withdrawals, Judea & Perea, Passion Week, Resurrection. `id`, `shortName`, `dateRange`, `color`, `waypoints[]` (`cityId`, `year`, `durationDays`, `note`, `ref`)
+- `books` — 15 **marquee events** (Baptism → Resurrection), the timeline's flag chips. `id`, `abbrev`, `name`, `dateRange`, `journeyId`
+- `cities` — 26 entries, `id`, `coords [lon, lat]`, `name`, `modernName`, `description`, `ref`. Several are not cities (Mount Hermon, Gethsemane, Bethany-beyond-Jordan, Judean Wilderness)
+- `churchEvents` — 55 **located events**; `churchId` and `cityId` are equal for all 55. Carries both an inherited `type` (drives nothing) and a real `category`: miracle 34 / encounter 9 / teaching 7 / event 5. See `src/lib/eventCategory.js`
+- `paulEvents` — 33 per-period events; only types `major` and `minor` exist
+- `parables` — 34 entries with `topic`, `gospels[]`, `ref`, `lesson`, `occasion.cityId`
+- `mapConfig` — advisory; MapView actually uses `d3.geoMercator().center([35.4, 32.4]).scale(12500)`
 
-Province boundaries from `public/provinces.geojson` (klokantech Roman Empire dataset, 53 features, `properties.name` in Latin). Fetched at runtime in App.jsx.
+Reading-plan data is separate and generated: `src/data/reading-plan/` (see the reader section). `src/data/passion-reading.json` is no longer a reader of its own — it is the *source* of the curated scenes folded into the plan.
+
+Region boundaries: `public/provinces.geojson`, fetched at runtime in App.jsx. 7 Herodian regions (Phoenicia, Galilee, Ituraea, Decapolis, Samaria, Judaea, Peraea) with `name`, `ruler`, `source`. Generated by `scripts/generate_regions.py` from coastline/river geometry in the same world-atlas data the basemap uses — rerun it to adjust borders; it re-validates that all 26 cities fall inside their declared region. **d3-geo gotcha documented in that script:** rings must be wound planar-clockwise or the fill floods the whole map.
 
 ### MapView D3 pattern
 
