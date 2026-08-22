@@ -249,21 +249,53 @@ const ANCHOR_OFFSETS = {
 }
 
 // ── Ternary search: arc length at closest point to (tx, ty) on pathNode
-function getArcLengthAtPoint(pathNode, tx, ty, total) {
-  if (total === 0) return 0
-  const pS = pathNode.getPointAtLength(0)
-  const pE = pathNode.getPointAtLength(total)
-  if ((pS.x - tx) ** 2 + (pS.y - ty) ** 2 < 4) return 0
-  if ((pE.x - tx) ** 2 + (pE.y - ty) ** 2 < 4) return total
-  let lo = 0, hi = total
-  for (let i = 0; i < 20; i++) {
-    const pA = pathNode.getPointAtLength(lo + (hi - lo) * 0.25)
-    const pB = pathNode.getPointAtLength(lo + (hi - lo) * 0.75)
-    if ((pA.x - tx) ** 2 + (pA.y - ty) ** 2 < (pB.x - tx) ** 2 + (pB.y - ty) ** 2) hi = (lo + hi) / 2
-    else lo = (lo + hi) / 2
-    if (hi - lo < 0.5) break
+// Arc length along the spine at each waypoint, in order.
+//
+// The spine is a Catmull-Rom through the waypoints, so it passes exactly through
+// every one of them — but a route that revisits a city gives the distance-to-
+// that-city function several minima, and the previous implementation ternary-
+// searched the whole path for the single closest point. Every visit after the
+// first therefore resolved to the first visit's arc length, the segment measured
+// zero, and the `l1 - l0 < 0.5` guard dropped it. The map drew 26 of the 41
+// segments the data implies: the Galilean ministry (Capernaum ×5) lost most of
+// its shuttle legs, and every return crossing of the Sea of Galilee vanished.
+//
+// Walking a dense sample forward without backtracking is monotone by
+// construction, which is the actual invariant — waypoint i cannot sit earlier
+// along the spine than waypoint i-1.
+function waypointArcLengths(pathNode, pts, total) {
+  if (total === 0) return pts.map(() => 0)
+  // Sample count, not sample spacing: Passion Week's entire route spans about
+  // six viewBox units, so a fixed 3-unit step put consecutive waypoints on the
+  // same sample and dropped two of its six segments.
+  const n = Math.max(200, Math.ceil(total / 3))
+  const step = total / n
+  const sx = new Float64Array(n + 1), sy = new Float64Array(n + 1)
+  for (let i = 0; i <= n; i++) {
+    const p = pathNode.getPointAtLength((i / n) * total)
+    sx[i] = p.x; sy[i] = p.y
   }
-  return (lo + hi) / 2
+  // Within ~1.5 samples of the waypoint counts as "the curve passes here".
+  const TOL2 = (step * 1.5) ** 2
+  const out = []
+  let cursor = 0
+  for (let k = 0; k < pts.length; k++) {
+    const [tx, ty] = pts[k]
+    let best = cursor, bestD = Infinity
+    for (let i = cursor; i <= n; i++) {
+      const d = (sx[i] - tx) ** 2 + (sy[i] - ty) ** 2
+      if (d < bestD) { bestD = d; best = i }
+      // Once we are within a sample step of the waypoint and moving away again,
+      // this is the approach that belongs to it — later ones belong to later
+      // waypoints.
+      else if (bestD <= TOL2) break
+    }
+    out.push((best / n) * total)
+    cursor = Math.min(best + 1, n)
+  }
+  out[0] = 0
+  out[out.length - 1] = total
+  return out
 }
 
 function getPaulLocationAtYear(year, cityById) {
@@ -854,10 +886,11 @@ export default function MapView({
 
       const node  = spine.node()
       const total = node.getTotalLength()
-      const wpLengths = waypoints.map(wp => {
-        const [px, py] = projection(cityById[wp.cityId].coords)
-        return getArcLengthAtPoint(node, px, py, total)
-      })
+      const wpLengths = waypointArcLengths(
+        node,
+        waypoints.map(wp => projection(cityById[wp.cityId].coords)),
+        total,
+      )
 
       // Visible route: one sampled sub-path per waypoint pair — sea legs dashed,
       // land legs solid over a casing; period-6 (Resurrection) stays dashed throughout
