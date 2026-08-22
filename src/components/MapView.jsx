@@ -715,6 +715,27 @@ export default function MapView({
       .attr('flood-color', isLight ? '#6b5a3a' : '#000')
       .attr('flood-opacity', isLight ? 0.3 : 0.55)
 
+    // ── Hillshade. Under the land tint: it carries the *shape* of the terrain,
+    // the contours carry its measure. Terrarium tiles are Web Mercator and so is
+    // this projection, so the raster maps to a rectangle in projected space —
+    // corner-to-corner placement, no reprojection. `mix-blend-mode: multiply`
+    // lets the land tint and the province fills read through it instead of the
+    // image sitting on top as a grey sheet.
+    if (terrain?.hillshade) {
+      const hs = terrain.hillshade
+      const [hx0, hy0] = projection([hs.bounds.west, hs.bounds.north])
+      const [hx1, hy1] = projection([hs.bounds.east, hs.bounds.south])
+      mapG.append('image')
+        .attr('class', 'map-hillshade')
+        .attr('href', hs.src)
+        .attr('x', hx0).attr('y', hy0)
+        .attr('width', hx1 - hx0).attr('height', hy1 - hy0)
+        .attr('preserveAspectRatio', 'none')
+        .attr('opacity', isLight ? 0.3 : 0.42)
+        .style('mix-blend-mode', isLight ? 'multiply' : 'soft-light')
+        .attr('pointer-events', 'none')
+    }
+
     // ── Elevation contours. Under everything: they are ground, not content.
     // The Jordan Rift is the fact this map most needed to show — the Dead Sea
     // shore is the lowest land on earth, and Jericho to Jerusalem climbs about

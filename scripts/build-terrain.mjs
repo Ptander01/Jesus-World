@@ -31,7 +31,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { inflateSync } from 'node:zlib'
+import { inflateSync, deflateSync } from 'node:zlib'
 
 const ROOT  = join(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT   = join(ROOT, 'src/data/terrain-levant.json')
@@ -78,6 +78,50 @@ function decodePNG(buf) {
     }
   }
   return { width, height, data: out }
+}
+
+// ── PNG encode: 8-bit greyscale, one IDAT ─────────────────────────────
+// Same reasoning as the decoder — a PNG is zlib plus a filter byte per row, so
+// hand-rolling the narrow case beats a dependency for a build script.
+const CRC = (() => {
+  const t = new Int32Array(256)
+  for (let n = 0; n < 256; n++) {
+    let c = n
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    t[n] = c
+  }
+  return buf => {
+    let c = -1
+    for (let i = 0; i < buf.length; i++) c = t[(c ^ buf[i]) & 0xff] ^ (c >>> 8)
+    return (c ^ -1) >>> 0
+  }
+})()
+function chunk(type, data) {
+  const len = Buffer.alloc(4); len.writeUInt32BE(data.length)
+  const td = Buffer.concat([Buffer.from(type, 'ascii'), data])
+  const crc = Buffer.alloc(4); crc.writeUInt32BE(CRC(td))
+  return Buffer.concat([len, td, crc])
+}
+function encodeGrayPNG(width, height, gray) {
+  const ihdr = Buffer.alloc(13)
+  ihdr.writeUInt32BE(width, 0); ihdr.writeUInt32BE(height, 4)
+  ihdr[8] = 8; ihdr[9] = 0
+  const raw = Buffer.alloc(height * (width + 1))
+  for (let y = 0; y < height; y++) {
+    raw[y * (width + 1)] = 1              // Sub filter: neighbouring terrain samples
+    let prev = 0                          // are close, so this deflates far better
+    for (let x = 0; x < width; x++) {     // than storing raw rows
+      const v = gray[y * width + x]
+      raw[y * (width + 1) + 1 + x] = (v - prev) & 0xff
+      prev = v
+    }
+  }
+  return Buffer.concat([
+    Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', deflateSync(raw, { level: 9 })),
+    chunk('IEND', Buffer.alloc(0)),
+  ])
 }
 
 // ── Web Mercator tile maths ───────────────────────────────────────────
@@ -241,6 +285,47 @@ function contour(level, region, stride = STRIDE) {
 // and at 1.1px the map cannot show that many without reading as hatching.
 // Land contours run everywhere; the Rift's sub-sea levels are asked for inside
 // the Jordan valley only, or they trace the Mediterranean seabed instead.
+// ── Hillshade ─────────────────────────────────────────────────────────
+// Standard slope/aspect shading from a north-west sun, which is the cartographic
+// convention: lit from the upper left, because a relief lit from below reads as
+// inverted — ridges become valleys. Emitted as an 8-bit greyscale PNG into
+// public/, not as a data URI, so it stays out of the JS bundle and the browser
+// can cache it on its own.
+//
+// Downsampled 2x. The map lays this under a land tint at low opacity, so it is
+// carrying the *shape* of the terrain, not its detail — the contours do detail.
+// Full resolution quadrupled the file for something no one can see through a
+// 0.3-opacity wash.
+const HS_STEP = 2
+const hsW = Math.floor(W / HS_STEP), hsH = Math.floor(H / HS_STEP)
+const shade = new Uint8Array(hsW * hsH)
+{
+  const AZ = (315 * Math.PI) / 180        // north-west
+  const ALT = (42 * Math.PI) / 180
+  const sinAlt = Math.sin(ALT), cosAlt = Math.cos(ALT)
+  // Metres per pixel at this latitude, so slope is in real units and the shading
+  // does not flatten out as you move north.
+  const midLat = (BOX.south + BOX.north) / 2
+  const mpp = (156543.03392 * Math.cos((midLat * Math.PI) / 180)) / 2 ** Z * HS_STEP
+  const at = (x, y) => elev[Math.min(H - 1, y * HS_STEP) * W + Math.min(W - 1, x * HS_STEP)]
+  for (let y = 0; y < hsH; y++) {
+    for (let x = 0; x < hsW; x++) {
+      const xm = Math.max(1, Math.min(hsW - 2, x)), ym = Math.max(1, Math.min(hsH - 2, y))
+      const a = at(xm - 1, ym - 1), b = at(xm, ym - 1), c = at(xm + 1, ym - 1)
+      const d = at(xm - 1, ym),                        f = at(xm + 1, ym)
+      const g = at(xm - 1, ym + 1), h = at(xm, ym + 1), i = at(xm + 1, ym + 1)
+      const dzdx = ((c + 2 * f + i) - (a + 2 * d + g)) / (8 * mpp)
+      const dzdy = ((g + 2 * h + i) - (a + 2 * b + c)) / (8 * mpp)
+      const slope = Math.atan(Math.hypot(dzdx, dzdy))
+      const aspect = Math.atan2(dzdy, -dzdx)
+      let v = sinAlt * Math.cos(slope) + cosAlt * Math.sin(slope) * Math.cos(AZ - aspect)
+      shade[y * hsW + x] = Math.max(0, Math.min(255, Math.round(v * 255)))
+    }
+  }
+}
+const HS_OUT = join(ROOT, 'public/hillshade-levant.png')
+writeFileSync(HS_OUT, encodeGrayPNG(hsW, hsH, shade))
+
 const LEVELS = [0, 300, 600, 900, 1200]
 const RIFT_BOX = [35.25, 30.9, 35.85, 33.3]
 const RIFT_LEVELS = [-350, -200]
@@ -314,6 +399,14 @@ const hulehPick = pick('Lake Huleh',
   [35.55, 33.02, 35.73, 33.17], [5.5, 11])
 
 const out = {
+  hillshade: {
+    src: '/hillshade-levant.png',
+    width: hsW, height: hsH,
+    // Web Mercator, same projection family the map uses, so the image maps to a
+    // rectangle in projected space and needs no reprojection — only these corners.
+    bounds: { west: x2lon(x0), east: x2lon(x1 + 1), north: y2lat(y0), south: y2lat(y1 + 1) },
+    note: 'North-west sun at 42 degrees altitude, 2x downsampled from the z10 DEM.',
+  },
   _readme: 'Generated by scripts/build-terrain.mjs — do not hand-edit. Contours from Terrarium elevation tiles (z10, ~150 m/px). The Dead Sea antique shoreline and Lake Huleh are reconstructions; see that script.',
   levels: contours,
   reconstructions: {
@@ -328,5 +421,6 @@ const out = {
 writeFileSync(OUT, JSON.stringify(out))
 const kb = (JSON.stringify(out).length / 1024).toFixed(0)
 console.log(`\nwrote ${OUT}  (${kb} kB)`)
+console.log(`wrote ${HS_OUT}  (${hsW}x${hsH}, ${(readFileSync(HS_OUT).length/1024).toFixed(0)} kB)`)
 console.log(`  Dead Sea -395 m: ${deadSea.ok ? 'shipped' : 'NOT shipped — ' + deadSea.reason}`)
 console.log(`  Lake Huleh:      ${hulehPick.ok ? 'shipped' : 'NOT shipped — ' + hulehPick.reason}`)
