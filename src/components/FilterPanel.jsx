@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import journeyData from '../data/gospels-data.json'
-import { attestationLabel, inLens } from '../lib/attestation.js'
+import { attestationLabel, inLens, isAllFour } from '../lib/attestation.js'
 import ScriptureReveal from './ScriptureReveal.jsx'
 
 const LENSES = ['All', 'Synoptics', 'Matthew', 'Mark', 'Luke', 'John']
@@ -194,11 +194,12 @@ export default function FilterPanel({
                 const journey = journeyData.journeys.find(j => j.id === book.journeyId)
                 const color   = journey?.color ?? '#a09a8e'
                 const selected = selectedBookId === book.id
-                const debated  = book.attribution === 'debated'
+                const debated  = !isAllFour(book.gospels)
+                const inThisLens = inLens(book.gospels, lens)
                 return (
                   <button
                     key={book.id}
-                    className={`fp-pill ${selected ? 'fp-pill--on' : ''} ${debated ? 'fp-em' : ''}`}
+                    className={`fp-pill ${selected ? 'fp-pill--on' : ''} ${debated ? 'fp-em' : ''} ${inThisLens ? '' : 'fp-pill--out'}`}
                     onClick={() => onBookSelect(selected ? null : book.id)}
                     title={book.name}
                   >
@@ -211,7 +212,7 @@ export default function FilterPanel({
 
             <div className="fp-attr-legend">
               <span className="fp-muted">Regular = in all four Gospels</span>
-              <span className="fp-muted fp-em">Italic = fewer Gospels / disputed</span>
+              <span className="fp-muted fp-em">Italic = fewer than four Gospels</span>
             </div>
 
             {eventCategories.map(([label, color, list]) => (

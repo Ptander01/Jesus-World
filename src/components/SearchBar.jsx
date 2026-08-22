@@ -25,13 +25,15 @@ function search(query) {
     .map(x => ({ type: 'city', id: x.item.id, label: x.item.name, sub: x.item.modernName, item: x.item }))
 
   const books = allBooks
-    .map(b => ({ score: Math.max(scoreMatch(b.abbrev, q), scoreMatch(b.id.replace(/-/g, ' '), q)), item: b }))
+    .map(b => ({ score: Math.max(scoreMatch(b.abbrev, q), scoreMatch(b.name, q), scoreMatch(b.id.replace(/-/g, ' '), q)), item: b }))
     .filter(x => x.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)
     .map(x => {
       const j = jById[x.item.journeyId]
-      return { type: 'book', id: x.item.id, label: x.item.abbrev, sub: `AD ${x.item.dateRange[0]}–${x.item.dateRange[1]}`, color: j?.color, item: x.item }
+      // `when` is the display date — dateRange is a fractional AD year now
+      // (33.256 = Friday of Passion Week) and printed raw as "AD 33.256–33.256".
+      return { type: 'book', id: x.item.id, label: x.item.abbrev, sub: x.item.when ?? `AD ${Math.round(x.item.dateRange[0])}`, color: j?.color, item: x.item }
     })
 
   return [...cities, ...books]
@@ -87,7 +89,7 @@ export default function SearchBar({ onCitySelect, onBookSelect }) {
           ref={inputRef}
           className="sb-input"
           type="text"
-          placeholder="Search cities or letters…"
+          placeholder="Search places or events…"
           value={query}
           onChange={e => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
@@ -117,7 +119,10 @@ export default function SearchBar({ onCitySelect, onBookSelect }) {
               </span>
               <span className="sb-result-label">{r.label}</span>
               {r.sub && <span className="sb-result-sub">{r.sub}</span>}
-              <span className="sb-result-type">{r.type === 'city' ? 'CITY' : 'LETTER'}</span>
+              {/* `type: 'book'` is Paul's-World vocabulary for what is an event
+                  here, and several of the 26 "cities" are a mountain, a garden or
+                  a stretch of wilderness. The badges say what the rows are. */}
+              <span className="sb-result-type">{r.type === 'city' ? 'PLACE' : 'EVENT'}</span>
             </button>
           ))}
         </div>

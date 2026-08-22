@@ -1,5 +1,15 @@
 import journeyData from '../data/gospels-data.json'
 import ScriptureReveal from './ScriptureReveal.jsx'
+import { isAllFour } from '../lib/attestation.js'
+
+// "Matthew, Mark and Luke" — the Gospels that carry this event, named. The old
+// copy here said only "attested in fewer than all four", which is both vaguer
+// than the data and was derived from a stale `attribution` field.
+function tellsIt(gospels = []) {
+  if (isAllFour(gospels)) return 'Told in all four Gospels.'
+  if (gospels.length === 1) return `Told only in ${gospels[0]}.`
+  return `Told in ${gospels.slice(0, -1).join(', ')} and ${gospels[gospels.length - 1]}.`
+}
 
 export default function BookDetailPanel({ book, onClose }) {
   const writingCity = book
@@ -15,9 +25,7 @@ export default function BookDetailPanel({ book, onClose }) {
           <h2 className="bdp-title">{book.name}</h2>
 
           <div className="bdp-badge">
-            AD {Math.round(book.dateRange[0]) === Math.round(book.dateRange[1])
-              ? Math.round(book.dateRange[0])
-              : `${Math.round(book.dateRange[0])}–${Math.round(book.dateRange[1])}`}
+            {book.when ?? `AD ${Math.round(book.dateRange[0])}`}
             {book.dateDebated && <span className="bdp-badge-debated"> · chronology debated</span>}
           </div>
 
@@ -55,10 +63,8 @@ export default function BookDetailPanel({ book, onClose }) {
             </div>
           )}
 
-          {book.attribution === 'debated' && (
-            <div className="bdp-attr-note">
-              Attested in fewer than all four Gospels (single Gospel or the Synoptics).
-            </div>
+          {book.gospels?.length > 0 && (
+            <div className="bdp-attr-note">{tellsIt(book.gospels)}</div>
           )}
 
           {book.ref && (

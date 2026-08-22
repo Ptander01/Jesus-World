@@ -63,6 +63,7 @@
     inset 0 -1px 0   rgba(255,255,255,0.045);
   --rail-bg:   linear-gradient(180deg, rgba(28,55,41,0.85) 0%, rgba(15,33,23,0.92) 100%);
   --tip-bg:    rgba(9,22,15,0.96);
+  --tour-scrim: rgba(4,12,8,0.78);
 
   /* Face sheen — top highlight falling to a base shadow */
   --sheen-hi:  rgba(255,255,255,0.17);
@@ -148,6 +149,7 @@
     inset 0 -1px 0   rgba(255,255,255,0.60);
   --rail-bg:   linear-gradient(180deg, rgba(250,246,238,0.88) 0%, rgba(230,222,208,0.92) 100%);
   --tip-bg:    rgba(248,244,236,0.97);
+  --tour-scrim: rgba(40,32,20,0.55);
 
   --sheen-hi:  rgba(255,255,255,0.55);
   --sheen-mid: rgba(255,255,255,0.06);

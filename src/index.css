@@ -448,7 +448,7 @@ body {
 
 /* ── Story layer (map overlay) ──────────────────────── */
 
-/* Entry rail: the timed tour and the scroll-driven reader, offered side by side. */
+/* Entry rail for the timed tour. */
 .story-entry {
   position: absolute;
   bottom: 18px;
@@ -464,24 +464,6 @@ body {
   transform: none;
 }
 
-.story-read {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 20px;
-  text-decoration: none;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-lt);
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--cream-dim);
-  transition: color 0.18s, border-color 0.18s;
-}
-.story-read:hover { color: var(--accent); border-color: var(--accent-dim); }
 
 .story-btn {
   position: absolute;
@@ -1550,6 +1532,11 @@ body {
 
 /* shared helpers */
 .fp-em   { font-style: italic; }
+
+/* Gospel-Lens fade on the timeline's flag row. A CSS transition rather than a
+   d3 one: the attribute lands immediately, so the state is inspectable even
+   where requestAnimationFrame is throttled. */
+[data-book-lens] { transition: opacity 0.3s ease; }
 .fp-muted { color: var(--muted); font-size: 10px; }
 
 /* book pills */
@@ -1592,6 +1579,11 @@ body {
   color: var(--accent);
   box-shadow: var(--lip-in-gold);
 }
+
+/* Gospel Lens — an event the selected Gospel doesn't record fades back but
+   stays put and stays clickable, matching the flag row on the timeline. */
+.fp-pill--out { opacity: 0.32; }
+.fp-pill--out:hover { opacity: 0.7; }
 
 .fp-pill-dot {
   width: 6px;
@@ -2617,4 +2609,151 @@ body {
 .ct-pill--hot:not(.ct-pill--active) {
   border-color: rgba(201, 168, 76, 0.45);
   color: var(--cream);
+}
+
+/* ── First-run tour ──────────────────────────────────────────────────────
+   The scrim is the spotlight's own box-shadow rather than four edge panels or
+   an SVG mask: one element, and it follows the target exactly. The shadow is
+   not hit-testable, so `.tour-veil` sits underneath to swallow clicks — the
+   tour is read-only, and letting the user drive the app mid-step would let a
+   later step contradict what an earlier one just said. */
+.tour { position: fixed; inset: 0; z-index: 200; }
+
+.tour-veil { position: absolute; inset: 0; cursor: pointer; }
+
+.tour-hole {
+  position: fixed;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px var(--tour-scrim), 0 0 0 1px var(--accent-dim) inset;
+  transition: top 0.28s cubic-bezier(0.4,0,0.2,1), left 0.28s cubic-bezier(0.4,0,0.2,1),
+              width 0.28s cubic-bezier(0.4,0,0.2,1), height 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+.tour-card {
+  position: fixed;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  padding: 16px 18px 14px;
+  border-radius: 8px;
+  background: var(--tip-bg);
+  border: 1px solid var(--border-lt);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+  outline: none;
+}
+
+.tour-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.tour-card__count {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: var(--muted);
+}
+.tour-card__skip {
+  background: none;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.18s;
+}
+.tour-card__skip:hover { color: var(--accent); }
+
+.tour-card__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--accent);
+}
+.tour-card__body {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--cream-dim);
+}
+
+.tour-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tour-dots { display: flex; gap: 5px; }
+.tour-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--border-lt);
+  transition: background 0.2s, transform 0.2s;
+}
+.tour-dot--on { background: var(--accent); transform: scale(1.3); }
+
+.tour-card__nav { display: flex; gap: 8px; }
+.tour-btn {
+  padding: 6px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--border-lt);
+  color: var(--cream-dim);
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.tour-btn:hover { color: var(--cream); border-color: var(--accent-dim); }
+.tour-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #10241a;
+}
+.tour-btn--primary:hover { background: var(--accent-lt); border-color: var(--accent-lt); color: #10241a; }
+
+/* Header affordance to reopen the tour */
+.tour-help {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border-lt);
+  color: var(--cream-dim);
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1;
+  transition: color 0.18s, border-color 0.18s;
+}
+.tour-help:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+@media (max-width: 768px) {
+  .tour-card { width: calc(100vw - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-hole { transition: none; }
+}
+
+/* Shown only when a step has fallen back to the mobile hamburger — see Tour.jsx */
+.tour-card__hint { display: none; }
+.tour-card[data-fallback="1"] .tour-card__hint {
+  display: block;
+  margin: -8px 0 14px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
 }

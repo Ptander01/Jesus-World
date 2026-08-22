@@ -10,18 +10,26 @@
 // `activeSite` (a key into SITES) gets the glow-pulse; everything else stays lit
 // but quiet, so the whole scene remains legible while one place carries the beat.
 
-const VB_W = 1200
-const VB_H = 700
+const VB_W = 1200   // still the coordinate space the sites are drawn in
+// The frame. The drawing itself occupies x 643-1200, y 11-644 (measured off the
+// rendered SVG, not guessed), so the frame is that band plus a margin — and it
+// is padded vertically well past the artwork so that `slice`, which must crop
+// one axis to fill the pane, crops into that empty headroom instead of into the
+// labels. At the reader's pane aspect (~0.79) this costs about 6 units a side
+// horizontally; the old full-1200 frame lost ~47, which is why Olivet,
+// Bethphage and Bethany used to lose their sublabels off the right edge.
+const VB = { x: 620, y: -45, w: 600, h: 740 }
 
 // kind: 'zone' (large hatched hill — no number, e.g. the Temple Mount), 'pin'
 // (numbered circle), 'special' (numbered circle + dashed halo, for the week's two
 // most dramatic single-point scenes), or 'edge' (off to the side, arrow-flagged —
 // Bethphage and Bethany sit outside this diagram's frame entirely).
-// This sits behind scrolling prose (see reading.css .rd-map-scrim), which fully
-// hides everything left of roughly x=700 and stays heavy past that until ~x=900 —
-// unlike the Philippi reference (a standalone page), every site here has to live
-// inside that right-hand readable band or it simply never renders visibly, active
-// glow or not. The whole composition is deliberately compressed into x:640-1180.
+// The whole composition occupies x:640-1180. That began as a workaround: the
+// diagram sat behind scrolling prose under a scrim that fully hid everything
+// left of ~x=700, so every site had to live in the right-hand readable band or
+// it never rendered visibly. The reader now gives the map its own half of the
+// screen and the scrim is light, so the band is simply where the drawing lives
+// — and VB_X crops the frame to it instead of carrying 600px of empty space.
 const SITES = {
   'temple-mount': {
     kind: 'zone', x: 850, y: 190, rx: 190, ry: 90,
@@ -85,7 +93,7 @@ export default function JerusalemDiagram({ activeSite }) {
   const edges = Object.entries(SITES).filter(([, s]) => s.kind === 'edge')
 
   return (
-    <svg className="jrs" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid slice"
+    <svg className="jrs" viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} preserveAspectRatio="xMidYMid slice"
       role="img" aria-label="Schematic reconstruction of Jerusalem during Passion Week">
       <defs>
         <pattern id="jrs-hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
