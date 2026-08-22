@@ -1,6 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
 import App from './App.jsx'
 import HeroLanding from './components/HeroLanding.jsx'
+import Tour from './components/Tour.jsx'
 
 // The visuals route is a preview surface, not part of the atlas shell, so it gets a
 // hash check rather than a router dependency. Lazy, to keep the charts out of the
@@ -21,12 +22,23 @@ export default function Root() {
   // Hero shows once per session, on the atlas route only. Persisted so navigating to
   // the reader/visuals and back doesn't re-trigger it.
   const [entered, setEntered] = useState(() => sessionStorage.getItem('jw-entered') === '1')
+  // The walkthrough runs once ever (localStorage, unlike the hero's per-session
+  // flag) and is reopenable from the header. It points at atlas chrome, so it
+  // waits for the hero to be dismissed and for that chrome to exist.
+  const [tourOpen, setTourOpen] = useState(false)
 
   useEffect(() => {
     const onHash = () => setRoute(routeOf())
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+
+  useEffect(() => {
+    if (!entered || route.replace(/^\//, '') !== '') return
+    if (localStorage.getItem('jw-tour-done') === '1') return
+    const t = setTimeout(() => setTourOpen(true), 700)
+    return () => clearTimeout(t)
+  }, [entered, route])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -59,10 +71,17 @@ export default function Root() {
   }
   return (
     <>
-      <App lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
+      <App
+        lens={lens}
+        onLensChange={setLens}
+        theme={theme}
+        onThemeChange={setTheme}
+        onShowTour={() => setTourOpen(true)}
+      />
       {!entered && (
         <HeroLanding onEnter={() => { setEntered(true); sessionStorage.setItem('jw-entered', '1') }} />
       )}
+      {tourOpen && entered && <Tour onClose={() => setTourOpen(false)} />}
     </>
   )
 }

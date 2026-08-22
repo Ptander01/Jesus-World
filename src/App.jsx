@@ -31,7 +31,7 @@ const SECONDS_PER_YEAR = 6
 // Tiberias, Magdala, the lake) rather than the full 200km strip with nothing lit.
 const INITIAL_FOCUS = { lon: 35.48, lat: 32.80, scale: 2 }
 
-export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange }) {
+export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange, onShowTour }) {
   const [activeJourneys, setActiveJourneys] = useState(() => new Set(['period-1']))
   const [selectedBookId, setSelectedBookId] = useState(null)
   const [viewMode, setViewMode]             = useState('journeys')
@@ -241,6 +241,12 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
             setViewMode('books')
           }}
         />
+        <button
+          className="tour-help"
+          onClick={onShowTour}
+          aria-label="How to use this atlas"
+          title="How to use this atlas"
+        >?</button>
         <ThemeToggle
           theme={theme}
           onToggle={() => onThemeChange?.(theme === 'dark' ? 'light' : 'dark')}
@@ -293,6 +299,7 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
       <TimelineBar
         activeJourneys={activeJourneys}
         selectedBookId={selectedBookId}
+        lens={lens}
         timelineYear={timelineYear}
         onYearChange={handleYearChange}
         onBookClick={handleBookSelect}

@@ -53,6 +53,10 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
     )
   }, [timelineYear])
 
+  // Only the tour lives here now. This used to sit beside a "Read the Last Week"
+  // shortcut into #/gospels/311, from when the reader had no home of its own; the
+  // Reader is a top-level tab, so the shortcut was a second door to a room that
+  // already has one.
   if (timelineYear === null) {
     return (
       <div className="story-entry">
@@ -63,12 +67,6 @@ export default function StoryLayer({ timelineYear, onStoryPlay }) {
           <span>Jesus&rsquo;s Story</span>
           <span className="story-btn__sub">AD 29–33</span>
         </button>
-        {/* The reader is a mode, not a chart — offered here beside the tour rather
-            than buried behind a URL. */}
-        <a className="story-read" href="#/gospels/311">
-          <span>Read the Last Week</span>
-          <span className="story-btn__sub">Scripture</span>
-        </a>
       </div>
     )
   }
