@@ -185,6 +185,14 @@ function applyZoomStyling(mapGEl, k) {
   // 0.3px of each other (0.5–0.8), which left the coastline — the strongest line
   // on any map — thinner than the road layer, so the base read as flat wash with
   // the routes floating over nothing.
+  // Contours fade in with zoom. At the opening view they would read as hatching
+  // over the whole land mass; by k=3 there is room for them to be terrain.
+  const contourOp = Math.max(0, Math.min(0.5, (k - 1.4) * 0.34))
+  g.selectAll('.map-contour')
+    .attr('stroke-opacity', contourOp)
+    .attr('stroke-width', function () {
+      return (this.dataset.level === '0' ? 0.5 : 0.35) / s
+    })
   g.selectAll('.map-coast').attr('stroke-width', 1.1 / s)
   g.selectAll('.map-lake').attr('stroke-width', 1.1 / s)
   g.selectAll('.map-river').attr('stroke-width', 0.8 / s)
@@ -409,6 +417,7 @@ export default function MapView({
   // See scripts/crop-basemap.mjs; regenerate with `node scripts/crop-basemap.mjs`.
   const [hiBasemap, setHiBasemap] = useState(null)
   const [water, setWater] = useState(null)
+  const [terrain, setTerrain] = useState(null)
   useEffect(() => {
     let cancelled = false
     const load = () => {
@@ -419,6 +428,10 @@ export default function MapView({
       // about the land map depends on it, and it is the larger of the two.
       import('../data/water-levant.json')
         .then(m => { if (!cancelled) setWater(m.default ?? m) })
+        .catch(() => {})
+      // Contours — see scripts/build-terrain.mjs.
+      import('../data/terrain-levant.json')
+        .then(m => { if (!cancelled) setTerrain(m.default ?? m) })
         .catch(() => {})
     }
     const ric = window.requestIdleCallback
@@ -678,6 +691,30 @@ export default function MapView({
       .attr('stroke', isLight ? '#8fa4b4' : '#4a7159')
       .attr('stroke-width', 1.1)
       .attr('stroke-opacity', 0.9)
+
+    // ── Elevation contours. Under everything: they are ground, not content.
+    // The Jordan Rift is the fact this map most needed to show — the Dead Sea
+    // shore is the lowest land on earth, and Jericho to Jerusalem climbs about
+    // 1000 m in 24 km, which is why the Gospels always say *up* to Jerusalem.
+    // Sub-sea levels are cut to the rift box at build time; unrestricted they
+    // trace the Mediterranean seabed.
+    if (terrain?.levels) {
+      const contourG = mapG.append('g').attr('class', 'map-contours')
+      terrain.levels.forEach(({ level, lines }) => {
+        if (!lines?.length) return
+        contourG.append('path')
+          .attr('class', 'map-contour')
+          .attr('data-level', level)
+          .attr('d', pathGen({ type: 'MultiLineString', coordinates: lines }))
+          .attr('fill', 'none')
+          .attr('stroke', isLight ? '#a8987c' : '#2f5340')
+          // Sea-level reads as a shoreline and earns a little more weight than
+          // the bands above and below it.
+          .attr('stroke-width', level === 0 ? 0.5 : 0.35)
+          .attr('stroke-linejoin', 'round')
+          .attr('stroke-opacity', 0)   // zoom decides; see applyZoomStyling
+      })
+    }
 
     // ── Inland water — the Sea of Galilee, the Dead Sea, the Jordan.
     // Filled with the sea tone so the lake reads as the same substance as the
@@ -1259,7 +1296,7 @@ export default function MapView({
 
     applyZoomStyling(mapGRef.current, kRef.current)
 
-  }, [projection, pathGen, land, borders, water, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes, lensCityIds])
+  }, [projection, pathGen, land, borders, water, terrain, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes, lensCityIds])
 
   // ── Progressive reveal — synchronized to timelineYear ─────────────────
   useEffect(() => {
