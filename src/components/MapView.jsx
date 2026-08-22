@@ -84,20 +84,28 @@ function revealStateFor(journey, jd, year, isActive) {
   return { len, op: jd.baseOpacity }
 }
 
+// Mix a route colour toward the map's ground (for casings) or its ink (for
+// chevrons). Always this rather than d3's brighter()/darker(), which scale RGB
+// channels and clip: brighter() turned the gold route's light-theme casing into
+// a neon #ffff86 and its chevrons into #fffd73.
+const tint = (c, toward, t) => d3.interpolateRgb(c, toward)(t)
+
 // Apply a reveal state to every segment, casing, and chevron of a journey
 function applyRevealState(jd, revealLen, opacity) {
+  // Opacity rides the two groups rather than the individual paths. A route is
+  // drawn one path per waypoint pair, so at any opacity below 1 the round caps
+  // where consecutive segments meet composite twice and print a brighter pip at
+  // every stop — the whole route beaded. Fading the group composites the
+  // segments against each other first, then fades the result once.
+  d3.select(jd.segG).attr('opacity', opacity)
+  if (jd.caseG) d3.select(jd.caseG).attr('opacity', opacity)
   jd.segs.forEach(seg => {
     const segLen = seg.l1 - seg.l0
     const vis = Math.max(0, Math.min(segLen, revealLen - seg.l0))
     const el = d3.select(seg.el)
     if (seg.dash) el.attr('stroke-dasharray', dashedRevealArray(vis, segLen, seg.dash[0], seg.dash[1]))
     else el.attr('stroke-dashoffset', segLen - vis)
-    el.attr('stroke-opacity', opacity)
-    if (seg.caseEl) {
-      d3.select(seg.caseEl)
-        .attr('stroke-dashoffset', segLen - vis)
-        .attr('stroke-opacity', opacity)
-    }
+    if (seg.caseEl) d3.select(seg.caseEl).attr('stroke-dashoffset', segLen - vis)
   })
   jd.chevrons.forEach(c => {
     d3.select(c.el).attr('opacity',
@@ -144,18 +152,23 @@ function applyZoomStyling(mapGEl, k) {
   // instead of k, so zoomed-in lines stay lines rather than ribbons.
   const s = Math.pow(k, 0.6)
   g.selectAll('.journey-line').attr('stroke-width', 2 / s)
-  g.selectAll('.journey-case').attr('stroke-width', 3.6 / s)
+  g.selectAll('.journey-case').attr('stroke-width', 3.4 / s)
   g.selectAll('.paul-marker-halo').attr('r', 7 / s)
   g.selectAll('.paul-marker-core').attr('r', 2.8 / s).attr('stroke-width', 0.9 / s)
   g.selectAll('.route-chevron').each(function () {
     const d = this.dataset
     d3.select(this).attr('transform', `translate(${d.x},${d.y}) rotate(${d.a}) scale(${1 / s})`)
   })
-  g.selectAll('.map-graticule').attr('stroke-width', 0.5 / s)
-  g.selectAll('.map-borders').attr('stroke-width', 0.7 / s)
-  g.selectAll('.map-coast').attr('stroke-width', 0.6 / s)
-  g.selectAll('.province-border').attr('stroke-width', 0.7 / s)
-  g.selectAll('.era-road').attr('stroke-width', 0.8 / s)
+  // Natural-feature hierarchy, strongest to faintest: coastline, era roads,
+  // region borders, modern country borders, graticule. These used to sit within
+  // 0.3px of each other (0.5–0.8), which left the coastline — the strongest line
+  // on any map — thinner than the road layer, so the base read as flat wash with
+  // the routes floating over nothing.
+  g.selectAll('.map-coast').attr('stroke-width', 1.1 / s)
+  g.selectAll('.era-road').attr('stroke-width', 0.9 / s)
+  g.selectAll('.province-border').attr('stroke-width', 0.9 / s)
+  g.selectAll('.map-borders').attr('stroke-width', 0.5 / s)
+  g.selectAll('.map-graticule').attr('stroke-width', 0.4 / s)
   g.selectAll('.seg-hit').attr('stroke-width', 12 / k) // hit zone stays screen-constant
 
   g.selectAll('.city-dot').each(function () {
@@ -260,7 +273,7 @@ function getPlayZoom(location) {
 }
 
 // Scale bar showing a fixed 50 km reference in the bottom-right corner
-function ScaleBar({ projection, theme }) {
+function ScaleBar({ projection, theme, fitMode }) {
   const barColor = theme === 'light' ? '#4a5a6a' : '#7a8ab0'
   const TARGET_KM = 50
   const R = 6371
@@ -278,7 +291,7 @@ function ScaleBar({ projection, theme }) {
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio={`xMidYMid ${fitMode}`}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
     >
       <line x1={bx} y1={by} x2={bx + barW} y2={by} stroke={barColor} strokeWidth={1.5} />
@@ -307,6 +320,12 @@ export default function MapView({
   theme,
   lens = 'All',
   initialFocus,
+  // How the 1200×680 viewBox fits its container. 'meet' letterboxes so the whole
+  // frame shows — right for the Atlas, whose container is landscape. The reader
+  // gives the map a tall half-width column, where 'meet' would letterbox a
+  // landscape viewBox into a portrait box and leave a 237px dead band above and
+  // below; 'slice' fills and crops instead.
+  fitMode = 'meet',
 }) {
   const isLight = theme === 'light'
   const svgRef      = useRef(null)
@@ -488,9 +507,14 @@ export default function MapView({
       if (!city || !zoomRef.current || !svgRef.current) return
       const [px, py] = projection(city.coords)
       const svgEl = svgRef.current
-      const { width, height } = svgEl.getBoundingClientRect()
+      // Centre in viewBox units, not screen pixels. The transform is applied to a
+      // <g> inside the SVG, so it lives in the viewBox's coordinate space, while
+      // getBoundingClientRect() reports CSS pixels — mixing them put the target
+      // 80 units right of centre on a 1360px-wide atlas, and a quarter of the
+      // frame off once the reader narrowed the map to half width. `initialFocus`
+      // above already anchors against W, which is the correct space.
       const scale = Math.max(kRef.current, 3)
-      const t = d3.zoomIdentity.translate(width / 2 - scale * px, height / 2 - scale * py).scale(scale)
+      const t = d3.zoomIdentity.translate(W / 2 - scale * px, H / 2 - scale * py).scale(scale)
       d3.select(svgEl).transition('search-pan').duration(700).call(zoomRef.current.transform, t)
     })
 
@@ -505,8 +529,6 @@ export default function MapView({
 
     // Halo behind labels — sits between the theme's land and sea tones
     const haloColor = isLight ? '#d3c9ae' : '#0a1710'
-    // Casing under land route segments — background tone lifts routes off the map
-    const caseColor = isLight ? '#f5f0e8' : '#06110b'
 
     // ── Graticule
     mapG.append('path')
@@ -581,9 +603,9 @@ export default function MapView({
       .attr('d', landPathD)
       .attr('class', 'map-coast')
       .attr('fill', 'none')
-      .attr('stroke', isLight ? '#8fa4b4' : '#3a5c46')
-      .attr('stroke-width', 0.6)
-      .attr('stroke-opacity', 0.85)
+      .attr('stroke', isLight ? '#8fa4b4' : '#4a7159')
+      .attr('stroke-width', 1.1)
+      .attr('stroke-opacity', 0.9)
 
     // ── Country borders
     mapG.append('path')
@@ -592,7 +614,8 @@ export default function MapView({
       .attr('class', 'map-borders')
       .attr('fill', 'none')
       .attr('stroke', isLight ? '#9aacb8' : '#243f30')
-      .attr('stroke-width', 0.7)
+      .attr('stroke-width', 0.5)
+      .attr('stroke-opacity', 0.7)
 
     // ── Province fills, borders, labels
     if (provincesGeo && showProvinces) {
@@ -613,10 +636,10 @@ export default function MapView({
         .attr('d', pathGen)
         .attr('fill', 'none')
         .attr('stroke', '#c9a84c')
-        .attr('stroke-width', 0.7)
+        .attr('stroke-width', 0.9)
         .attr('stroke-dasharray', '3 2.6')
         .attr('stroke-linecap', 'round')
-        .attr('stroke-opacity', 0.28)
+        .attr('stroke-opacity', 0.4)
 
       const provLabelG = mapG.append('g').attr('pointer-events', 'none')
       provincesGeo.features.forEach(feature => {
@@ -733,6 +756,16 @@ export default function MapView({
         baseOpacity = isActive ? 0.85 : 0
       }
 
+      // Casing in a darker cast of the route's own hue. It used to be near-black
+      // (#06110b at 0.85 under a 2px line), which reads as a sticker cut out and
+      // laid on the map — and where two routes cross, one route's black rim
+      // slices through the other's colour. Six converge on Capernaum and the
+      // rims stacked into a blob. A hue-matched casing still lifts the route off
+      // the terrain but keeps it reading as one object.
+      // Toward the ground in both themes: darker than the route on the dark map,
+      // paler than it on the parchment one.
+      const caseColor = tint(colors.primary, isLight ? '#f5f0e8' : '#08150e', 0.55)
+
       const waypoints = journey.waypoints
         .filter((wp, i) => i === 0 || wp.cityId !== journey.waypoints[i - 1].cityId)
         .filter(wp => cityById[wp.cityId])
@@ -776,7 +809,8 @@ export default function MapView({
             .attr('d', d)
             .attr('fill', 'none')
             .attr('stroke', caseColor)
-            .attr('stroke-width', 3.6)
+            .attr('stroke-width', 3.4)
+            .attr('stroke-opacity', 0.9)
             .attr('stroke-linecap', 'round')
             .attr('stroke-linejoin', 'round')
             .attr('stroke-dasharray', `${segLen} ${segLen}`)
@@ -807,9 +841,14 @@ export default function MapView({
           .attr('class', 'route-chevron')
           .attr('d', 'M -3.4 -2.8 L 2.4 0 L -3.4 2.8')
           .attr('fill', 'none')
-          .attr('stroke', colors.primary)
-          .attr('stroke-width', 1.2)
+          // Lighter than the line it sits on — same hue and weight made these read
+          // as bumps in the route rather than direction markers. Tinted toward
+          // the theme's ink rather than d3's brighter(), which scales RGB and
+          // drove the gold route's chevrons to a near-neon #fffd73.
+          .attr('stroke', tint(colors.primary, isLight ? '#2a2420' : '#eef0e2', 0.45))
+          .attr('stroke-width', 1.05)
           .attr('stroke-linecap', 'round')
+          .attr('stroke-linejoin', 'round')
           .attr('opacity', 0)
         chev.node().dataset.x = p.x.toFixed(2)
         chev.node().dataset.y = p.y.toFixed(2)
@@ -817,7 +856,8 @@ export default function MapView({
         chevrons.push({ el: chev.node(), len: l })
       }
 
-      const jd = { node, total, wps: waypoints, wpLengths, colors, baseOpacity, segs, chevrons }
+      const jd = { node, total, wps: waypoints, wpLengths, colors, baseOpacity, segs, chevrons,
+                   segG: segG.node(), caseG: caseG.node() }
       lineDataRef.current[journey.id] = jd
 
       // Initial reveal for the current scrub year (or full route when idle)
@@ -1259,7 +1299,7 @@ export default function MapView({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio={`xMidYMid ${fitMode}`}
         style={{ width: '100%', height: '100%' }}
       >
         <defs>
@@ -1276,7 +1316,7 @@ export default function MapView({
       </svg>
 
       {/* Scale bar — fixed 50 km reference, bottom-right */}
-      <ScaleBar projection={projection} theme={theme} />
+      <ScaleBar projection={projection} theme={theme} fitMode={fitMode} />
 
       {segmentTip && !tooltipCity && (
         <div className="city-tooltip" style={{
