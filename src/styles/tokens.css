@@ -82,11 +82,19 @@
      ~3% so the surface has tooth instead of reading as flat paint. */
   --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23g)'/></svg>");
 
-  --j1:    #c9a84c;
-  --j2:    #4A7C6F;
-  --j3:    #7B6FA0;
-  --j-rom: #B85042;
-  --j-pst: #5B8DB8;
+  /* Period swatches — mirrors journeys[].color in gospels-data.json; the two
+     must move together. Generated as one system in OKLCH at L=0.66 / C=0.082,
+     so all six carry equal perceived weight rather than equal HSL lightness,
+     which is why the old set had a gold that outshone everything and a teal
+     that sank into the land. Hues sit 60 degrees apart and at least 21 from the
+     accent — --j1 used to *be* --accent, so the opening route was the same
+     colour as every gold element of the chrome. */
+  --j1:    #B4895A;
+  --j2:    #849C65;
+  --j3:    #4FA39B;
+  --j4:    #A085B9;
+  --j-rom: #BE7D89;
+  --j-pst: #6997C2;
 
   --city-writing:   #e9c86c;
   --city-recipient: #4A7C6F;

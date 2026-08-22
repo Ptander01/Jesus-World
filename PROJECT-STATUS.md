@@ -233,6 +233,37 @@ call: the flags should be the first step a reader takes, not the state they walk
 in on. Note this means the state-1 dock magnification and flag tooltips are not
 reachable until Next is pressed once.
 
+## Physical geography, and a repainted period palette
+
+Water, terrain and colour all landed together; the details live in CLAUDE.md and
+in the two generators' headers. The short version:
+
+- **The Sea of Galilee, Dead Sea and Jordan were not on the map at all**, which
+  had also silently disabled the sea-leg styling — 0 of 42 crossings classified.
+  Now from OpenStreetMap (2001 vertices for the lake against Natural Earth's 28,
+  and none of NE's six modern reservoirs).
+- **The map drew 26 of the 41 route segments the data implies.** Waypoint arc
+  lengths came from a nearest-point search over the whole spine, so every revisit
+  to a city resolved to the first visit and its segment measured zero. Galilean
+  Ministry (Capernaum ×5) lost most of its shuttle legs. Now 41 of 41.
+- **Elevation contours** from keyless Terrarium tiles, with an inline PNG
+  decoder. The Jordan Rift is finally visible.
+- **The period colours were rebuilt as one system in OKLCH.** `--j1` used to be
+  the accent gold exactly, so the opening route was the same colour as every
+  piece of gold chrome; three periods sat in a 37-degree warm band with the
+  closest pair 16 degrees apart; and three fell below the 3:1 contrast floor
+  against the land, the worst being the largest period at 2.33. Now 60-degree
+  spacing, 3.5:1 minimum, and equal *perceived* weight — the old set was even in
+  HSL lightness, which is why the gold outshone everything and the teal sank
+  into the pine ground.
+
+**Two reconstructions were attempted and neither shipped**, which is the useful
+part: `build-terrain.mjs` validates its own output and records why rather than
+emitting a plausible wrong shape. The Dead Sea's -395 m antique shoreline is too
+thin a band to stitch at 150 m/px; Lake Huleh cannot be found by elevation alone
+because the Huleh valley floor sits at much the same height the lake did. Both
+want a finer DEM or pre-drainage survey mapping.
+
 ## Current state
 
 - **Deployed:** everything above is merged to `main` and pushed.
