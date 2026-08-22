@@ -31,15 +31,17 @@ Key dependencies: `d3` v7, `topojson-client`, `world-atlas` (Natural Earth 50m l
 
 ```
 Root.jsx                    — hash router + shared state above the routes:
-                              lens (Gospel Lens), theme, hero-seen flag
+                              lens (Gospel Lens), theme, hero-seen + tour-seen flags
 ├── HeroLanding.jsx         — pinned depth-glide parallax; once per session
+├── Tour.jsx                — first-run walkthrough; once ever, reopenable from ?
 ├── App.jsx           (#)   — the Atlas
-│   ├── NavTabs.jsx         — Atlas / Charts / Reader, in every surface's header
-│   ├── SearchBar.jsx · ThemeToggle.jsx
+│   ├── NavTabs.jsx         — Atlas / Charts / Reader; used by App and VisualsDemo
+│   │                         only — GospelReader has its own header and no tabs
+│   ├── SearchBar.jsx · ThemeToggle.jsx · .tour-help (?)
 │   ├── .map-container
 │   │   ├── FilterPanel.jsx — Gospel Lens, period toggles, Events/Parables lists
 │   │   ├── MapView.jsx     — D3 SVG map; basemap, regions, routes, city dots
-│   │   ├── StoryLayer.jsx  — play-mode caption card over the map
+│   │   ├── StoryLayer.jsx  — Jesus's Story entry button + play-mode caption card
 │   │   └── BookDetailPanel.jsx
 │   ├── TimelineBar.jsx     — 4-state overview; click a capsule to drill in
 │   │   └── TimelineDetail.jsx — rows: STOPS · EVENTS · PLACES
@@ -57,6 +59,32 @@ Root.jsx                    — hash router + shared state above the routes:
 Shared:  TimelineDefs.jsx (SVG material) · ScriptureReveal.jsx (click-to-read verses)
 Unused:  ReadingMode.jsx, BookTrack.jsx — out of the bundle, still on disk
 ```
+### The first-run tour (`Tour.jsx`)
+
+Nine steps pointing at the atlas's chrome in turn: the nav tabs, the Gospel
+Lens, the filter modes, the layer list, the timeline's state nav, the timeline
+itself, and the story button. Opens once ever — `localStorage['jw-tour-done']`,
+unlike the hero's per-session `sessionStorage['jw-entered']` — 700 ms after the
+hero is dismissed, and only on the atlas route. Reopenable from the `?` in the
+header (`.tour-help`, wired through `App`'s `onShowTour` prop).
+
+- **The scrim is the spotlight's own `box-shadow: 0 0 0 9999px`**, not four edge
+  panels or an SVG mask: one element, and it tracks the target exactly. A
+  box-shadow is not hit-testable, so `.tour-veil` sits underneath to swallow
+  clicks.
+- **The tour is read-only.** Letting the user drive the app mid-step would let a
+  later step contradict what an earlier one just said.
+- **Placement is imperative** (`place()` writing inline styles), not state. The
+  spotlight reads the live rect of an element this component does not own, and
+  re-rendering to store what was just measured buys nothing — it also keeps the
+  component clear of `react-hooks/set-state-in-effect`.
+- **`spotMobile`** is the stand-in for a target inside the off-canvas panel at
+  ≤768px; those three steps spotlight `.fp-mobile-toggle` and reveal a "Tap ☰"
+  hint via `card.dataset.fallback`. A step whose target is missing or collapsed
+  falls back to a centred card, so nothing ever points at empty space.
+- The card flips above its target when there is no room below, and clamps to the
+  viewport horizontally.
+
 ### State flow
 
 - `activeJourneys` — `Set<string>` of journey IDs currently shown; toggled by FilterPanel and passed to MapView + TimelineBar
@@ -87,7 +115,11 @@ Unused:  ReadingMode.jsx, BookTrack.jsx — out of the bundle, still on disk
 All map/period/event/city data lives in `src/data/gospels-data.json`. **This app began as an atlas of Paul's journeys and was reskinned for the Gospels**, so some field names still carry the old vocabulary — `journeys` are periods, `books` are marquee events, `churchEvents` are things that happened at a place, `paulEvents` are per-period events. The names are load-bearing in code; the meanings are not what they say.
 
 - `journeys` — 6 **periods**: Early Ministry, Galilean Ministry, Withdrawals, Judea & Perea, Passion Week, Resurrection. `id`, `shortName`, `dateRange`, `color`, `waypoints[]` (`cityId`, `year`, `durationDays`, `note`, `ref`)
-- `books` — 15 **marquee events** (Baptism → Resurrection), the timeline's flag chips. `id`, `abbrev`, `name`, `dateRange`, `journeyId`
+- `books` — 16 **marquee events** (Baptism → Ascension), the timeline's flag chips. `id`, `abbrev`, `name`, `dateRange`, `when`, `journeyId`, `gospels`
+  - **The roster is `paulEvents` where `type === 'major'`** — that is the definition, and the two must not drift. They did: the flag row carried the AD 30 temple cleansing and the Olivet Discourse (both `minor`) and omitted the call of the disciples, the Great Commission and the Ascension (all `major`). Both dropped events still render in the drill-down EVENTS row; only their flags are gone.
+  - `dateRange` is `[year, year]` at the **fractional** year of the matching `major` event (`33.256` = Friday of Passion Week). It used to be whole years inherited from Paul's epistles, where whole years over AD 44–68 were fine. On a 29–33.5 axis that put six events on one pixel and dated five of them outside their own `journeyId`'s range.
+  - `when` is the display string (`"AD 33 · Palm Sunday"`). Nothing should print `dateRange` — `33.256` is not a date a reader can use.
+  - There is **no `attribution` field**. It was Paul's-World authorship-dispute vocabulary reused to mean "told in fewer than four Gospels", which is derivable from `gospels` and had already gone stale (the temple cleansing carried 3 Gospels and `undisputed`). `isAllFour(b.gospels)` from `src/lib/attestation.js` is the one source; TimelineBar, FilterPanel and BookDetailPanel all read it.
 - `cities` — 26 entries, `id`, `coords [lon, lat]`, `name`, `modernName`, `description`, `ref`. Several are not cities (Mount Hermon, Gethsemane, Bethany-beyond-Jordan, Judean Wilderness)
 - `churchEvents` — 55 **located events**; `churchId` and `cityId` are equal for all 55. Carries both an inherited `type` (drives nothing) and a real `category`: miracle 34 / encounter 9 / teaching 7 / event 5. See `src/lib/eventCategory.js`
 - `paulEvents` — 33 per-period events; only types `major` and `minor` exist
@@ -114,6 +146,14 @@ Four separate `useEffect` hooks:
 - Tier-1 city labels: `font-size = 13/k` (base 13px)
 - Tier-2 city labels: `font-size = 11/k`, visible at k ≥ 2
 - Tier-3 city labels: `font-size = 9/k`, visible at k ≥ 3.5
+
+**Route linework.** Three things carry it, and each replaced something that read as marker-pen rather than cartography:
+
+- **Casings are a cast of the route's own hue**, mixed 0.55 toward the ground (dark on the dark map, pale on the parchment) at 3.4 width under a 2px line. They used to be near-black `#06110b` at 0.85/3.6 — an 0.8px black rim that made routes read as stickers laid on the map, and where two crossed, one route's black rim sliced the other's colour. Six converge on Capernaum and the rims stacked into a blob.
+- **`tint(c, toward, t)`** (module-level, `d3.interpolateRgb`) is how every derived route colour is mixed. Never `d3.color().brighter()/darker()` — those scale RGB channels and clip, which produced a neon `#ffff86` light-theme casing and `#fffd73` chevrons on the gold route.
+- **Reveal opacity rides `jd.segG` / `jd.caseG`, not the individual paths.** A route is one path per waypoint pair, so at any opacity below 1 the round caps where consecutive segments meet composite twice and print a brighter pip at every stop — the whole route beaded. Fading the group composites the segments first.
+
+**Basemap line hierarchy** (base widths, before the `k^0.6` divisor): coast `1.1` → era roads `0.9` → region borders `0.9` (dashed, 0.4 opacity) → modern country borders `0.5` → graticule `0.4`. These used to sit within 0.3px of each other (0.5–0.8), leaving the coastline — the strongest line on any map — thinner than the road layer, so the base read as flat wash with the routes floating over nothing. Modern national borders are deliberately near the bottom: they are anachronistic on a 1st-century map.
 
 **Zoom-aware strokes/dots:** `applyZoomStyling` also divides journey-line widths, city dot radii (+ their strokes, via `data-r0`/`data-sw0` attrs), graticule/border/coast/province-border/Via Egnatia widths by `k^0.6` (rendered size grows as `k^0.4` — lines stay lines under zoom, not ribbons), and keeps `.seg-hit` distance-hover targets screen-constant at `12/k`. All labels carry a `paint-order: stroke` halo (`haloColor`: dark `#0a1220`, light `#d3c9ae`) whose width scales `1/k` alongside the font.
 
@@ -155,13 +195,28 @@ Six `useEffect` hooks:
 5. **Main render** `[activeJourneys, selectedBookId, highlightRange, onBookClick, isPlaying, detailJourneyId]` — clears and redraws everything at the *current* `bookStateRef` geometry (no animation). Creates `<defs>` with one `<clipPath id="pbw-bar-clip-{id}">` per journey plus the `#pbw-pole-mask` mask. Capsule bars live in `<g class="tl-bars">` (ghosted to 0.07 opacity in state 3). Each book's elements (pole, anchor dot, stem, chip rect, abbrev/name/date texts) are grouped under `<g data-book-group={id}>` with initial opacity/transform set based on current year. Also attaches `mousemove.dock`/`mouseleave.dock` handlers on the SVG for state-1 dock magnification.
 6. **`[bookState]` transition effect** — mirrors `bookState` into `bookStateRef`, then runs a named `'bookState'` transition (650 ms, easeCubicInOut) morphing the SVG `viewBox`, `.tl-bars` / `.tl-anchor-line` opacity, and every book's chip rect / stem / pole / texts to the `getP`-derived geometry for the new state. First run (mount) sets the viewBox instantly and returns. The viewBox is **not** set via JSX — it is owned imperatively by this effect.
 
-**4-state books system** (from `src/data/TIMELINE-BOOKS-4STATE-PROTOTYPE.md`): local `bookState` (0–3, default 1) replaces the old lollipop diamonds. State 0 = journey bars only; 1 = bars + flag dots (with stems, Apple-dock hover magnification); 2 = both rows, compact abbrev chips (width = date range, min 28); 3 = books only — full-name chips with date sublabels, bars ghosted, L-shaped flag poles (`polePath`) connecting each chip to its date anchor on the `SEP` line, passing behind chip bodies via `#pbw-pole-mask`. One rounded `<rect data-chip>` per book morphs across all states via `getP(b, s)`. Nav UI (`.tl-state-nav`: state label + 4 dots + Next button) renders as a sibling strip *above* the `.timeline-bar` card, hidden in detail mode. Card height is aspect-locked to the state's viewBox: `height = cardWidth × vbH/1200` (ResizeObserver feeds `tlWidth`), clamped to `H_MIN=[64,64,104,96]` / `H_MAX=[112,112,190,160]` so the overview scales uniformly (no stretch distortion; mild stretch only at clamped extremes), +68 when the story row is open; manual resize (`tlHeight`) overrides.
+**4-state books system** (from `src/data/TIMELINE-BOOKS-4STATE-PROTOTYPE.md`): local `bookState` (0–3, default 1) replaces the old lollipop diamonds. State 0 = journey bars only; 1 = bars + flag dots (with stems, Apple-dock hover magnification); 2 = both rows, compact abbrev chips; 3 = events only — full-name chips with date sublabels, bars ghosted, L-shaped flag poles (`polePath`) connecting each chip to its date anchor on the `SEP` line, passing behind chip bodies via `#pbw-pole-mask`. One rounded `<rect data-chip>` per book morphs across all states via `getP(b, s)`. Nav UI (`.tl-state-nav`: state label + 4 dots + Next button) renders as a sibling strip *above* the `.timeline-bar` card, hidden in detail mode. Card height is aspect-locked to the state's viewBox: `height = cardWidth × vbH/1200` (ResizeObserver feeds `tlWidth`), clamped to `H_MIN=[72,72,112,188]` / `H_MAX=[126,126,206,306]` so the overview scales uniformly (no stretch distortion; mild stretch only at clamped extremes), +68 when the story row is open; manual resize (`tlHeight`) overrides.
 
-ViewBox per state (`VIEWBOXES`): `[0,0,1200,78]` for states 0/1, `[0,0,1200,150]` for state 2, `[0,75,1200,123]` for state 3. `preserveAspectRatio="none"`. xScale: `d3.scaleLinear().domain([44, 68]).range([80, 1140])`. Key layout constants: `TH=210`, `BY=24`, `BH=16` (bars `y=24–40`), `FAY=8`/`FBY=48` (flag dot rows), `AXIS_Y=62`, `SEP=78`, `ROUTE_Y=82`, `FDR=4` (7 on coarse pointers), state-2 chip rows `CR0_S2=88`/`CR1_S2=113` (`CH_S2=20`), state-3 rows `CR0_S3=106`/`CR1_S3=165` (`CH_S3=30`). Even-index books (`row=0`) use the upper row, odd-index the lower. The left "BOOKS" label is state-aware (`.tl-lbl-books`, y `110`/`150` in states ≤2/3). `S2_OFFSETS` staggers state-2 chips that stack exactly (same row + same date midpoint — Phil/Eph and Col/Phm) by ±16px so both labels and click targets stay exposed.
+**Every state packs its chips with `packRow(items, gap, lo, hi)`** — one shared 1-D collision resolver: push right to clear left neighbours, clamp to the right boundary, push back left, clamp left, push right once more. (The boundary clamps are interleaved with the passes deliberately; clamping only after both passes reintroduces overlap at the right edge.) It is called three times, and all three callers need it for the same reason — **the Gospels cluster at the end**. Six of the sixteen events fall inside the last two weeks of a 4.5-year axis, ~4px apart:
 
-`S3_CHIPS` (module-level IIFE): state-3 chip layout with per-row collision resolution — chip width `max(dateRange px, name.length×6.5+26)`, then a forward push-right pass, right-boundary clamp + backward push-left pass, left-boundary clamp + final push-right pass (the boundary clamps are interleaved with the passes deliberately; clamping after both passes reintroduces overlap at the right edge — 1 Ti/2 Ti). Prison epistles (Phil/Eph at AD 60–62 row 0, Col/Phm row 1) are the main cluster this resolves.
+- `FLAG_X` — states 0/1, per row (`b.row = i % 2`), gap `2×2.4+3`. Without it the Passion Week and Resurrection flags render as *pixel-identical* 8×8 rects and only the last one painted is clickable; that was live, with 5 of 15 events unreachable in the default state.
+- `S2_CHIPS` — state 2, per row, gap 6. This replaced a stagger that only fired on *exact* coincidence (same row, same rounded date). Fine while every event sat on a whole year; useless the moment they carry true dates, when the chips are 3px apart with 34px bodies.
+- `S3_CHIPS` — state 3, per shelf, gap 6.
 
-Left-side section labels "TIMELINE" (centered over the bars/axis band) and "EVENTS" (centered in `y=78–210`) at `x=40` in Cinzel, `var(--muted)`, separated by a `1px` rule at `y=SEP`.
+`data-stem` (states 0/1) and `data-pole` (state 3) are both L-routes from the displaced chip back to its true date, so displacement never costs accuracy. `stemPath` mirrors `polePath` one band up.
+
+ViewBox per state (`VIEWBOXES`): `[0,0,1200,78]` for states 0/1, `[0,0,1200,150]` for state 2, `[0,75,1200,211]` for state 3. `preserveAspectRatio="none"`. xScale: `d3.scaleLinear().domain([29, 33.5]).range([80, 1140])`. Key layout constants: `TH=290` (the canvas the scrub line, the highlight rect and the pole mask span — it must reach `S3_BOTTOM`), `BY=24`, `BH=16` (bars `y=24–40`), `FAY=8`/`FBY=48` (flag dot rows), `AXIS_Y=62`, `SEP=78`, `ROUTE_Y=82`, `FDR=4` (7 on coarse pointers), state-2 chip rows `CR0_S2=88`/`CR1_S2=113` (`CH_S2=20`), state-3 shelves `CR0_S3=100`/`CR1_S3=152`/`CR2_S3=204`/`CR3_S3=256` (`CH_S3=30`, `S3_BOTTOM=286`). Even-index books (`row=0`) use the upper row, odd-index the lower. The left "EVENTS" label is state-aware (`.tl-lbl-books`, y `110`/`180` in states ≤2/3).
+
+`S3_CHIPS` (module-level IIFE): assigns each event to one of **four** shelves, then `packRow`s each. Chip width is `max(dateRange px, name.length×7.8+28)`; measured against the real font that estimate runs ~1.6% high, close enough.
+
+Two things about it are load-bearing and were both wrong before:
+
+- **Four shelves, not three.** Sixteen full names total ~2900px against a 1060px axis. Split three ways every shelf sits over 90% full, and the packing is then forced to put some chip ~310px from the date it marks (brute-forcing the assignment only gets that to 295px — it is arithmetic, not a bad heuristic). Four shelves land at ~70% full and halve the drift to ~190px.
+- **Shelves are balanced by total width, not by count.** The old running-edge greedy put the six longest names on one shelf, whose content needed 1181px of the 1060px axis and ran off the right edge. That was already happening on the previous 15-event roster (right edge 1159 against a 1140 limit) — the wider roster only made it obvious. Assignment walks the events in date order and drops each on the least-loaded shelf, so every shelf still reads left-to-right in time.
+
+**Gospel Lens.** `TimelineBar` takes a `lens` prop and fades any flag the selected Gospel doesn't record to `LENS_DIM` (0.25) — dimmed, never removed or re-packed, because the row is a fixed chronological spine and the gaps are the point (under `John`, 7 of 16 go dark). The opacity rides an inner `<g data-book-lens>` so it never contends with the play-mode reveal, which owns `opacity` on the outer `<g data-book-group>`. The fade is a CSS transition on `[data-book-lens]`, not a d3 one, so the attribute lands immediately and the state is inspectable where `requestAnimationFrame` is throttled. `FilterPanel`'s EVENTS pills dim to match via `.fp-pill--out`.
+
+Left-side section labels "TIMELINE" (centered over the bars/axis band) and "EVENTS" (centered in the books band) at `x=40` in Cinzel, `var(--muted)`, separated by a `1px` rule at `y=SEP`.
 
 Year labels sit **below** the axis (`y = AXIS_Y + 12`), not above it: the state-0/1 lower flag-dot row occupies `y=44–52` and completely covered them at the old `y=54`. The scrub tooltip pill (`AXIS_Y+2 … +16`) does overlap them while scrubbing, which is fine — it shows the same year more precisely.
 
@@ -262,6 +317,35 @@ This is what the merge bought beyond tidier navigation: day 324 runs 103 verses 
 
 `GospelReader.jsx` lazy-loads days via `import.meta.glob` (39 chunks, 2–4 kB gzipped each) and prefetches the next day. Routes: `/gospels`, `/gospels/<planDay>` (deep-linkable; the reader mirrors the current day into the hash with `replaceState`, which doesn't fire `hashchange`), and `/read`, which is the retired curated route and lands on day 311. `src/components/ReadingMode.jsx` is the old curated reader — now unreferenced and out of the bundle; `passion-reading.json` lives on as the *source* of the scene prose.
 
+**Reader layout — a real 50/50 split, above 820px.** `.rd-map` takes `inset: 0 0
+0 50%`, `.rd-scroll` takes `inset: 0 50% 0 0`. It used to be a full-bleed map
+with the column floating over it, and the *scrim* made the split: a 90° gradient
+running near-opaque to 38% and still 45% at 62%. That meant the western half of
+the map was rendered and then buried, the map was never at full strength
+anywhere, and a dead band sat between the column's right edge and the point the
+map became legible. Three things had to move together:
+
+- **`MapView` needs `fitMode="slice"` here.** The viewBox is 1200×680 landscape;
+  the reader's pane is half-width and portrait. The default `xMidYMid meet`
+  letterboxed it into a 680×386 strip with a **237px dead band above and below**.
+  `slice` fills and crops instead. The Atlas keeps `meet` (its container is
+  landscape), so `fitMode` defaults to it. `ScaleBar` must take the same value or
+  it detaches from the map.
+- **`panToCity` was mixing coordinate spaces** — `getBoundingClientRect()` CSS
+  pixels against projection output in viewBox units. It now centres on `W/2, H/2`,
+  the space the zoom transform actually lives in (`initialFocus` above always did
+  this correctly). The old code left a located city **78px right of centre on the
+  Atlas** and a quarter-frame off once the map was half width.
+- **`JerusalemDiagram`'s composition sits in x 643–1200** because the old scrim
+  hid everything left of ~700 — a workaround, not a design. Its viewBox now crops
+  to the drawing (`VB = {x:620, y:-45, w:600, h:740}`), padded vertically so
+  `slice` eats headroom rather than labels. The old full-1200 frame cropped ~47
+  units a side, which is why Olivet, Bethphage and Bethany lost their sublabels
+  entirely; it is ~6 now.
+
+Below 820px the split collapses back to the overlay — half a phone is neither a
+map nor a column.
+
 `ReaderTimeline.jsx` is the bottom orientation strip, two rows doing two jobs. **AD** is the true chronological axis — period bands plus a marker for where the reading falls in time. **DAYS** is an evenly spaced rail, one segment per day. They must be separate: positioned by year, over half the adjacent days sit within 12px of each other and days 311–324 collapse onto a single point at AD 33.25, which made the last third of the plan unclickable. There are **no `<title>` elements** in that SVG — `<title>` draws the browser's own unstyled tooltip, which duplicated the themed pill; accessible names come from `aria-label` instead.
 
 ### PlayControls
@@ -283,7 +367,7 @@ Props: `isPlaying`, `playSpeed`, `onPlay`, `onPause`, `onReset`, `onSpeedChange`
 
 Absolutely positioned over the right edge of `.map-container`. Always in the DOM; CSS `transform: translateX(100%)` hides it when no book is selected; `.bdp--open` (`translateX(0)`) slides it in with a 0.25s ease transition. Width 320px, full map height. Receives `book` (full object or null) and `onClose`. Looks up writing city and recipient cities from `journeyData.cities` internally.
 
-Sections rendered when open: close button → book name (Cinzel 28px gold) → date badge → writing city + province → recipient chips (teal) → theme (italic) → key verse block (green left border) → attribution note (debated books only).
+Sections rendered when open: close button → event name (Cinzel 28px gold) → `when` badge → setting city + province → region chip (teal) → theme (italic) → key verse block (green left border) → attestation line → scripture refs. The attestation line names the Gospels outright ("Told in Matthew, Mark and Luke.") via the local `tellsIt()`; it used to say only "attested in fewer than all four Gospels", off a `attribution` field that no longer exists.
 
 ### FilterPanel layout
 
