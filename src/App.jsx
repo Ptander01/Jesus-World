@@ -29,7 +29,12 @@ const SECONDS_PER_YEAR = 6
 
 // Curated first load: settle over the Galilee cluster (Nazareth, Capernaum,
 // Tiberias, Magdala, the lake) rather than the full 200km strip with nothing lit.
-const INITIAL_FOCUS = { lon: 35.48, lat: 32.80, scale: 2 }
+// Frames the Early Ministry route — the one layer active on load. `scale: 2` is
+// the fit for that period's extent (computed 1.99); the centre was on Galilee at
+// lat 32.80, which cut Jerusalem and the Jordan off the bottom, so it moves to
+// the route's own vertical midpoint. Nothing framed it correctly before because
+// the reset described in MapView's detail-zoom effect was wiping this on mount.
+const INITIAL_FOCUS = { lon: 35.42, lat: 32.33, scale: 2 }
 
 export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange, onShowTour }) {
   const [activeJourneys, setActiveJourneys] = useState(() => new Set(['period-1']))

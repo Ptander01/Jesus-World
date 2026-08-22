@@ -1229,10 +1229,22 @@ export default function MapView({
   }, [timelineYear, activeJourneys, isPlaying, cityById, projection])
 
   // ── Journey bounds zoom — fires when detailJourneyId changes ──────────
+  const prevDetailRef = useRef(detailJourneyId)
   useEffect(() => {
+    const prevDetail = prevDetailRef.current
+    prevDetailRef.current = detailJourneyId
     if (!zoomRef.current || !svgRef.current) return
 
     if (detailJourneyId === null) {
+      // Only undo an actual drill-down. This branch also ran on mount, where it
+      // transitioned the map straight back to identity and wiped the curated
+      // `initialFocus` the mount effect had applied a few lines earlier — so the
+      // atlas opened on the full dark strip at k=1, the exact thing initialFocus
+      // exists to avoid, rather than framed on the opening period at k=2.
+      // Guarding on "first run" is not enough: StrictMode double-invokes the
+      // effect and refs survive between the two, so the second pass reset it
+      // anyway. Comparing against the previous value is what actually holds.
+      if (prevDetail === null) return
       d3.select(svgRef.current)
         .transition('zoom-to-journey').duration(800).ease(d3.easeCubicInOut)
         .call(zoomRef.current.transform, d3.zoomIdentity)
