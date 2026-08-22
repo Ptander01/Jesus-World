@@ -186,6 +186,8 @@ function applyZoomStyling(mapGEl, k) {
   // on any map — thinner than the road layer, so the base read as flat wash with
   // the routes floating over nothing.
   g.selectAll('.map-coast').attr('stroke-width', 1.1 / s)
+  g.selectAll('.map-lake').attr('stroke-width', 1.1 / s)
+  g.selectAll('.map-river').attr('stroke-width', 0.8 / s)
   g.selectAll('.era-road').attr('stroke-width', 0.9 / s)
   g.selectAll('.province-border').attr('stroke-width', 0.9 / s)
   g.selectAll('.map-borders').attr('stroke-width', 0.5 / s)
@@ -374,12 +376,19 @@ export default function MapView({
   // which read as land and sea inverted. Cropped, the swap is imperceptible.
   // See scripts/crop-basemap.mjs; regenerate with `node scripts/crop-basemap.mjs`.
   const [hiBasemap, setHiBasemap] = useState(null)
+  const [water, setWater] = useState(null)
   useEffect(() => {
     let cancelled = false
-    const load = () =>
+    const load = () => {
       import('../data/basemap-levant.json')
         .then(m => { if (!cancelled) setHiBasemap(m.default ?? m) })
         .catch(() => {}) // 50m stays if the fetch fails
+      // Inland water — see scripts/build-water.mjs. Also code-split: nothing
+      // about the land map depends on it, and it is the larger of the two.
+      import('../data/water-levant.json')
+        .then(m => { if (!cancelled) setWater(m.default ?? m) })
+        .catch(() => {})
+    }
     const ric = window.requestIdleCallback
     const id = ric ? ric(load, { timeout: 8000 }) : setTimeout(load, 3000)
     return () => {
@@ -422,9 +431,18 @@ export default function MapView({
   // Sea vs land per journey segment — sampled with spherical point-in-polygon
   // against the 50m land (always bundled; independent of the lazy basemap swap),
   // so the classification never shifts when the crisper basemap arrives.
+  // A leg is a sea crossing if it leaves the land mass *or* crosses inland
+  // water. Only the first half of that existed before, and the Levant's coast
+  // never falls between two waypoints — so 0 of 42 legs classified as sea, and
+  // Capernaum→Gergesa, the Calming of the Storm, drew as a road.
   const segModes = useMemo(() => {
     const landTest = topojson.feature(countries50m, countries50m.objects.land)
-    const onLand = pt => landTest.features.some(f => d3.geoContains(f, pt))
+    const lakePolys = (water?.lakes ?? []).map(l => ({
+      type: 'Feature', properties: {},
+      geometry: { type: 'Polygon', coordinates: l.rings },
+    }))
+    const inLake = pt => lakePolys.some(f => d3.geoContains(f, pt))
+    const onLand = pt => landTest.features.some(f => d3.geoContains(f, pt)) && !inLake(pt)
     const modes = {}
     journeyData.journeys.forEach(j => {
       const wps = j.waypoints
@@ -441,7 +459,7 @@ export default function MapView({
       }
     })
     return modes
-  }, [cityById])
+  }, [cityById, water])
 
   // Regions the ministry actually reaches — derived from the provinces of every
   // city visited by any period, used to gold-tint those tetrarchies.
@@ -628,6 +646,38 @@ export default function MapView({
       .attr('stroke', isLight ? '#8fa4b4' : '#4a7159')
       .attr('stroke-width', 1.1)
       .attr('stroke-opacity', 0.9)
+
+    // ── Inland water — the Sea of Galilee, the Dead Sea, the Jordan.
+    // Filled with the sea tone so the lake reads as the same substance as the
+    // Mediterranean, and outlined with the coast stroke so its edge carries the
+    // same weight as the coastline. See scripts/build-water.mjs for what is
+    // reconstruction and what is observation.
+    if (water) {
+      const waterG = mapG.append('g').attr('class', 'map-water')
+      water.lakes?.forEach(lake => {
+        waterG.append('path')
+          .attr('class', 'map-lake')
+          .attr('data-lake', lake.id)
+          .attr('d', pathGen({ type: 'Polygon', coordinates: lake.rings }))
+          .attr('fill', isLight ? '#c3d3dd' : '#0d2233')
+          .attr('fill-opacity', 0.95)
+          .attr('stroke', isLight ? '#8fa4b4' : '#4a7159')
+          .attr('stroke-width', 1.1)
+          .attr('stroke-opacity', 0.9)
+      })
+      water.rivers?.forEach(river => {
+        waterG.append('path')
+          .attr('class', 'map-river')
+          .attr('data-river', river.id)
+          .attr('d', pathGen({ type: 'MultiLineString', coordinates: river.lines }))
+          .attr('fill', 'none')
+          .attr('stroke', isLight ? '#93aec2' : '#2f5f74')
+          .attr('stroke-width', 0.8)
+          .attr('stroke-opacity', 0.85)
+          .attr('stroke-linecap', 'round')
+          .attr('stroke-linejoin', 'round')
+      })
+    }
 
     // ── Country borders
     mapG.append('path')
@@ -841,6 +891,8 @@ export default function MapView({
         const el = segG.append('path')
           .attr('class', 'journey-line')
           .attr('data-journey', journey.id)
+          .attr('data-mode', dash ? (journey.id === 'period-6' ? 'traditional' : 'sea') : 'land')
+          .attr('data-leg', `${waypoints[i].cityId}->${waypoints[i + 1].cityId}`)
           .attr('d', d)
           .attr('fill', 'none')
           .attr('stroke', colors.primary)
@@ -1174,7 +1226,7 @@ export default function MapView({
 
     applyZoomStyling(mapGRef.current, kRef.current)
 
-  }, [projection, pathGen, land, borders, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes, lensCityIds])
+  }, [projection, pathGen, land, borders, water, provincesGeo, showProvinces, activeJourneys, selectedBookId, cityById, visitedIds, lineGen, theme, isLight, segModes, lensCityIds])
 
   // ── Progressive reveal — synchronized to timelineYear ─────────────────
   useEffect(() => {

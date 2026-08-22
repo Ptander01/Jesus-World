@@ -30,3 +30,4 @@ dist-ssr
 
 # HTTP cache for scripts/build-reading-plan.mjs — regenerable, ~1.5MB
 scripts/.chapter-cache.json
+scripts/.water-cache.json
