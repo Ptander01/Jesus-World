@@ -268,6 +268,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', initialDay 
             }}
             theme={theme}
             lens={lens}
+            fitMode="slice"
           />
         </div>
         <div className={`rd-map-layer${isCloseUp ? ' rd-map-layer--on' : ''}`}>
