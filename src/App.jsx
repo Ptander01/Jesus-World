@@ -8,6 +8,7 @@ import StoryLayer from './components/StoryLayer'
 import SearchBar from './components/SearchBar'
 import ThemeToggle from './components/ThemeToggle'
 import NavTabs from './components/NavTabs'
+import SitePlan from './components/SitePlan.jsx'
 import journeyData from './data/gospels-data.json'
 import './index.css'
 
@@ -44,6 +45,8 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
   const [hoveredCityId, setHoveredCityId]   = useState(null)
   const [provincesGeo, setProvincesGeo]     = useState(null)
   const [showProvinces, setShowProvinces]   = useState(true)
+  // Clicking a place that has one opens its schematic town plan — see SitePlan.
+  const [planCityId, setPlanCityId]         = useState(null)
   const [isPlaying, setIsPlaying]           = useState(false)
   const [playSpeed, setPlaySpeed]           = useState(1)
   const [detailJourneyId, setDetailJourneyId]       = useState(null)
@@ -282,7 +285,7 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
             hoveredCityId={hoveredCityId}
             onMapReady={panFn => { panToCityRef.current = panFn }}
             onCityHover={setHoveredCityId}
-            onCityClick={() => {}}
+            onCityClick={setPlanCityId}
             provincesGeo={provincesGeo}
             showProvinces={showProvinces}
             isPlaying={isPlaying}
@@ -299,6 +302,7 @@ export default function App({ lens = 'All', onLensChange, theme = 'dark', onThem
             book={selectedBook}
             onClose={() => handleBookSelect(null)}
           />
+          <SitePlan cityId={planCityId} onClose={() => setPlanCityId(null)} />
         </div>
       </div>
       <TimelineBar

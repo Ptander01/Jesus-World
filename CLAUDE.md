@@ -20,6 +20,7 @@ node scripts/build-reading-plan.mjs   # src/data/reading-plan/  (--refetch to by
 node scripts/crop-basemap.mjs         # src/data/basemap-levant.json
 node scripts/build-water.mjs          # src/data/water-levant.json   (--refetch)
 node scripts/build-terrain.mjs        # src/data/terrain-levant.json (--refetch)
+node scripts/build-site-plans.mjs     # src/data/site-plans.json
 python3 scripts/generate_regions.py   # public/provinces.geojson
 ```
 
@@ -178,6 +179,30 @@ rather than emitting a plausible wrong shape:
   over the basin it returns a 7×23 km sheet: the valley, not the lake. Wants a
   hydrological constraint or the pre-drainage survey mapping. The check is
   Josephus, *War* 3.515 — sixty furlongs by thirty, about 11×5.5 km.
+
+
+### Schematic town plans (`SitePlan.jsx`, `build-site-plans.mjs`)
+
+**These cannot live on the map, and that is arithmetic rather than taste.** A
+viewBox unit is 428 m at this projection, so Capernaum's 300 m of shore is 0.7
+units — 22 px wide even at the k=32 ceiling. A readable plan wants about k=430,
+where the basemap (Natural Earth 10m), the hillshade (150 m/px) and the contours
+are all an order of magnitude past their own resolution. So a plan is drawn at
+its own scale, entered by clicking a place that has one, the way
+`JerusalemDiagram` already works.
+
+Four sites: Capernaum, Nazareth, Magdala, Bethsaida. Layouts are generated
+procedurally in metres from a few declared parameters, with a seeded PRNG so the
+same build gives the same plan and a perfect grid never appears.
+
+**What is sourced and what is illustration is the load-bearing distinction.**
+Footprint dimensions, hectares, population estimates and the named landmarks are
+real and cited per site in the generator. The street grid and the individual
+blocks are not — they illustrate density and arrangement, nothing more. Every
+plan carries a `Schematic` tag and its basis text on its face, and a metre scale
+bar, which is what earns the right to draw a 4-hectare village at panel size.
+This atlas refuses to ship a Dead Sea shoreline that fails its own check; an
+invented street grid must not be able to pass as a survey either.
 
 ### MapView D3 pattern
 

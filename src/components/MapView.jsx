@@ -4,6 +4,7 @@ import * as topojson from 'topojson-client'
 import countries50m from 'world-atlas/countries-50m.json'
 import journeyData from '../data/gospels-data.json'
 import { inLens } from '../lib/attestation.js'
+import { hasSitePlan } from '../lib/sitePlans.js'
 
 const W = 1200
 const H = 680
@@ -1248,7 +1249,11 @@ export default function MapView({
         .attr('stroke', isActive ? '#060d1a' : '#a09a8e')
         .attr('stroke-width', sw)
         .attr('stroke-opacity', isActive ? 1 : 0.15)
-        .attr('cursor', isActive ? 'pointer' : 'default')
+        .attr('cursor', isActive || hasSitePlan(city.id) ? 'pointer' : 'default')
+        .on('click', function (event) {
+          event.stopPropagation()
+          if (hasSitePlan(city.id)) onCityClick?.(city.id)
+        })
         .on('mouseover', function(event) {
           if (!isActive) return
           const rect = containerRef.current?.getBoundingClientRect()
@@ -1577,6 +1582,9 @@ export default function MapView({
           <div className="city-tooltip__desc">{tooltipCity.description}</div>
           {tooltipCity.ref && (
             <div className="city-tooltip__ref">{tooltipCity.ref}</div>
+          )}
+          {hasSitePlan(tooltipCity.id) && (
+            <div className="city-tooltip__plan">Click for the town plan</div>
           )}
         </div>
       )}
