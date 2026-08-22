@@ -86,15 +86,15 @@
      must move together. Generated as one system in OKLCH at L=0.66 / C=0.082,
      so all six carry equal perceived weight rather than equal HSL lightness,
      which is why the old set had a gold that outshone everything and a teal
-     that sank into the land. Hues sit 60 degrees apart and at least 21 from the
-     accent — --j1 used to *be* --accent, so the opening route was the same
+     that sank into the land. Hues sit at least 45 degrees apart, 48 from the land's own
+     hue and 20 from the — --j1 used to *be* --accent, so the opening route was the same
      colour as every gold element of the chrome. */
-  --j1:    #B4895A;
-  --j2:    #849C65;
-  --j3:    #4FA39B;
-  --j4:    #A085B9;
-  --j-rom: #BE7D89;
-  --j-pst: #6997C2;
+  --j1:    #B5885B;
+  --j2:    #4DA1A7;
+  --j3:    #9289C1;
+  --j4:    #B27FA5;
+  --j-rom: #BF7E7C;
+  --j-pst: #6797C2;
 
   --city-writing:   #e9c86c;
   --city-recipient: #4A7C6F;

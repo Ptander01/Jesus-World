@@ -117,6 +117,9 @@ function applyRevealState(jd, revealLen, opacity) {
   // segments against each other first, then fades the result once.
   d3.select(jd.segG).attr('opacity', opacity)
   if (jd.caseG) d3.select(jd.caseG).attr('opacity', opacity)
+  // The lit edge is a highlight, not a line — it carries less than the body so a
+  // route never reads as two strokes.
+  if (jd.hiG) d3.select(jd.hiG).attr('opacity', opacity * 0.75)
   jd.segs.forEach(seg => {
     const segLen = seg.l1 - seg.l0
     const vis = Math.max(0, Math.min(segLen, revealLen - seg.l0))
@@ -124,6 +127,7 @@ function applyRevealState(jd, revealLen, opacity) {
     if (seg.dash) el.attr('stroke-dasharray', dashedRevealArray(vis, segLen, seg.dash[0], seg.dash[1]))
     else el.attr('stroke-dashoffset', segLen - vis)
     if (seg.caseEl) d3.select(seg.caseEl).attr('stroke-dashoffset', segLen - vis)
+    if (seg.hiEl) d3.select(seg.hiEl).attr('stroke-dashoffset', segLen - vis)
   })
   jd.chevrons.forEach(c => {
     d3.select(c.el).attr('opacity',
@@ -174,6 +178,11 @@ function applyZoomStyling(mapGEl, k) {
   const sp = k <= K_MARK_CAP ? s : k / MARK_CAP_S
   g.selectAll('.journey-line').attr('stroke-width', 2 / s)
   g.selectAll('.journey-case').attr('stroke-width', 3.4 / s)
+  // Both the highlight's width and its offset track the body, so the lit edge
+  // stays a fixed fraction of the stroke at every zoom instead of sliding off it.
+  g.selectAll('.journey-hi')
+    .attr('stroke-width', 0.85 / s)
+    .attr('transform', `translate(0,${-0.45 / s})`)
   g.selectAll('.paul-marker-halo').attr('r', 7 / sp)
   g.selectAll('.paul-marker-core').attr('r', 2.8 / sp).attr('stroke-width', 0.9 / sp)
   g.selectAll('.route-chevron').each(function () {
@@ -692,6 +701,20 @@ export default function MapView({
       .attr('stroke-width', 1.1)
       .attr('stroke-opacity', 0.9)
 
+    // Route cast shadow. This is the timeline's `cast` doing the same job here.
+    // The sheen and bevel do NOT transfer: those light a *shape*, and SVG cannot
+    // run a gradient across a stroke's thickness — a gradient on a stroke maps to
+    // the path's bounding box, along its length rather than across it. Depth on a
+    // line has to come from stacked strokes and a shadow instead.
+    const defsSel = mapG.append('defs')
+    defsSel.append('filter')
+      .attr('id', 'route-cast')
+      .attr('x', '-40%').attr('y', '-40%').attr('width', '180%').attr('height', '180%')
+      .append('feDropShadow')
+      .attr('dx', 0).attr('dy', 0.55).attr('stdDeviation', 0.7)
+      .attr('flood-color', isLight ? '#6b5a3a' : '#000')
+      .attr('flood-opacity', isLight ? 0.3 : 0.55)
+
     // ── Elevation contours. Under everything: they are ground, not content.
     // The Jordan Rift is the fact this map most needed to show — the Dead Sea
     // shore is the lowest land on earth, and Jericho to Jerusalem climbs about
@@ -931,8 +954,9 @@ export default function MapView({
 
       // Visible route: one sampled sub-path per waypoint pair — sea legs dashed,
       // land legs solid over a casing; period-6 (Resurrection) stays dashed throughout
-      const caseG = linesG.append('g')
+      const caseG = linesG.append('g').attr('filter', 'url(#route-cast)')
       const segG  = linesG.append('g')
+      const hiG   = linesG.append('g')
       const segs = []
       const dStrings = []
       for (let i = 0; i < waypoints.length - 1; i++) {
@@ -958,6 +982,26 @@ export default function MapView({
             .attr('stroke-dasharray', `${segLen} ${segLen}`)
             .node()
         }
+        // Lit top edge — the same path redrawn thinner, lighter, and nudged up
+        // half a unit. With the casing below and the body between, the three
+        // strokes read as a rounded section rather than a flat ribbon. Skipped on
+        // dashed legs, where the offset copy shows through the gaps as a double
+        // line rather than a highlight.
+        let hiEl = null
+        if (!dash) {
+          hiEl = hiG.append('path')
+            .attr('class', 'journey-hi')
+            .attr('d', d)
+            .attr('fill', 'none')
+            .attr('stroke', tint(colors.primary, isLight ? '#3a2f22' : '#f4f2e4', 0.5))
+            .attr('stroke-width', 0.85)
+            .attr('stroke-linecap', 'round')
+            .attr('stroke-linejoin', 'round')
+            .attr('stroke-dasharray', `${segLen} ${segLen}`)
+            .attr('transform', 'translate(0,-0.45)')
+            .node()
+        }
+
         const el = segG.append('path')
           .attr('class', 'journey-line')
           .attr('data-journey', journey.id)
@@ -970,7 +1014,7 @@ export default function MapView({
           .attr('stroke-linecap', dash ? 'butt' : 'round')
           .attr('stroke-linejoin', 'round')
         if (!dash) el.attr('stroke-dasharray', `${segLen} ${segLen}`)
-        segs.push({ el: el.node(), caseEl, l0, l1, dash })
+        segs.push({ el: el.node(), caseEl, hiEl, l0, l1, dash })
       }
 
       // Direction-of-travel chevrons, skipping the immediate vicinity of stops
@@ -1001,7 +1045,7 @@ export default function MapView({
       }
 
       const jd = { node, total, wps: waypoints, wpLengths, colors, baseOpacity, segs, chevrons,
-                   segG: segG.node(), caseG: caseG.node() }
+                   segG: segG.node(), caseG: caseG.node(), hiG: hiG.node() }
       lineDataRef.current[journey.id] = jd
 
       // Initial reveal for the current scrub year (or full route when idle)

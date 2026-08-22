@@ -387,7 +387,7 @@
         29,
         30.3
       ],
-      "color": "#B4895A",
+      "color": "#B5885B",
       "colorDim": "#7a6430",
       "companions": [
         "John the Baptist",
@@ -486,7 +486,7 @@
         30.3,
         32.1
       ],
-      "color": "#849C65",
+      "color": "#4DA1A7",
       "colorDim": "#2d5048",
       "companions": [
         "The Twelve"
@@ -577,7 +577,7 @@
         32.1,
         32.5
       ],
-      "color": "#4FA39B",
+      "color": "#9289C1",
       "colorDim": "#4a4166",
       "companions": [
         "The Twelve",
@@ -647,7 +647,7 @@
         32.5,
         33.24
       ],
-      "color": "#A085B9",
+      "color": "#B27FA5",
       "colorDim": "#7a4a28",
       "companions": [
         "The Twelve",
@@ -717,7 +717,7 @@
         33.24,
         33.258
       ],
-      "color": "#BE7D89",
+      "color": "#BF7E7C",
       "colorDim": "#7a3530",
       "companions": [
         "The Twelve",
@@ -785,7 +785,7 @@
         33.258,
         33.37
       ],
-      "color": "#6997C2",
+      "color": "#6797C2",
       "colorDim": "#3a5c78",
       "uncertainty": "traditional",
       "reference": "Matt 28; Mark 16; Luke 24; John 20-21; Acts 1",
@@ -2530,39 +2530,39 @@
   },
   "colorSystem": {
     "period1": {
-      "primary": "#B4895A",
-      "dim": "#6E4A1F",
-      "light": "#E1BD97",
+      "primary": "#B5885B",
+      "dim": "#6F4921",
+      "light": "#E2BC98",
       "label": "Early Ministry"
     },
     "period2": {
-      "primary": "#849C65",
-      "dim": "#475A2B",
-      "light": "#B8CD9F",
+      "primary": "#4DA1A7",
+      "dim": "#005E64",
+      "light": "#91D1D6",
       "label": "Galilean Ministry"
     },
     "period3": {
-      "primary": "#4FA39B",
-      "dim": "#02605A",
-      "light": "#92D3CB",
+      "primary": "#9289C1",
+      "dim": "#534A79",
+      "light": "#C4BDEC",
       "label": "Withdrawals"
     },
     "period4": {
-      "primary": "#A085B9",
-      "dim": "#5E4772",
-      "light": "#D0B9E5",
+      "primary": "#B27FA5",
+      "dim": "#6C4262",
+      "light": "#E0B5D4",
       "label": "Judea & Perea"
     },
     "period5": {
-      "primary": "#BE7D89",
-      "dim": "#76404B",
-      "light": "#EBB3BC",
+      "primary": "#BF7E7C",
+      "dim": "#774140",
+      "light": "#ECB4B2",
       "label": "Passion Week"
     },
     "period6": {
-      "primary": "#6997C2",
-      "dim": "#2E567A",
-      "light": "#A3C9ED",
+      "primary": "#6797C2",
+      "dim": "#2C567A",
+      "light": "#A2C9ED",
       "label": "Resurrection"
     },
     "cityMajor": "#c9a84c",
