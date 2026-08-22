@@ -5,13 +5,14 @@ import TimelineDetail from './TimelineDetail'
 import TimelineDefs from './TimelineDefs'
 import { mat, bevelRect } from '../utils/timelineMaterial'
 import { categoryOf } from '../lib/eventCategory.js'
+import { inLens, isAllFour } from '../lib/attestation.js'
 
 const M  = mat('pbw')    // main overview SVG
 const MS = mat('tls')    // city story row
 const MM = mat('tlm')    // detail-mode mini strip
 
 const TW = 1200
-const TH = 210
+const TH = 290
 
 // ── 4-state books layout (see src/data/TIMELINE-BOOKS-4STATE-PROTOTYPE.md) ──
 const PL = 80            // left edge of the year scale
@@ -26,19 +27,21 @@ const ROUTE_Y = SEP + 4  // horizontal routing level for displaced chip poles
 // Flag dot radius — larger touch targets on coarse pointers (phones/tablets)
 const FDR = (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches) ? 7 : 4
 const CR0_S2 = 88,  CR1_S2 = 113, CH_S2 = 20   // state-2 compact chip rows
-const CR0_S3 = 100, CR1_S3 = 152, CR2_S3 = 204, CH_S3 = 30   // state-3 expanded chip rows (3 shelves)
+const CR0_S3 = 100, CR1_S3 = 152, CR2_S3 = 204, CR3_S3 = 256, CH_S3 = 30  // state-3 shelves
+const S3_ROWS = 4
+const S3_BOTTOM = CR3_S3 + CH_S3
 
 const VIEWBOXES = [
   [0, 0, TW, 78],    // state 0 — journey bars only
   [0, 0, TW, 78],    // state 1 — bars + book flags
   [0, 0, TW, 150],   // state 2 — both rows, compact chips (chips end ~y=133)
-  [0, 75, TW, 168],  // state 3 — books only, three shelves
+  [0, 75, TW, S3_BOTTOM - 75],  // state 3 — events only, four shelves
 ]
 // Card height tracks the viewBox aspect (height = width × vbH/1200) so the
 // overview scales uniformly — no funhouse stretch on the lone timeline.
 // Clamps keep it usable at extreme window widths (mild stretch only there).
-const H_MIN = [72, 72, 112, 150]
-const H_MAX = [126, 126, 206, 244]
+const H_MIN = [72, 72, 112, 188]
+const H_MAX = [126, 126, 206, 306]
 const STATE_LABELS  = ['Periods', 'Events Appear', 'Periods + Events', 'The Events']
 
 const xScale = d3.scaleLinear().domain([29, 33.5]).range([80, 1140])
@@ -63,6 +66,60 @@ const BOOKS = journeyData.books.map((b, i) => ({
   dt: (b.dateRange[0] + b.dateRange[1]) / 2,
 }))
 
+// How far a flag fades when the selected Gospel doesn't record it. Dimmed, not
+// removed — the row is a fixed chronological spine, so nothing may move or
+// vanish on a lens change; the gaps are the point.
+const LENS_DIM = 0.25
+
+// One-dimensional collision resolver — shared by the flag row, the state-2
+// chips and the state-3 shelves, so "several events land on the same pixel" is
+// solved once. `items` are {x: ideal centre, w} sorted by x, mutated in place.
+// Push right to clear left neighbours, clamp to the right boundary, push back
+// left, then clamp left and push right once more. The boundary clamps are
+// interleaved with the passes deliberately: clamping only after both passes
+// reintroduces overlap at the right edge.
+function packRow(items, gap, lo, hi) {
+  if (!items.length) return items
+  const pushRight = () => {
+    for (let k = 1; k < items.length; k++) {
+      const min = items[k - 1].x + items[k - 1].w / 2 + gap + items[k].w / 2
+      if (items[k].x < min) items[k].x = min
+    }
+  }
+  pushRight()
+  const last = items[items.length - 1]
+  last.x = Math.min(last.x, hi - last.w / 2)
+  for (let k = items.length - 2; k >= 0; k--) {
+    const max = items[k + 1].x - items[k + 1].w / 2 - gap - items[k].w / 2
+    if (items[k].x > max) items[k].x = max
+  }
+  items[0].x = Math.max(items[0].x, lo + items[0].w / 2)
+  pushRight()
+  return items
+}
+
+// ── State-0/1 flag placement ──────────────────────────────────────────
+// Dots are placed by true date, but Passion Week is six days — about 4px on a
+// 4.5-year axis — so Entry/Supper/Cross/Risen and their neighbours all land
+// inside a single dot, and only the last one painted stays clickable. Resolve
+// each row the way S3_CHIPS resolves its shelves: push right, clamp to the
+// right margin, push back left. `data-stem` then routes from the displaced dot
+// back to its true date, so the encoding stays honest.
+const FLAG_GAP = 2 * 2.4 + 3             // clear the state-1 ring, plus a hair
+const FLAG_X = (() => {
+  const out = {}
+  ;[0, 1].forEach(row => {
+    packRow(
+      BOOKS.filter(b => b.row === row)
+        .map(b => ({ id: b.id, x: xScale(b.dt), w: 2 * FDR }))
+        .sort((a, b) => a.x - b.x),
+      FLAG_GAP, PL, TW - PR,
+    ).forEach(c => { out[c.id] = c.x })
+  })
+  return out
+})()
+const flagX = b => FLAG_X[b.id]
+
 // State-3 chip layout — collision-resolved per row (prison epistles cluster at AD 60–62)
 const S3_CHIPS = (() => {
   const CPX = 7.8, CPAD = 28, GAP = 6
@@ -70,88 +127,95 @@ const S3_CHIPS = (() => {
     id: b.id,
     idealCx: xScale(b.dt),
     cx: xScale(b.dt),
+    x: xScale(b.dt),
     w: Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), b.name.length * CPX + CPAD),
     row: b.row,
   }))
-  // Fifteen full-length event names outgrow two shelves (the Paul engine's 13 short
-  // book names fit; these don't), so state 3 packs onto THREE shelves. Greedy in date
-  // order onto the emptiest shelf keeps each row roughly chronological; `srow` is
-  // state-3-only and leaves the other states' b.row parity untouched.
-  const edges = [-Infinity, -Infinity, -Infinity]
+  // Sixteen full-length event names outgrow two shelves (the Paul engine's 13
+  // short book names fit; these don't), so state 3 packs onto FOUR. Three was
+  // the old count and no longer works: the names total ~2900px against a
+  // 1060px axis, so a three-way split leaves every shelf over 90% full and
+  // forces a ~310px gap between a chip and the date it marks. Four shelves
+  // land at ~70% full and halve that.
+  //
+  // Assignment balances by total WIDTH, not by count. The previous
+  // running-edge greedy put the six longest names on one shelf, whose content
+  // then needed 1181px of the 1060px axis and ran off the right edge — it
+  // already did so with the previous roster (R=1159). Date order is preserved
+  // within each shelf, so every shelf still reads left-to-right in time.
+  // `srow` is state-3-only and leaves the other states' b.row parity untouched.
+  const load = new Array(S3_ROWS).fill(0)
   chips.slice().sort((a, b) => a.idealCx - b.idealCx).forEach(c => {
     let best = 0
-    for (let r = 1; r < 3; r++) if (edges[r] < edges[best]) best = r
+    for (let r = 1; r < S3_ROWS; r++) if (load[r] < load[best]) best = r
     c.srow = best
-    edges[best] = Math.max(edges[best], c.idealCx - c.w / 2) + c.w + GAP
+    load[best] += c.w + GAP
   })
-  ;[0, 1, 2].forEach(row => {
-    const rc = chips.filter(c => c.srow === row).sort((a, b) => a.idealCx - b.idealCx)
-    if (!rc.length) return
-    // push right to clear left neighbors
-    for (let k = 1; k < rc.length; k++) {
-      const lo = rc[k - 1].cx + rc[k - 1].w / 2 + GAP + rc[k].w / 2
-      if (rc[k].cx < lo) rc[k].cx = lo
-    }
-    // enforce right boundary, then push left to clear right neighbors
-    const last = rc[rc.length - 1]
-    last.cx = Math.min(last.cx, TW - PR - last.w / 2)
-    for (let k = rc.length - 2; k >= 0; k--) {
-      const hi = rc[k + 1].cx - rc[k + 1].w / 2 - GAP - rc[k].w / 2
-      if (rc[k].cx > hi) rc[k].cx = hi
-    }
-    // enforce left boundary, push right again if needed
-    rc[0].cx = Math.max(rc[0].cx, PL + rc[0].w / 2)
-    for (let k = 1; k < rc.length; k++) {
-      const lo = rc[k - 1].cx + rc[k - 1].w / 2 + GAP + rc[k].w / 2
-      if (rc[k].cx < lo) rc[k].cx = lo
-    }
+  ;[...Array(S3_ROWS).keys()].forEach(row => {
+    const rc = packRow(
+      chips.filter(c => c.srow === row).sort((a, b) => a.idealCx - b.idealCx),
+      GAP, PL, TW - PR,
+    )
+    rc.forEach(c => { c.cx = c.x })
   })
   return Object.fromEntries(chips.map(c => [c.id, c]))
 })()
 
-// State-2 stagger for books whose chips stack exactly (same row + same date
-// midpoint — the prison epistles). ±16px keeps the date-range encoding honest
-// while separating the abbrev labels and exposing both click targets.
-const S2_OFFSETS = (() => {
-  const clusters = new Map()
-  BOOKS.forEach(b => {
-    const key = `${b.row}_${Math.round(xScale(b.dt))}`
-    if (!clusters.has(key)) clusters.set(key, [])
-    clusters.get(key).push(b.id)
+// State-2 chip layout. This used to stagger only chips that stacked *exactly*
+// (same row, same rounded date) — fine when every event sat on a whole year,
+// useless once they carry true dates: the Passion Week chips are then 3px apart
+// with 34px bodies, near-total overlap that the exact-match test never sees.
+const S2_CHIPS = (() => {
+  const out = {}
+  ;[0, 1].forEach(row => {
+    packRow(
+      BOOKS.filter(b => b.row === row)
+        .map(b => ({
+          id: b.id,
+          x: xScale(b.dt),
+          w: Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), 34),
+        }))
+        .sort((a, b) => a.x - b.x),
+      6, PL, TW - PR,
+    ).forEach(c => { out[c.id] = c })
   })
-  const offsets = {}
-  clusters.forEach(ids => {
-    if (ids.length < 2) return
-    // Spread must clear the abbrev TEXT (~54px at 10.5px Cinzel), which overflows
-    // the 34px min chip — chip gaps alone still let neighboring labels collide.
-    ids.forEach((id, j) => { offsets[id] = (j - (ids.length - 1) / 2) * 56 })
-  })
-  return offsets
+  return out
 })()
 
 
 // State-3 shelf y for a book (three rows, assigned in S3_CHIPS)
-const S3_ROW_Y = [CR0_S3, CR1_S3, CR2_S3]
+const S3_ROW_Y = [CR0_S3, CR1_S3, CR2_S3, CR3_S3]
 const s3Y = (b) => S3_ROW_Y[S3_CHIPS[b.id].srow]
 
 // Chip geometry per state — one rounded rect morphs dot → compact chip → full chip.
 // fo = fill-opacity, so = stroke-opacity, sto = flag-stem opacity.
 function getP(b, s) {
-  const cx = xScale(b.dt)
   if (s <= 1) {
     const dy = b.row === 0 ? FAY : FBY
-    return { x: cx - FDR, y: dy - FDR, w: 2 * FDR, h: 2 * FDR, rx: FDR,
+    const fx = flagX(b)
+    return { x: fx - FDR, y: dy - FDR, w: 2 * FDR, h: 2 * FDR, rx: FDR,
              fo: s ? 0.5 : 0, so: s ? 1 : 0, sto: s ? 0.7 : 0 }
   }
   if (s === 2) {
-    const rw = Math.max(xScale(b.dateRange[1]) - xScale(b.dateRange[0]), 34)
+    const lay2 = S2_CHIPS[b.id]
     const cy = b.row === 0 ? CR0_S2 : CR1_S2
-    const off = S2_OFFSETS[b.id] ?? 0
-    return { x: cx - rw / 2 + off, y: cy, w: rw, h: CH_S2, rx: 4, fo: 0.2, so: 0.8, sto: 0 }
+    return { x: lay2.x - lay2.w / 2, y: cy, w: lay2.w, h: CH_S2, rx: 4, fo: 0.2, so: 0.8, sto: 0 }
   }
   const lay = S3_CHIPS[b.id]
   const cy  = s3Y(b)
   return { x: lay.cx - lay.w / 2, y: cy, w: lay.w, h: CH_S3, rx: 6, fo: 0.2, so: 0.85, sto: 0 }
+}
+
+// L-shaped stem routing for states 0/1 — mirrors polePath, one band up. A dot
+// nudged aside by the collision pass still points at the date it belongs to.
+function stemPath(b) {
+  const ax = xScale(b.dt), fx = flagX(b)
+  const [y0, y1] = b.row === 0 ? [FAY + FDR, BY] : [BY + BH, FBY - FDR]
+  if (Math.abs(fx - ax) < 0.5) return `M ${ax} ${y0} V ${y1}`
+  const ym = (y0 + y1) / 2
+  return b.row === 0
+    ? `M ${fx} ${y0} V ${ym} H ${ax} V ${y1}`
+    : `M ${ax} ${y0} V ${ym} H ${fx} V ${y1}`
 }
 
 // L-shaped pole routing — no diagonals; displaced chips route via ROUTE_Y
@@ -166,13 +230,13 @@ function polePath(b) {
 function abbrevAttrs(b, s) {
   if (s === 2) {
     const cy = b.row === 0 ? CR0_S2 : CR1_S2
-    return { x: xScale(b.dt) + (S2_OFFSETS[b.id] ?? 0), y: cy + CH_S2 / 2 + 3, o: 0.9 }
+    return { x: S2_CHIPS[b.id].x, y: cy + CH_S2 / 2 + 3, o: 0.9 }
   }
   if (s === 3) {
     const lay = S3_CHIPS[b.id]
     return { x: lay.cx, y: s3Y(b) + CH_S3 / 2 + 3, o: 0 }
   }
-  return { x: xScale(b.dt), y: (b.row === 0 ? FAY : FBY) + 2.5, o: 0 }
+  return { x: flagX(b), y: (b.row === 0 ? FAY : FBY) + 2.5, o: 0 }
 }
 
 function nameAttrs(b, s) {
@@ -182,9 +246,9 @@ function nameAttrs(b, s) {
   }
   if (s === 2) {
     const cy = b.row === 0 ? CR0_S2 : CR1_S2
-    return { x: xScale(b.dt), y: cy + CH_S2 / 2 + 3.5, o: 0 }
+    return { x: S2_CHIPS[b.id].x, y: cy + CH_S2 / 2 + 3.5, o: 0 }
   }
-  return { x: xScale(b.dt), y: (b.row === 0 ? FAY : FBY) + 3, o: 0 }
+  return { x: flagX(b), y: (b.row === 0 ? FAY : FBY) + 3, o: 0 }
 }
 
 function dateAttrs(b, s) {
@@ -193,37 +257,26 @@ function dateAttrs(b, s) {
   return { ...na, o: 0 }
 }
 
+// `dateRange` is a fractional AD year (33.256 = Friday of Passion Week), which
+// is right for the axis and useless as a label — `when` carries the prose form.
 function dateLabel(b) {
-  const [r0, r1] = b.dateRange
-  const s = r0 === r1 ? `AD ${r0}` : `AD ${r0}–${r1}`
+  const s = b.when ?? `AD ${Math.round(b.dateRange[0])}`
   return b.dateDebated ? `c. ${s}` : s
 }
 
-// Maps a marquee event to the site where it happened (its "church" thread)
-const BOOK_CHURCH = {
-  'baptism-of-jesus': 'bethany-beyond-jordan',
-  'cana-wine':        'cana',
-  'temple-cleansing': 'jerusalem',
-  'woman-at-well':    'sychar',
-  'sermon-on-mount':  'capernaum',
-  'calming-storm':    'gergesa',
-  'feeding-5000':     'bethsaida',
-  'peters-confession':'caesarea-philippi',
-  'transfiguration':  'mount-hermon',
-  'raising-lazarus':  'bethany',
-  'triumphal-entry':  'jerusalem',
-  'olivet-discourse': 'mount-of-olives',
-  'last-supper':      'jerusalem',
-  'crucifixion':      'jerusalem',
-  'resurrection':     'jerusalem',
-}
+// Maps a marquee event to the site where it happened (its "church" thread).
+// This is `recipientCityIds[0]` for every event — derived rather than restated
+// so adding an event to the roster can't leave the story row behind.
+const BOOK_CHURCH = Object.fromEntries(
+  journeyData.books.map(b => [b.id, b.recipientCityIds[0]])
+)
 
 const cityById = Object.fromEntries(journeyData.cities.map(c => [c.id, c]))
 
 // Sites without a "founding"-type event — story row shows a context note
 // instead of a first-act→moment bracket
 const ORIGIN_NOTES = {
-  'mount-of-olives': 'Delivered on the ridge over the temple · Matt 24-25',
+  'galilee-mountain': 'The appointed mountain where the eleven were sent · Matt 28:16',
 }
 
 function stopR(days) {
@@ -469,6 +522,7 @@ export default function TimelineBar({
   onChurchTrackToggle,
   onCityHover,
   hoveredCityId,
+  lens = 'All',
 }) {
   const svgRef          = useRef(null)
   const mainGRef        = useRef(null)
@@ -477,9 +531,13 @@ export default function TimelineBar({
   const yearRef         = useRef(timelineYear)
   const timelineYearRef = useRef(timelineYear)
   const revealedBooks   = useRef(new Set())
+  const lensRef         = useRef(lens)
 
-  // 4-state books disclosure — local to the timeline (0=bars, 1=flags, 2=chips, 3=books only)
-  const [bookState, setBookState] = useState(1)
+  // 4-state books disclosure — local to the timeline (0=bars, 1=flags, 2=chips,
+  // 3=events only). Opens on 0, the bare period bars, so the timeline starts as
+  // the simplest thing it can be and the event flags arrive as the first step
+  // the reader takes rather than as the state they walk in on.
+  const [bookState, setBookState] = useState(0)
   const bookStateRef      = useRef(bookState)
   const bookStateInit     = useRef(false)
   const selectedBookIdRef = useRef(selectedBookId)
@@ -501,6 +559,19 @@ export default function TimelineBar({
   useEffect(() => {
     selectedBookIdRef.current = selectedBookId
   }, [selectedBookId])
+
+  // Gospel Lens — fade flags the selected Gospel doesn't record. Its own wrapper
+  // group, so it never contends with the play-mode reveal that owns `opacity` on
+  // the outer group; the fade itself is a CSS transition on [data-book-lens].
+  useEffect(() => {
+    lensRef.current = lens
+    const g = d3.select(mainGRef.current)
+    if (g.empty()) return
+    BOOKS.forEach(b => {
+      g.select(`[data-book-lens="${b.id}"]`)
+        .attr('opacity', inLens(b.gospels, lens) ? 1 : LENS_DIM)
+    })
+  }, [lens])
 
   useEffect(() => {
     yearRef.current         = timelineYear
@@ -797,7 +868,7 @@ export default function TimelineBar({
       .attr('shape-rendering', 'crispEdges')
     ;[
       { label: 'TIMELINE', cy: (BY + AXIS_Y) / 2,   cls: 'tl-lbl-timeline' },
-      { label: 'EVENTS',   cy: bs === 3 ? 167 : 110, cls: 'tl-lbl-books' },
+      { label: 'EVENTS',   cy: bs === 3 ? 180 : 110, cls: 'tl-lbl-books' },
     ].forEach(({ label, cy, cls }) =>
       g.append('text')
         .attr('class', cls)
@@ -814,7 +885,7 @@ export default function TimelineBar({
       .attr('id', 'pbw-pole-mask')
       .attr('maskUnits', 'userSpaceOnUse')
     poleMask.append('rect')
-      .attr('x', 0).attr('y', 0).attr('width', TW).attr('height', TH + 40)
+      .attr('x', 0).attr('y', 0).attr('width', TW).attr('height', S3_BOTTOM + 40)
       .attr('fill', 'white')
     BOOKS.forEach(b => {
       const lay = S3_CHIPS[b.id]
@@ -850,7 +921,7 @@ export default function TimelineBar({
     BOOKS.forEach(b => {
       const col     = jColor[b.journeyId] ?? 'var(--cream-dim)'
       const sel     = selectedBookId === b.id
-      const debated = b.attribution === 'debated'
+      const debated = !isAllFour(b.gospels)
       const cx      = xScale(b.dt)
       const p       = getP(b, bs)
 
@@ -866,9 +937,14 @@ export default function TimelineBar({
       if (initialTransform) bookG.attr('transform', initialTransform)
       if (alreadyRevealed && currentYear !== null) revealedBooks.current.add(b.id)
 
+      // Lens dimming rides an inner wrapper — see the [lens] effect above.
+      const lensG = bookG.append('g')
+        .attr('data-book-lens', b.id)
+        .attr('opacity', inLens(b.gospels, lensRef.current) ? 1 : LENS_DIM)
+
       // State-3 flag pole + date anchor dot — non-scaling strokes stay crisp
       // under the stretched viewBox; poles are pure V/H so crispEdges is safe
-      bookG.append('path')
+      lensG.append('path')
         .attr('data-pole', b.id)
         .attr('d', polePath(b))
         .attr('fill', 'none')
@@ -878,19 +954,19 @@ export default function TimelineBar({
         .attr('shape-rendering', 'crispEdges')
         .attr('mask', 'url(#pbw-pole-mask)')
         .attr('pointer-events', 'none')
-      bookG.append('circle')
+      lensG.append('circle')
         .attr('data-adot', b.id)
         .attr('cx', cx).attr('cy', SEP).attr('r', 2.4)
         .attr('fill', col)
         .attr('fill-opacity', bs === 3 ? 0.95 : 0)
         .attr('pointer-events', 'none')
 
-      // Flag stem — connects the state-0/1 dot to the journey bar band
-      bookG.append('line')
+      // Flag stem — connects the state-0/1 dot to the journey bar band, routed
+      // back to the true date when the collision pass has nudged the dot aside
+      lensG.append('path')
         .attr('data-stem', b.id)
-        .attr('x1', cx).attr('x2', cx)
-        .attr('y1', b.row === 0 ? FAY + FDR : BY + BH)
-        .attr('y2', b.row === 0 ? BY : FBY - FDR)
+        .attr('d', stemPath(b))
+        .attr('fill', 'none')
         .attr('stroke', col).attr('stroke-width', 1)
         .attr('stroke-opacity', p.sto)
         .attr('vector-effect', 'non-scaling-stroke')
@@ -898,9 +974,9 @@ export default function TimelineBar({
         .attr('pointer-events', 'none')
 
       // Flag ring — echoes the state-nav sequencer dots (visible in state 1)
-      bookG.append('circle')
+      lensG.append('circle')
         .attr('data-ring', b.id)
-        .attr('cx', cx).attr('cy', b.row === 0 ? FAY : FBY)
+        .attr('cx', flagX(b)).attr('cy', b.row === 0 ? FAY : FBY)
         .attr('r', FDR + 2.4)
         .attr('fill', 'none')
         .attr('stroke', col)
@@ -910,7 +986,7 @@ export default function TimelineBar({
         .attr('pointer-events', 'none')
 
       // Chip body — one rounded rect morphs dot → compact chip → full chip
-      bookG.append('rect')
+      lensG.append('rect')
         .attr('data-chip', b.id)
         .attr('data-book', b.id)
         .attr('x', p.x).attr('y', p.y)
@@ -947,7 +1023,7 @@ export default function TimelineBar({
       // transitions only have to morph a single extra element. Luminance-only, so
       // the journey hue underneath stays true.
       const bp = bevelRect(p)
-      bookG.append('rect')
+      lensG.append('rect')
         .attr('data-sheen', b.id)
         .attr('x', bp.x).attr('y', bp.y)
         .attr('width', bp.w).attr('height', bp.h).attr('rx', bp.rx)
@@ -959,7 +1035,7 @@ export default function TimelineBar({
 
       // Abbreviation — visible in state 2
       const aa = abbrevAttrs(b, bs)
-      bookG.append('text')
+      lensG.append('text')
         .attr('data-abbrev', b.id)
         .attr('x', aa.x).attr('y', aa.y)
         .attr('text-anchor', 'middle')
@@ -972,7 +1048,7 @@ export default function TimelineBar({
 
       // Full name + date — visible in state 3
       const na = nameAttrs(b, bs)
-      bookG.append('text')
+      lensG.append('text')
         .attr('data-name', b.id)
         .attr('x', na.x).attr('y', na.y)
         .attr('text-anchor', 'middle')
@@ -985,7 +1061,7 @@ export default function TimelineBar({
         .text(b.name)
 
       const da = dateAttrs(b, bs)
-      bookG.append('text')
+      lensG.append('text')
         .attr('data-date', b.id)
         .attr('x', da.x).attr('y', da.y)
         .attr('text-anchor', 'middle')
@@ -1005,7 +1081,7 @@ export default function TimelineBar({
       if (bookStateRef.current !== 1) return
       const [mx] = d3.pointer(ev, svgRef.current)
       BOOKS.forEach(b => {
-        const cx = xScale(b.dt)
+        const cx = flagX(b)
         const r  = FDR * (1 + 1.5 * Math.exp(-(((cx - mx) / 45) ** 2)))
         const dy = b.row === 0 ? FAY : FBY
         const x = cx - r, y = dy - r, wh = 2 * r
@@ -1050,7 +1126,7 @@ export default function TimelineBar({
     g.select('.tl-anchor-line').transition('bookState').duration(dur).ease(ease)
       .attr('opacity', bookState === 3 ? 1 : 0)
     g.select('.tl-lbl-books').transition('bookState').duration(dur).ease(ease)
-      .attr('y', (bookState === 3 ? 167 : 110) + 3)
+      .attr('y', (bookState === 3 ? 180 : 110) + 3)
 
     BOOKS.forEach(b => {
       const bookG = g.select(`[data-book-group="${b.id}"]`)
