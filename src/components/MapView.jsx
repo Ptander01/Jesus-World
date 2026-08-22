@@ -8,6 +8,24 @@ import { inLens } from '../lib/attestation.js'
 const W = 1200
 const H = 680
 
+// Zoom limits. The ceiling used to be 8, which could not resolve Passion Week:
+// Mount of Olives and Gethsemane are 0.49km apart — 1.1 viewBox units — and five
+// pairs of the week's sites sat closer together than a single label. 32 gives
+// ~16km across the frame, enough to separate every pair in the data.
+const K_MIN = 0.5
+const K_MAX = 32
+// Above this, point marks stop growing. Lines keep thickening with zoom (that is
+// what makes room for their casing and highlight), but a city dot that kept
+// growing as k^0.4 would reach a 20px radius at the new ceiling.
+// The drill-down gets a lower ceiling than the user does. Fitting Passion Week's
+// own extent wants k=85 — three kilometres of Jerusalem filling the frame — and
+// at that range the atlas has nothing left to draw: no coastline, no borders,
+// just green with two dots on it. 16 keeps the week's sites separable while
+// leaving the city in context. Manual zoom can still go to K_MAX.
+const K_AUTO_MAX = 16
+const K_MARK_CAP = 8
+const MARK_CAP_S = Math.pow(K_MARK_CAP, 0.4)
+
 function haversineKm([lon1, lat1], [lon2, lat2]) {
   const R = 6371
   const dLat = (lat2 - lat1) * Math.PI / 180
@@ -151,13 +169,16 @@ function applyZoomStyling(mapGEl, k) {
   // Strokes and dots thin gently under zoom: rendered size grows as k^0.4
   // instead of k, so zoomed-in lines stay lines rather than ribbons.
   const s = Math.pow(k, 0.6)
+  // Point marks follow that only to K_MARK_CAP, then hold the rendered size they
+  // had there. Continuous at the cap, since K_MARK_CAP / MARK_CAP_S === k^0.6.
+  const sp = k <= K_MARK_CAP ? s : k / MARK_CAP_S
   g.selectAll('.journey-line').attr('stroke-width', 2 / s)
   g.selectAll('.journey-case').attr('stroke-width', 3.4 / s)
-  g.selectAll('.paul-marker-halo').attr('r', 7 / s)
-  g.selectAll('.paul-marker-core').attr('r', 2.8 / s).attr('stroke-width', 0.9 / s)
+  g.selectAll('.paul-marker-halo').attr('r', 7 / sp)
+  g.selectAll('.paul-marker-core').attr('r', 2.8 / sp).attr('stroke-width', 0.9 / sp)
   g.selectAll('.route-chevron').each(function () {
     const d = this.dataset
-    d3.select(this).attr('transform', `translate(${d.x},${d.y}) rotate(${d.a}) scale(${1 / s})`)
+    d3.select(this).attr('transform', `translate(${d.x},${d.y}) rotate(${d.a}) scale(${1 / sp})`)
   })
   // Natural-feature hierarchy, strongest to faintest: coastline, era roads,
   // region borders, modern country borders, graticule. These used to sit within
@@ -175,7 +196,7 @@ function applyZoomStyling(mapGEl, k) {
     const el  = d3.select(this)
     const r0  = parseFloat(this.dataset.r0 ?? this.getAttribute('r'))
     const sw0 = parseFloat(this.dataset.sw0 ?? this.getAttribute('stroke-width'))
-    el.attr('r', r0 / s).attr('stroke-width', sw0 / s)
+    el.attr('r', r0 / sp).attr('stroke-width', sw0 / sp)
   })
 }
 
@@ -473,7 +494,7 @@ export default function MapView({
     const mapG = d3.select(mapGRef.current)
 
     const zoom = d3.zoom()
-      .scaleExtent([0.5, 8])
+      .scaleExtent([K_MIN, K_MAX])
       .on('zoom', event => {
         const t = event.transform
         kRef.current = t.k
@@ -497,6 +518,7 @@ export default function MapView({
       // map, so a true W/2 center reads as off-balance in the space actually visible.
       const ax = (initialFocus.anchorX ?? 0.58) * W
       const it = d3.zoomIdentity.translate(ax - ik * ix, H / 2 - ik * iy).scale(ik)
+      homeTransformRef.current = it
       kRef.current = ik
       svg.call(zoom.transform, it)
     }
@@ -1229,6 +1251,7 @@ export default function MapView({
   }, [timelineYear, activeJourneys, isPlaying, cityById, projection])
 
   // ── Journey bounds zoom — fires when detailJourneyId changes ──────────
+  const homeTransformRef = useRef(null)
   const prevDetailRef = useRef(detailJourneyId)
   useEffect(() => {
     const prevDetail = prevDetailRef.current
@@ -1245,9 +1268,11 @@ export default function MapView({
       // effect and refs survive between the two, so the second pass reset it
       // anyway. Comparing against the previous value is what actually holds.
       if (prevDetail === null) return
+      // Back to the opening frame, not to identity — "Overview" should return
+      // you where the atlas started, and identity is a view it never shows.
       d3.select(svgRef.current)
         .transition('zoom-to-journey').duration(800).ease(d3.easeCubicInOut)
-        .call(zoomRef.current.transform, d3.zoomIdentity)
+        .call(zoomRef.current.transform, homeTransformRef.current ?? d3.zoomIdentity)
       return
     }
 
@@ -1261,14 +1286,19 @@ export default function MapView({
 
     const lons = coords.map(c => c[0])
     const lats = coords.map(c => c[1])
-    const west  = Math.min(...lons) - 2
-    const east  = Math.max(...lons) + 2
-    const south = Math.min(...lats) - 2
-    const north = Math.max(...lats) + 2
+    // Margin is a share of the period's own extent. It used to be a flat ±2°,
+    // inherited from Paul's world where a journey spanned the Mediterranean and
+    // two degrees was a modest frame. Gospel periods span 0.03° to 1.1°, so the
+    // padding swamped the subject: every period resolved to k≈0.5 regardless of
+    // size, which meant clicking a bar to *drill in* zoomed further out than the
+    // atlas's own opening view. The floor keeps a single-city period sane.
+    const padLon = Math.max((Math.max(...lons) - Math.min(...lons)) * 0.12, 0.012)
+    const padLat = Math.max((Math.max(...lats) - Math.min(...lats)) * 0.12, 0.012)
 
-    const [x0, y0] = projection([west, north])
-    const [x1, y1] = projection([east, south])
-    const scale = 0.9 / Math.max((x1 - x0) / W, (y1 - y0) / H)
+    const [x0, y0] = projection([Math.min(...lons) - padLon, Math.max(...lats) + padLat])
+    const [x1, y1] = projection([Math.max(...lons) + padLon, Math.min(...lats) - padLat])
+    const raw = 0.9 / Math.max((x1 - x0) / W, (y1 - y0) / H)
+    const scale = Math.max(K_MIN, Math.min(K_AUTO_MAX, raw))
     const tx = W / 2 - scale * (x0 + x1) / 2
     const ty = H / 2 - scale * (y0 + y1) / 2
 
