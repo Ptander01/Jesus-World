@@ -21,6 +21,7 @@ node scripts/crop-basemap.mjs         # src/data/basemap-levant.json
 node scripts/build-water.mjs          # src/data/water-levant.json   (--refetch)
 node scripts/build-terrain.mjs        # src/data/terrain-levant.json (--refetch)
 node scripts/build-site-plans.mjs     # src/data/site-plans.json
+node scripts/build-landmarks.mjs      # src/data/landmarks-levant.json (--refetch)
 python3 scripts/generate_regions.py   # public/provinces.geojson
 ```
 
@@ -182,6 +183,21 @@ rather than emitting a plausible wrong shape:
 
 
 ### Schematic town plans (`SitePlan.jsx`, `build-site-plans.mjs`)
+
+`build-landmarks.mjs` is the counterpart: structures that still stand, drawn on
+the map at true size. Only the Temple Mount qualifies so far — Herod's retaining
+walls survive to their original courses, so the OSM outline *is* the
+first-century one, and the script refuses to ship it unless the geometry matches
+the published trapezoid (west wall 488 m, north 315 m). Even so it renders about
+9 px wide at k=16, which is itself the argument for the plans below. The Ottoman
+Old City wall is deliberately excluded: it was built in 1538 and does not follow
+the first-century line.
+
+Jerusalem's plan is a different kind of entry from the villages. Nearly every
+feature is individually attested, so it carries a per-landmark `tier` — extant,
+excavated, reconstructed — with a key, instead of one blanket `Schematic` tag,
+and it gets no procedural blocks at all. Inventing an insula grid for a city this
+well studied would be adding noise to evidence.
 
 **These cannot live on the map, and that is arithmetic rather than taste.** A
 viewBox unit is 428 m at this projection, so Capernaum's 300 m of shore is 0.7

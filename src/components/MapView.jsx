@@ -5,6 +5,7 @@ import countries50m from 'world-atlas/countries-50m.json'
 import journeyData from '../data/gospels-data.json'
 import { inLens } from '../lib/attestation.js'
 import { hasSitePlan } from '../lib/sitePlans.js'
+import landmarkData from '../data/landmarks-levant.json'
 
 const W = 1200
 const H = 680
@@ -197,6 +198,13 @@ function applyZoomStyling(mapGEl, k) {
   // the routes floating over nothing.
   // Contours fade in with zoom. At the opening view they would read as hatching
   // over the whole land mass; by k=3 there is room for them to be terrain.
+  // Nothing this small says anything until you are well in, so it arrives late
+  // and then holds.
+  const landmarkOp = Math.max(0, Math.min(0.85, (k - 6) * 0.12))
+  g.selectAll('.map-landmark')
+    .attr('stroke-opacity', landmarkOp)
+    .attr('fill-opacity', landmarkOp * 0.2)
+    .attr('stroke-width', 0.9 / s)
   const contourOp = Math.max(0, Math.min(0.5, (k - 1.4) * 0.34))
   g.selectAll('.map-contour')
     .attr('stroke-opacity', contourOp)
@@ -792,6 +800,25 @@ export default function MapView({
           .attr('stroke-linejoin', 'round')
       })
     }
+
+    // ── Standing structures, at true size. Only the Temple Mount is large
+    // enough to register: 488 m along the west wall is 1.14 viewBox units, about
+    // 36 px at the k=32 ceiling. Everything else in first-century Jerusalem is
+    // smaller than a city dot, which is why the town plans exist. Fades in with
+    // zoom for the same reason the contours do.
+    const landmarkG = mapG.append('g').attr('class', 'map-landmarks')
+    landmarkData.landmarks.forEach(lm => {
+      landmarkG.append('path')
+        .attr('class', 'map-landmark')
+        .attr('data-landmark', lm.id)
+        .attr('d', pathGen({ type: 'Polygon', coordinates: lm.rings }))
+        .attr('fill', '#c9a84c')
+        .attr('fill-opacity', 0.14)
+        .attr('stroke', '#c9a84c')
+        .attr('stroke-width', 0.9)
+        .attr('stroke-opacity', 0)
+        .attr('pointer-events', 'none')
+    })
 
     // ── Country borders
     mapG.append('path')

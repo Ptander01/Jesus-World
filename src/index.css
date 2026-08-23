@@ -2830,3 +2830,22 @@ body {
 @media (max-width: 820px) {
   .sp { width: calc(100% - 24px); }
 }
+
+/* Confidence tiers, used by the Jerusalem plan — solid for masonry that still
+   stands, lighter for excavated, dashed for reconstructed. The villages have no
+   tiers because their block plans are invented outright. */
+.sp-lm--extant rect        { stroke-width: 1.6; fill-opacity: 0.22; }
+.sp-lm--excavated rect     { stroke-width: 1.1; fill-opacity: 0.12; }
+.sp-lm--reconstructed rect { stroke-width: 1; stroke-dasharray: 4 3; fill-opacity: 0.05; }
+
+.sp-key {
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
+  margin: 0; padding: 0; list-style: none;
+  font-family: var(--font-display); font-size: 9px; letter-spacing: 1.1px;
+  text-transform: uppercase; color: var(--cream-dim);
+}
+.sp-key li { display: flex; align-items: center; gap: 5px; }
+.sp-swatch { width: 11px; height: 8px; border: 1px solid var(--accent); display: inline-block; }
+.sp-swatch--extant        { background: rgba(201,168,76,0.22); border-width: 1.6px; }
+.sp-swatch--excavated     { background: rgba(201,168,76,0.12); }
+.sp-swatch--reconstructed { background: rgba(201,168,76,0.05); border-style: dashed; }

@@ -100,47 +100,44 @@ than emitting a plausible wrong shape. Both still open:
 Content gaps first — these are what the atlas is still missing rather than what
 is broken.
 
-1. **The Temple Mount platform.** 488 × 315 m, retaining walls extant and
-   precisely surveyed. The only piece of urban fabric in this atlas that needs no
-   schematic caveat at all, and the most recognisable thing in Jerusalem.
-   Currently absent entirely.
-2. **Jerusalem has no town plan.** It has `JerusalemDiagram`, which is
-   Passion-Week-scoped rather than a plan of the city. The two should probably
-   merge, and Jerusalem is the site where scale matters most — ~40,000 people
-   against Nazareth's ~400.
-3. **Machaerus is missing from `cities`**, so day 300's execution of John is
+1. **`JerusalemDiagram` and the Jerusalem town plan now overlap.** The plan
+   (clicking Jerusalem on the atlas) is the city with its attested features; the
+   diagram is the Passion-Week close-up in the Reader. Both are useful and they
+   disagree about nothing, but a reader meeting them in sequence sees the same
+   city drawn twice in two idioms. Worth resolving.
+2. **Machaerus is missing from `cities`**, so day 300's execution of John is
    pinned to `null` rather than to where the text puts it.
-4. **The 26 `LOCATION_OVERRIDES`** driving the reader's map were assigned by
+3. **The 26 `LOCATION_OVERRIDES`** driving the reader's map were assigned by
    Claude, never reviewed by Patrick. e.g. Sermon on the Mount → Capernaum.
-5. **The Galilee route tangle** — six periods crossing one corridor. Data
+4. **The Galilee route tangle** — six periods crossing one corridor. Data
    density, not linework; thinning it is a display decision (fade inactive
    periods harder, offset parallel runs, show fewer at once) and so Patrick's.
 
 Debt and unfinished business:
 
-6. **The Paul's-World cluster still on disk.** `src/data/pauline-journeys-data.json`
+5. **The Paul's-World cluster still on disk.** `src/data/pauline-journeys-data.json`
    (73 kB, imported by nothing), `PAULS-WORLD-APP-SPEC.md`, `TIMELINE-DRILLDOWN-SPEC.md`
    and `scripts/enrich-data.cjs`, which operates on that data. The two
    `philippians-*.html` pages were removed from `public/` — they were being
    served publicly — but this group was left alone, since `HANDOFF-TEMPLATE.md`
    is deliberately kept as history and these may be the same.
-7. **Two dead components** — `ReadingMode.jsx` and `BookTrack.jsx` (plus the
+6. **Two dead components** — `ReadingMode.jsx` and `BookTrack.jsx` (plus the
    `.bt-*` styles). Zero references, still on disk. Patrick has been asked twice
    and not decided.
-8. **`MapView.jsx:1116` still widens a selected event's map segment by ±0.5
+7. **`MapView.jsx:1116` still widens a selected event's map segment by ±0.5
    years** — a fudge for whole-year dates. Now that events carry true fractional
    dates it swallows whole periods where it could highlight a real segment.
-9. **`.tl-resize-handle` overlaps the upper flag row.** An 8px drag strip across
+8. **`.tl-resize-handle` overlaps the upper flag row.** An 8px drag strip across
    the top of the timeline card; the state-0/1 upper dots are centred ~1px inside
    it. Pre-existing, confirmed against a stashed tree.
-10. **The Reader has no `NavTabs`.** `App` and `VisualsDemo` both render the
+9. **The Reader has no `NavTabs`.** `App` and `VisualsDemo` both render the
     Atlas/Charts/Reader strip; `GospelReader` builds its own header and omits it,
     so the Reader is the one surface you cannot tab out of.
-11. **No prose in the reader** — deliberate, by Patrick's choice. The `gr-scene`
+10. **No prose in the reader** — deliberate, by Patrick's choice. The `gr-scene`
     styling exists if day-level notes get written.
-12. **Accessibility** — keyboard access to the D3 surfaces is unaudited.
-13. **Meta basics** — favicon, OG image, per-route titles are still Vite defaults.
-14. **Mobile** — the tour and reader split were checked at 375×812; the atlas has
+11. **Accessibility** — keyboard access to the D3 surfaces is unaudited.
+12. **Meta basics** — favicon, OG image, per-route titles are still Vite defaults.
+13. **Mobile** — the tour and reader split were checked at 375×812; the atlas has
     never been audited holistically.
 
 ## Working notes

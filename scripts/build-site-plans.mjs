@@ -73,6 +73,28 @@ const SITES = [
     seed: 37,
   },
   {
+    // Jerusalem is a different kind of entry from the villages. Almost every
+    // feature here is individually attested — excavated, or still standing — so
+    // the plan carries a per-landmark `tier` rather than one blanket caveat, and
+    // it gets no procedural blocks at all. Inventing an insula grid for a city
+    // this well studied would be adding noise to evidence.
+    id: 'jerusalem', name: 'Jerusalem', modern: 'Jerusalem',
+    footprint: [1000, 900], hectares: 90, people: '~40,000',
+    noBlocks: true,
+    basis: 'Roughly 90 hectares inside Herod\u2019s walls, perhaps 40,000 people — a hundred times Nazareth on twenty times the ground. Individual features are marked by how well each is known. The Ottoman Old City wall, built in 1538, is deliberately not drawn: it does not follow the first-century line.',
+    landmarks: [
+      { id: 'temple-mount', label: 'The Temple Mount', sub: "Herod's platform \u2014 walls still standing", x: 150, y: -150, w: 200, h: 310, kind: 'major', tier: 'extant' },
+      { id: 'antonia', label: 'Antonia Fortress', sub: 'Position known, plan debated', x: 150, y: -350, w: 90, h: 70, kind: 'minor', tier: 'reconstructed' },
+      { id: 'upper-city', label: 'The Upper City', sub: 'Herodian mansions, excavated', x: -230, y: -40, w: 260, h: 240, kind: 'major', tier: 'excavated' },
+      { id: 'herods-palace', label: "Herod's Palace", sub: 'Phasael\u2019s tower base survives', x: -350, y: -170, w: 110, h: 130, kind: 'major', tier: 'excavated' },
+      { id: 'city-of-david', label: 'City of David', sub: 'The original spur', x: 90, y: 260, w: 120, h: 300, kind: 'minor', tier: 'excavated' },
+      { id: 'siloam', label: 'Pool of Siloam', sub: 'Steps uncovered in 2004', x: 90, y: 415, w: 70, h: 45, kind: 'water', tier: 'extant' },
+      { id: 'bethesda', label: 'Pool of Bethesda', sub: 'Twin pools, excavated', x: 210, y: -395, w: 80, h: 55, kind: 'water', tier: 'extant' },
+      { id: 'golgotha', label: 'Golgotha', sub: 'A disused quarry outside the wall', x: -300, y: -350, w: 70, h: 55, kind: 'major', tier: 'excavated' },
+    ],
+    seed: 71,
+  },
+  {
     id: 'bethsaida', name: 'Bethsaida', modern: 'et-Tell',
     footprint: [420, 260], hectares: 8, people: '~800',
     basis: 'A mound north-east of the lake, identified with et-Tell. An Iron Age gate complex survives and 1st-c. houses sit on the slope; the shoreline lay closer in antiquity than it does now. Block layout is illustration.',
@@ -86,6 +108,7 @@ const SITES = [
 
 function layout(site) {
   const [W, H] = site.footprint
+  if (site.noBlocks) return { blocks: [], streets: [] }
   const r = rng(site.seed)
   const blocks = []
   const streets = []
@@ -119,7 +142,7 @@ const plans = SITES.map(s => ({
   id: s.id, name: s.name, modern: s.modern,
   footprint: s.footprint, hectares: s.hectares, people: s.people,
   shore: s.shore ?? null,
-  confidence: 'schematic',
+  confidence: s.noBlocks ? 'attested-features' : 'schematic',
   basis: s.basis,
   landmarks: s.landmarks,
   ...layout(s),

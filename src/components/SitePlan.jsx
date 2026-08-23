@@ -73,7 +73,7 @@ export default function SitePlan({ cityId, onClose }) {
 
         <g className="sp-landmarks">
           {plan.landmarks.map(l => (
-            <g key={l.id} className={`sp-lm sp-lm--${l.kind}`}>
+            <g key={l.id} className={`sp-lm sp-lm--${l.kind}${l.tier ? ` sp-lm--${l.tier}` : ''}`}>
               <rect x={l.x - l.w / 2} y={l.y - l.h / 2} width={l.w} height={l.h} rx={2} />
               <text x={l.x} y={l.y - l.h / 2 - 5} textAnchor="middle">{l.label}</text>
               <text x={l.x} y={l.y + l.h / 2 + 9} textAnchor="middle" className="sp-lm-sub">{l.sub}</text>
@@ -90,10 +90,24 @@ export default function SitePlan({ cityId, onClose }) {
         </g>
       </svg>
 
-      <p className="sp-basis">
-        <span className="sp-tag">Schematic</span>
-        {plan.basis}
-      </p>
+      {/* Jerusalem's features are each individually attested, so it carries a
+          key of confidence tiers instead of one blanket caveat. The villages
+          carry the caveat, because their block plans really are invented. */}
+      {plan.confidence === 'attested-features' ? (
+        <>
+          <ul className="sp-key">
+            <li><i className="sp-swatch sp-swatch--extant" />Still standing</li>
+            <li><i className="sp-swatch sp-swatch--excavated" />Excavated</li>
+            <li><i className="sp-swatch sp-swatch--reconstructed" />Reconstructed</li>
+          </ul>
+          <p className="sp-basis">{plan.basis}</p>
+        </>
+      ) : (
+        <p className="sp-basis">
+          <span className="sp-tag">Schematic</span>
+          {plan.basis}
+        </p>
+      )}
     </aside>
   )
 }
