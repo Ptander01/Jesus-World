@@ -319,7 +319,11 @@ const shade = new Uint8Array(hsW * hsH)
       const slope = Math.atan(Math.hypot(dzdx, dzdy))
       const aspect = Math.atan2(dzdy, -dzdx)
       let v = sinAlt * Math.cos(slope) + cosAlt * Math.sin(slope) * Math.cos(AZ - aspect)
-      shade[y * hsW + x] = Math.max(0, Math.min(255, Math.round(v * 255)))
+      // Posterised to 32 levels. The map lays this under a tint at 0.42 opacity
+      // through a soft-light blend, where 32 greys are far more than the eye can
+      // separate — and a smaller alphabet deflates much better: 524 kB to 227.
+      const q = Math.max(0, Math.min(255, Math.round((v * 255) / 8) * 8))
+      shade[y * hsW + x] = q
     }
   }
 }
