@@ -44,8 +44,10 @@ Root.jsx                    — hash router + shared state above the routes:
 │   ├── SearchBar.jsx · ThemeToggle.jsx · .tour-help (?)
 │   ├── .map-container
 │   │   ├── FilterPanel.jsx — Gospel Lens, period toggles, Events/Parables lists
-│   │   ├── MapView.jsx     — D3 SVG map; basemap, regions, routes, city dots
+│   │   ├── MapView.jsx     — D3 SVG map: hillshade, contours, water, regions,
+│   │   │                     routes, the Temple Mount, city dots
 │   │   ├── StoryLayer.jsx  — Jesus's Story entry button + play-mode caption card
+│   │   ├── SitePlan.jsx    — schematic town plan; opens on clicking a place
 │   │   └── BookDetailPanel.jsx
 │   ├── TimelineBar.jsx     — 4-state overview; click a capsule to drill in
 │   │   └── TimelineDetail.jsx — rows: STOPS · EVENTS · PLACES
@@ -62,6 +64,7 @@ Root.jsx                    — hash router + shared state above the routes:
 
 Shared:  TimelineDefs.jsx (SVG material) · ScriptureReveal.jsx (click-to-read verses)
 Unused:  ReadingMode.jsx, BookTrack.jsx — out of the bundle, still on disk
+         (see PROJECT-STATUS; Patrick has been asked twice and not decided)
 ```
 ### The first-run tour (`Tour.jsx`)
 
@@ -97,6 +100,9 @@ header (`.tour-help`, wired through `App`'s `onShowTour` prop).
 - `timelineYear` — `number | null`; null means scrubber hidden; set by dragging/clicking TimelineBar or advanced by play loop
 - `highlightRange` — `[start, end] | null` derived from `selectedBook.dateRange`; passed to TimelineBar for the gold overlay
 - `showProvinces` — `boolean` (default `true`); toggles province fill/border layers in MapView; controlled by the "Provincial Boundaries" checkbox in FilterPanel
+- `viewMode` — `'journeys' | 'books' | 'parables'`; which list FilterPanel shows
+- `provincesGeo` — the Herodian region GeoJSON, fetched at runtime from `public/provinces.geojson`
+- `planCityId` — `string | null`; the place whose schematic town plan is open. Set by clicking a city dot that has one (`hasSitePlan`), cleared by the panel's close button. Only four places plus Jerusalem have plans; clicking any other dot does nothing
 - `isPlaying` — `boolean`; true while the rAF animation loop is running; paused by any user interaction with journeys/books/scrubber
 - `playSpeed` — `0.5 | 1 | 2`; multiplier applied to the 1.5s-per-year base rate; mirrored to `playSpeedRef` for use inside the rAF closure
 - `detailJourneyId` — `string | null`; when set, TimelineBar switches to detail mode showing PaulStopTrack + church tracks for that journey; set by clicking a capsule bar, cleared by "← Overview" breadcrumb
@@ -219,6 +225,20 @@ plan carries a `Schematic` tag and its basis text on its face, and a metre scale
 bar, which is what earns the right to draw a 4-hectare village at panel size.
 This atlas refuses to ship a Dead Sea shoreline that fails its own check; an
 invented street grid must not be able to pass as a survey either.
+
+### Map layer order
+
+Bottom to top, all inside `mapG` so the zoom transform carries them together:
+
+    base sea rect → land fill → hillshade (soft-light) → contours → coastline
+    → inland water → country borders → province fill/borders → era roads
+    → the Temple Mount → journey casings (cast shadow) → journey lines
+    → highlights → chevrons → city dots → labels
+
+Three of those are lazy and arrive on `requestIdleCallback`: the cropped 10m
+basemap, `water-levant.json`, and `terrain-levant.json`. Until they land the map
+draws from the bundled 50m atlas with no water and no terrain, which is what it
+looked like for most of this project's life.
 
 ### MapView D3 pattern
 

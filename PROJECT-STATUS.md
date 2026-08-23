@@ -3,8 +3,9 @@
 **Last updated:** 2026-08-22, at `2a184ea` (main, pushed, deployed).
 **For:** picking this project back up in a fresh context. Pairs with `CLAUDE.md`
 (the maintained architecture reference — read that first; it is current as of this
-commit). `HANDOFF-TEMPLATE.md` is the original Paul's-World-to-Gospels bootstrap
-spec — historical, not a status doc.
+commit). `HANDOFF.md` carries a
+paste-ready prompt for starting a fresh session. `HANDOFF-TEMPLATE.md` is the
+original Paul's-World-to-Gospels bootstrap spec — historical, not a status doc.
 
 ## What this project is
 
