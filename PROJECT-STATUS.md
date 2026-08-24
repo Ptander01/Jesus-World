@@ -1,6 +1,6 @@
 # Project Status — Jesus's World
 
-**Last updated:** 2026-08-22, at `2a184ea` (main, pushed, deployed).
+**Last updated:** 2026-08-23, at `HEAD` (main, committed, not pushed).
 **For:** picking this project back up in a fresh context. Pairs with `CLAUDE.md`
 (the maintained architecture reference — read that first; it is current as of this
 commit). `HANDOFF.md` carries a
@@ -26,7 +26,7 @@ running it and looking.
 **It began as an atlas of Paul's journeys and was reskinned.** Most of the recent
 work has been finding inherited assumptions that were quietly wrong. Expect more.
 
-## What shipped in the last session
+## What shipped in the session before that
 
 Fourteen commits, `e0e1408..2a184ea`. Grouped:
 
@@ -81,9 +81,45 @@ than emitting a plausible wrong shape. Both still open:
   the same height the lake did, so the contour returns the valley, not the lake.
   Wants a hydrological constraint or the pre-drainage survey mapping.
 
+## This session — five small fixes
+
+Former next-steps 7, 8 and 9, plus two mobile defects on the Charts page. All
+verified on localhost:
+
+- **The selected-event map highlight now marks one leg**, not most of a period.
+  The ±0.5-year pad was a leftover from whole-year dates; all 16 events went from
+  4–7 waypoints to exactly 2 (the crucifixion had been highlighting the whole of
+  Passion Week). Caveat worth a look: the Passion Week legs are sub-kilometre, so
+  at the opening zoom those highlights are a dot — nothing zooms on selection.
+- **`.tl-resize-handle` was worse than recorded.** Not a 1px graze: the full-width
+  8px strip sat over the *entire* upper flag row, and `elementFromPoint` at each
+  dot's centre returned the handle for **all 8 upper-row events** in states 1
+  and 2. It is now 48px, centred on its own grip.
+- **The Reader has `NavTabs`**, replacing the one-way "← The Atlas" button, so all
+  three surfaces switch the same way. `onExit` is gone from `GospelReader` and
+  `Root`.
+
+- **The Charts page had no width media query at all** — it had never been laid
+  out for a phone. At 375px the heatmap rendered 783px of grid into a 277px card
+  and lost four of its six periods with no way to reach them, because `.jw-card`
+  is `overflow: hidden`. Wide charts now scroll inside their own card
+  (`.jw-scrollx`, bleeding out to the card's padding edges so a part-cut column
+  reads as "more this way"), and a `max-width: 760px` block claws back the side
+  padding and retunes the heatmap's fixed tracks. 783px unreachable → 615px
+  reachable in a 349px viewport. Desktop layout is byte-identical.
+- **The theme toggle was off-screen below ~484px.** The shared `.app-header` laid
+  out at a fixed content width, so `.tt-wrap` (`margin-left: auto`,
+  `flex-shrink: 0`) was pushed past the right edge — at 375px it began 1px
+  outside the viewport. The nav tabs now shrink at ≤520px and again at ≤340px;
+  the Charts header fits down to 320px. **The Atlas header still overflows** —
+  see next-steps 10.
+
+Also corrected in CLAUDE.md: `bookState` defaults to **0** ("Periods"), not 1.
+
 ## Current state
 
-- **Deployed:** `main` == `2a184ea`, pushed.
+- **Deployed:** Vercel is still on `4d75b9b`. The five fixes above are committed
+  to local `main` but **not pushed** — Patrick reviews on localhost first.
 - **Lint:** 3 errors + 2 warnings. Down one from the long-standing four —
   wiring the town plans gave `MapView`'s `onCityClick` a use at last. The rest
   are pre-existing: `setState` in an effect (`App.jsx`, `SearchBar.jsx`), an
@@ -125,20 +161,17 @@ Debt and unfinished business:
 6. **Two dead components** — `ReadingMode.jsx` and `BookTrack.jsx` (plus the
    `.bt-*` styles). Zero references, still on disk. Patrick has been asked twice
    and not decided.
-7. **`MapView.jsx:1116` still widens a selected event's map segment by ±0.5
-   years** — a fudge for whole-year dates. Now that events carry true fractional
-   dates it swallows whole periods where it could highlight a real segment.
-8. **`.tl-resize-handle` overlaps the upper flag row.** An 8px drag strip across
-   the top of the timeline card; the state-0/1 upper dots are centred ~1px inside
-   it. Pre-existing, confirmed against a stashed tree.
-9. **The Reader has no `NavTabs`.** `App` and `VisualsDemo` both render the
-    Atlas/Charts/Reader strip; `GospelReader` builds its own header and omits it,
-    so the Reader is the one surface you cannot tab out of.
-10. **No prose in the reader** — deliberate, by Patrick's choice. The `gr-scene`
+7. **No prose in the reader** — deliberate, by Patrick's choice. The `gr-scene`
     styling exists if day-level notes get written.
-11. **Accessibility** — keyboard access to the D3 surfaces is unaudited.
-12. **Meta basics** — favicon, OG image, per-route titles are still Vite defaults.
-13. **Mobile** — the tour and reader split were checked at 375×812; the atlas has
+8. **Accessibility** — keyboard access to the D3 surfaces is unaudited.
+9. **Meta basics** — favicon, OG image, per-route titles are still Vite defaults.
+10. **Mobile — the atlas header overflows.** At 375px the Atlas header lays out
+    five children in 553px: the search box, the `?` tour button and the theme
+    toggle are all off the right edge and unreachable. The Charts header (three
+    children) now fits down to 320px, but the Atlas has too many controls for the
+    row, and the fix is a layout decision — wrap to a second row, collapse search
+    to an icon, or move some into the filter drawer. Patrick's call.
+    The tour and the reader split were checked at 375×812; the atlas has still
     never been audited holistically.
 
 ## Working notes

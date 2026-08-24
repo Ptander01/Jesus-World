@@ -22,7 +22,8 @@ export default function GospelAttestationUpSet({ filter } = {}) {
           Each bar is a combination; the dots below show which Gospels are in it.
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "84px 1fr", gap: 12, opacity: combos.length ? 1 : 0.4 }}>
+        <div className="jw-scrollx">
+        <div className="jw-up-grid" style={{ opacity: combos.length ? 1 : 0.4 }}>
           {combos.length === 0 && (
             <div style={{ gridColumn: "1 / -1", padding: "20px 0", textAlign: "center", fontStyle: "italic", color: "var(--jw-muted)" }}>
               No events match the current filter.
@@ -83,6 +84,7 @@ export default function GospelAttestationUpSet({ filter } = {}) {
               </div>
             ))}
           </div>
+        </div>
         </div>
 
         <div className={`jw-tip${hover !== null ? " on" : ""}`} style={{ position: "static", marginTop: 16, maxWidth: "none", display: hover !== null ? "block" : "none" }}>

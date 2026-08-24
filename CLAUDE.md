@@ -305,7 +305,7 @@ Six `useEffect` hooks:
 5. **Main render** `[activeJourneys, selectedBookId, highlightRange, onBookClick, isPlaying, detailJourneyId]` — clears and redraws everything at the *current* `bookStateRef` geometry (no animation). Creates `<defs>` with one `<clipPath id="pbw-bar-clip-{id}">` per journey plus the `#pbw-pole-mask` mask. Capsule bars live in `<g class="tl-bars">` (ghosted to 0.07 opacity in state 3). Each book's elements (pole, anchor dot, stem, chip rect, abbrev/name/date texts) are grouped under `<g data-book-group={id}>` with initial opacity/transform set based on current year. Also attaches `mousemove.dock`/`mouseleave.dock` handlers on the SVG for state-1 dock magnification.
 6. **`[bookState]` transition effect** — mirrors `bookState` into `bookStateRef`, then runs a named `'bookState'` transition (650 ms, easeCubicInOut) morphing the SVG `viewBox`, `.tl-bars` / `.tl-anchor-line` opacity, and every book's chip rect / stem / pole / texts to the `getP`-derived geometry for the new state. First run (mount) sets the viewBox instantly and returns. The viewBox is **not** set via JSX — it is owned imperatively by this effect.
 
-**4-state books system** (from `src/data/TIMELINE-BOOKS-4STATE-PROTOTYPE.md`): local `bookState` (0–3, default 1) replaces the old lollipop diamonds. State 0 = journey bars only; 1 = bars + flag dots (with stems, Apple-dock hover magnification); 2 = both rows, compact abbrev chips; 3 = events only — full-name chips with date sublabels, bars ghosted, L-shaped flag poles (`polePath`) connecting each chip to its date anchor on the `SEP` line, passing behind chip bodies via `#pbw-pole-mask`. One rounded `<rect data-chip>` per book morphs across all states via `getP(b, s)`. Nav UI (`.tl-state-nav`: state label + 4 dots + Next button) renders as a sibling strip *above* the `.timeline-bar` card, hidden in detail mode. Card height is aspect-locked to the state's viewBox: `height = cardWidth × vbH/1200` (ResizeObserver feeds `tlWidth`), clamped to `H_MIN=[72,72,112,188]` / `H_MAX=[126,126,206,306]` so the overview scales uniformly (no stretch distortion; mild stretch only at clamped extremes), +68 when the story row is open; manual resize (`tlHeight`) overrides.
+**4-state books system** (from `src/data/TIMELINE-BOOKS-4STATE-PROTOTYPE.md`): local `bookState` (0–3, default 0) replaces the old lollipop diamonds. State 0 = journey bars only; 1 = bars + flag dots (with stems, Apple-dock hover magnification); 2 = both rows, compact abbrev chips; 3 = events only — full-name chips with date sublabels, bars ghosted, L-shaped flag poles (`polePath`) connecting each chip to its date anchor on the `SEP` line, passing behind chip bodies via `#pbw-pole-mask`. One rounded `<rect data-chip>` per book morphs across all states via `getP(b, s)`. Nav UI (`.tl-state-nav`: state label + 4 dots + Next button) renders as a sibling strip *above* the `.timeline-bar` card, hidden in detail mode. Card height is aspect-locked to the state's viewBox: `height = cardWidth × vbH/1200` (ResizeObserver feeds `tlWidth`), clamped to `H_MIN=[72,72,112,188]` / `H_MAX=[126,126,206,306]` so the overview scales uniformly (no stretch distortion; mild stretch only at clamped extremes), +68 when the story row is open; manual resize (`tlHeight`) overrides.
 
 **Every state packs its chips with `packRow(items, gap, lo, hi)`** — one shared 1-D collision resolver: push right to clear left neighbours, clamp to the right boundary, push back left, clamp left, push right once more. (The boundary clamps are interleaved with the passes deliberately; clamping only after both passes reintroduces overlap at the right edge.) It is called three times, and all three callers need it for the same reason — **the Gospels cluster at the end**. Six of the sixteen events fall inside the last two weeks of a 4.5-year axis, ~4px apart:
 
@@ -329,6 +329,14 @@ Two things about it are load-bearing and were both wrong before:
 Left-side section labels "TIMELINE" (centered over the bars/axis band) and "EVENTS" (centered in the books band) at `x=40` in Cinzel, `var(--muted)`, separated by a `1px` rule at `y=SEP`.
 
 Year labels sit **below** the axis (`y = AXIS_Y + 12`), not above it: the state-0/1 lower flag-dot row occupies `y=44–52` and completely covered them at the old `y=54`. The scrub tooltip pill (`AXIS_Y+2 … +16`) does overlap them while scrubbing, which is fine — it shows the same year more precisely.
+
+**`.tl-resize-handle` is only as wide as its own grip (48px, centred).** It used
+to span the card's full width at `z-index: 10`, and in states 1 and 2 the upper
+flag row is centred ~10px below the card's top edge — inside the 8px strip. All
+**8 upper-row events were unclickable**: `elementFromPoint` at each dot's centre
+returned the handle, not the chip. Centred at 48px it clears the nearest upper
+flag (Sermon on the Mount, 96 viewBox units off centre) by 4px even at a 375px
+card, and the grip is the only visual affordance anyway.
 
 Chip hover shows `name · date` in a pill tooltip (flips below the chip when the state's viewBox would clip it above). Chips are click targets for `onBookClick`; selection styling = gold stroke `#e9c86c` + boosted fill/stroke opacity.
 
@@ -473,6 +481,19 @@ Local state only: `isOpen` (`useState(false)`) lives entirely in `PlayControls.j
 
 Props: `isPlaying`, `playSpeed`, `onPlay`, `onPause`, `onReset`, `onSpeedChange`.
 
+**Selected-event map highlight.** The render effect draws a 3.5-width segment in
+the event's period colour over **the one leg of the route the event falls on** —
+bracketing `selectedBook.dateRange` against the waypoint years with no padding.
+It used to pad by ±0.5 years, a fudge from when events carried whole-year dates
+inherited from Paul's epistles; on a 4.5-year axis that selected most of a period
+(all 7 Passion Week waypoints for the crucifixion, 7 of 11 for the baptism). All
+16 events are dated *exactly* at a waypoint, so the bracket collapses to a point
+and the fallback picks the leg **arriving** at that stop — or the leg leaving it,
+for the three events sitting on their period's first waypoint. Note the Passion
+Week legs are genuinely sub-kilometre (Gethsemane→Jerusalem is 1 viewBox unit,
+~430 m), and nothing zooms on selection, so those highlights read as a dot at the
+opening view.
+
 ### BookDetailPanel
 
 Absolutely positioned over the right edge of `.map-container`. Always in the DOM; CSS `transform: translateX(100%)` hides it when no book is selected; `.bdp--open` (`translateX(0)`) slides it in with a 0.25s ease transition. Width 320px, full map height. Receives `book` (full object or null) and `onClose`. Looks up writing city and recipient cities from `journeyData.cities` internally.
@@ -490,6 +511,20 @@ Below both view-mode sections, always visible: a thin `fp-layer-divider` border 
 - `src/styles/tokens.css` — CSS custom properties for colors, fonts, journey colors (`--j1`–`--j-pst`), city colors, the glass/lip system (`--glass-*`, `--pill-bg*`, `--lip-*`), and the timeline material tokens (`--well-bg`, `--well-lip`, `--rail-bg`, `--tip-bg`, `--sheen-*`, `--bevel-*`, `--groove-shadow`, `--cast-shadow`, `--grain`). Every one has a parchment counterpart under `[data-theme="light"]`
 - `src/utils/timelineMaterial.js` — `mat(id)` / `bevelRect(rect)` for the SVG material (see the Timeline material system section)
 - `src/index.css` — imports tokens, base reset, layout (`.app`, `.app-header`, `.app-body`, `.map-container`, `.timeline-bar`), all `fp-*` FilterPanel styles, all `bdp-*` BookDetailPanel styles, all `pc-*` PlayControls styles, all `tl-*` timeline detail styles, all `ct-*` church track styles including `@keyframes ctMarkerPulse` and `.ct-marker-pulse` (scale 1→1.8→1 over 600ms, `transform-box: fill-box`), `.city-tooltip` and child classes (`.city-tooltip__name`, `__modern`, `__desc`, `__ref`) for city and segment distance tooltips. `.map-container > div` and `.map-container > div > svg` replace the old `> svg` selectors since MapView now wraps its SVG in a container div.
+- `src/styles/visuals.css` — the Charts page (`jw-` namespace). Two things there
+  are load-bearing. **`.jw-card` is `overflow: hidden`** — the `::before`
+  catch-light rides its rounded corners — so any chart wider than the card is
+  unreachable, not merely cut; wide charts go inside a **`.jw-scrollx`**, which
+  bleeds out to the card's padding edge via `margin-inline: calc(-1 *
+  var(--jw-card-pad))` and pads itself back, so a part-cut column reads as "more
+  this way" instead of as the end of the chart. And the heatmap's fixed tracks
+  are **CSS custom properties** (`--hm-lbl`, `--hm-tot`) rather than literals in
+  the JSX `gridTemplateColumns`, because an inline value cannot be retuned by the
+  `max-width: 760px` block. That block is the file's only width query — before
+  it, the page had never been laid out for a phone and the heatmap lost four of
+  its six periods at 375px. Note the row labels **cannot** be pinned with
+  `position: sticky`: a grid item's containing block is its own grid area, so it
+  has nowhere to travel and scrolls away regardless.
 - `src/utils/stopLayout.js` — `buildStopLayout(journey)` shared utility for duration-proportional x layout
 - Google Fonts: Cinzel (display/headings), Cormorant Garamond (serif), Lora (body) — linked in `index.html`
 - `public/icons.svg` — SVG sprite sheet (referenced via `<use href="/icons.svg#...">` if needed)

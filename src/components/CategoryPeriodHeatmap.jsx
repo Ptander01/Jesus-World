@@ -12,7 +12,9 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
   const m = useMemo(() => categoryPeriodMatrix(kind, { filter }), [kind, filter]);
 
   const cols = m.cols.length;
-  const gridCols = `130px repeat(${cols}, 1fr) 46px`;
+  // Track widths come from CSS custom properties so the narrow-screen media
+  // query can retune them; an inline `130px … 46px` could not be overridden.
+  const gridCols = `var(--hm-lbl) repeat(${cols}, 1fr) var(--hm-tot)`;
   // Sequential ramp: magnitude is ONE hue (the accent gold), light -> dark.
   // Category identity lives in the row-label dot, not the cells — so the eye
   // reads the matrix as intensity, not as seven competing hues.
@@ -32,6 +34,7 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
           <button className={kind === "parables" ? "on" : ""} onClick={() => setKind("parables")}>Parables</button>
         </div>
 
+        <div className="jw-scrollx">
         <div className="jw-hm" style={{ gridTemplateColumns: gridCols, opacity: m.total === 0 ? 0.4 : 1 }}>
           {m.total === 0 && (
             <div style={{ gridColumn: "1 / -1", padding: "18px 0", textAlign: "center", fontStyle: "italic", color: "var(--jw-muted)" }}>
@@ -85,6 +88,7 @@ export default function CategoryPeriodHeatmap({ filter } = {}) {
             <div key={i} className="jw-hm-totlbl">{t}</div>
           ))}
           <div className="jw-hm-totlbl" style={{ color: "var(--jw-accent)" }}>{m.total}</div>
+        </div>
         </div>
 
         <div className={`jw-tip${hover ? " on" : ""}`} style={{ position: "static", marginTop: 16, maxWidth: "none", display: hover ? "block" : "none" }}>

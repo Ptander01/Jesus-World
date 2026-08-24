@@ -65,16 +65,18 @@
 
 /* ── Glass cards ── */
 .jw-card {
+  --jw-card-pad: 28px;
   background: var(--glass-bg, var(--jw-surface));
   backdrop-filter: var(--glass-blur, none);
   -webkit-backdrop-filter: var(--glass-blur, none);
   border: 1px solid var(--glass-border, var(--jw-border));
   border-radius: 16px;
   box-shadow: var(--lip-out, none);
-  padding: 26px 28px;
+  padding: 26px var(--jw-card-pad);
   position: relative;
   overflow: hidden;
 }
+
 /* top shine — the glass catch-light the atlas panels carry */
 .jw-card::before {
   content: '';
@@ -82,6 +84,29 @@
   background: linear-gradient(90deg, transparent, var(--glass-shine, rgba(255,255,255,0.06)) 30%, var(--glass-shine, rgba(255,255,255,0.06)) 70%, transparent);
   pointer-events: none;
 }
+/* Wide charts scroll inside their own card instead of being clipped by it.
+   `.jw-card` has to be `overflow: hidden` — the ::before catch-light rides its
+   rounded corners — so anything wider than the card was simply unreachable: at
+   375px the heatmap laid out 783px of grid into a 277px box and lost four of its
+   six periods with no way to get at them. The scroller bleeds out to the card's
+   padding edges and pads itself back, so a part-cut column reads as "there is
+   more this way" rather than as the chart ending. */
+.jw-scrollx {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  margin-inline: calc(-1 * var(--jw-card-pad));
+  padding-inline: var(--jw-card-pad);
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--jw-border-lt) transparent;
+}
+.jw-scrollx::-webkit-scrollbar { height: 6px; }
+.jw-scrollx::-webkit-scrollbar-track { background: transparent; }
+.jw-scrollx::-webkit-scrollbar-thumb { background: var(--jw-border-lt); border-radius: 3px; }
+.jw-scrollx::-webkit-scrollbar-thumb:hover { background: var(--jw-accent-dim); }
+
 .jw-h { font-family: var(--jw-display); font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--jw-accent); margin-bottom: 6px; }
 .jw-cap { font-family: var(--jw-serif); font-style: italic; font-size: 16px; line-height: 1.5; color: var(--jw-cream-dim); margin-bottom: 18px; max-width: 660px; }
 .jw-toggle { display: inline-flex; gap: 2px; background: var(--pill-bg-active, var(--jw-surface-2)); box-shadow: var(--lip-in, none); border-radius: 20px; padding: 3px; margin-bottom: 18px; }
@@ -99,7 +124,7 @@
 .jw-viz.in .jw-reveal { opacity: 1; transform: none; }
 
 /* ---------- HEATMAP ---------- */
-.jw-hm { display: grid; gap: 4px; }
+.jw-hm { display: grid; gap: 4px; --hm-lbl: 130px; --hm-tot: 46px; }
 .jw-hm-rowlbl { font-size: 13px; color: var(--jw-cream-dim); display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-right: 10px; text-align: right; }
 .jw-hm-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .jw-hm-collbl { font-family: var(--jw-display); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--jw-muted); text-align: center; padding-bottom: 6px; }
@@ -110,6 +135,7 @@
 .jw-hm-totlbl { font-family: var(--jw-display); font-size: 11px; color: var(--jw-accent-dim); display: flex; align-items: center; justify-content: center; }
 
 /* ---------- UPSET ---------- */
+.jw-up-grid { display: grid; grid-template-columns: 84px 1fr; gap: 12px; }
 .jw-up-bars { display: flex; align-items: flex-end; gap: 10px; height: 170px; padding-bottom: 4px; }
 .jw-up-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; cursor: pointer; }
 .jw-up-bar { width: 100%; max-width: 46px; border-radius: 4px 4px 0 0; transform: scaleY(0); transform-origin: bottom; transition: transform .6s cubic-bezier(.2,.8,.3,1), filter .15s; transition-delay: calc(var(--i,0) * 60ms); }
@@ -157,6 +183,34 @@ svg.jw-radar { width: 100%; height: auto; display: block; overflow: visible; }
 
 /* Light theme: parchment glass/pill values come from tokens.css [data-theme=light] */
 [data-theme="light"] .jw-tip { box-shadow: 0 10px 34px rgba(60,50,30,.25); }
+
+/* ── Narrow screens ──
+   This file had no width query at all, so the charts page had never been laid
+   out for a phone. Two things: claw back horizontal room (the card's 28px side
+   padding plus the scroller's 20px was eating 96 of 375 px), and shrink the
+   heatmap's fixed tracks and column labels so the grid that has to scroll is as
+   short a scroll as it can honestly be. */
+@media (max-width: 760px) {
+  .jw-scroll { padding: 20px 12px 48px; }
+  .jw-col { gap: 18px; }
+  .jw-card { --jw-card-pad: 16px; padding: 20px var(--jw-card-pad); border-radius: 14px; }
+  .jw-controls { padding: 12px 14px 14px; }
+  .jw-cap { font-size: 15px; margin-bottom: 14px; }
+
+  .jw-hm { --hm-lbl: 96px; --hm-tot: 32px; }
+  /* NB: the row labels cannot be pinned with `position: sticky` — a grid item's
+     containing block is its own grid area, so it has nowhere to travel to and
+     scrolls away with everything else. Pinning them wants the label column
+     lifted out of the grid, which means matching row heights across two
+     containers, and the heights come from the cells' aspect-ratio. Left alone. */
+  .jw-hm-rowlbl { font-size: 12px; padding-right: 7px; }
+  .jw-hm-collbl { font-size: 9px; letter-spacing: 0.4px; }
+  .jw-hm-cell { font-size: 13px; }
+
+  .jw-up-grid { grid-template-columns: 74px 1fr; gap: 10px; }
+  .jw-up-bars, .jw-up-matrix { min-width: 236px; }
+  .jw-up-glbl { font-size: 10px; letter-spacing: 0.5px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .jw-viz .jw-reveal, .jw-viz .jw-hm-cell, .jw-viz .jw-up-bar, .jw-viz .jw-up-val, .jw-viz .jw-radar-poly { transition: none !important; transform: none !important; opacity: 1 !important; }

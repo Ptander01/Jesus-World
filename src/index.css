@@ -2349,6 +2349,24 @@ body {
   button, label, a { touch-action: manipulation; }
 }
 
+/* The header laid out at a fixed 484px of content regardless of viewport, so
+   below ~484px the theme toggle — `margin-left: auto` and `flex-shrink: 0` —
+   was pushed clean off the right edge. At 375px it began 1px past the viewport
+   and could not be reached at all, on the Atlas and the Charts page alike. The
+   nav tabs are the bulk of that width, so they are what gives. */
+@media (max-width: 520px) {
+  .app-header { padding: 8px 12px; gap: 10px; }
+  .nav-tabs { padding: 3px; gap: 2px; }
+  .nav-tab { font-size: 10px; letter-spacing: 0.08em; padding: 6px 10px; }
+}
+
+/* 320px (iPhone SE 1) needs one more step or the toggle goes off again. */
+@media (max-width: 340px) {
+  .app-header { padding: 8px 10px; gap: 8px; }
+  .app-header h1 { font-size: 11px; letter-spacing: 0.1em; }
+  .nav-tab { font-size: 9px; padding: 6px 7px; }
+}
+
 @media (max-width: 480px) {
   .app-header h1 { font-size: 13px; }
   .bdp { height: 80%; }
