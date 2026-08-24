@@ -1140,13 +1140,23 @@ export default function MapView({
       }
 
       if (isBookJourney && selectedBook) {
-        const segStart  = selectedBook.dateRange[0] - 0.5
-        const segEnd    = selectedBook.dateRange[1] + 0.5
-        const beforeIdx = waypoints.reduce((acc, wp, i) => wp.year <= segStart ? i : acc, -1)
-        const afterIdx  = waypoints.findIndex(wp => wp.year >= segEnd)
-        const startIdx  = Math.max(0, beforeIdx)
-        const endIdx    = afterIdx === -1 ? waypoints.length - 1 : afterIdx
-        const segWps    = waypoints.slice(startIdx, endIdx + 1)
+        // The one leg of the route the event falls on. Events carry true
+        // fractional dates now, so bracketing them needs no padding — the old
+        // ±0.5-year pad was a fudge for whole-year dates, and on a 4.5-year
+        // axis it selected most of a period (all 7 waypoints of Passion Week
+        // for the crucifixion, 7 of 11 in Early Ministry for the baptism).
+        const last = waypoints.length - 1
+        let startIdx = waypoints.reduce((acc, wp, i) => wp.year <= selectedBook.dateRange[0] ? i : acc, -1)
+        let endIdx   = waypoints.findIndex(wp => wp.year >= selectedBook.dateRange[1])
+        if (startIdx < 0) startIdx = 0
+        if (endIdx   < 0) endIdx   = last
+        if (startIdx >= endIdx) {
+          // Dated exactly at a stop (which is true of all 16 marquee events):
+          // show the leg arriving there, or the leg leaving the first stop.
+          startIdx = Math.max(0, Math.min(startIdx, last) - 1)
+          endIdx   = Math.min(last, startIdx + 1)
+        }
+        const segWps = waypoints.slice(startIdx, endIdx + 1)
 
         if (segWps.length >= 2) {
           const segEl = linesG.append('path')

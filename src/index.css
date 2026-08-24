@@ -717,11 +717,17 @@ body {
   z-index: 3;
 }
 
+/* Only as wide as its own grip. It used to span the card's full width, and in
+   states 0/1 the upper flag-dot row is centred ~4px below the card's top edge —
+   a full-width strip at z-index 10 sat on top of those dots and swallowed their
+   clicks. Centred at 48px it clears the nearest upper flag (Sermon on the Mount,
+   96 viewBox units off centre) by 4px even at a 375px card. */
 .tl-resize-handle {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
   height: 8px;
   cursor: ns-resize;
   z-index: 10;

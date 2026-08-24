@@ -457,6 +457,11 @@ svg.jrs {
   gap: 10px;
 }
 
+/* The mode switcher sits where the old one-way "← The Atlas" button did, so the
+   Reader is no longer the one surface you cannot tab out of. `.nav-tabs` is
+   inline-flex; in this column it would stretch to the full 64ch without this. */
+.gr-dayhead .nav-tabs { align-self: flex-start; }
+
 .gr-dayhead-row {
   display: flex;
   align-items: baseline;

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import MapView from './MapView'
 import JerusalemDiagram from './JerusalemDiagram.jsx'
 import ReaderTimeline from './ReaderTimeline.jsx'
+import NavTabs from './NavTabs.jsx'
 import planIndex from '../data/reading-plan/index.json'
 import journeyData from '../data/gospels-data.json'
 import { attestationLabel } from '../lib/attestation.js'
@@ -97,7 +98,7 @@ function Passage({ passage, showCite, sceneAt, sectionId, register, activeKey })
  * verses through Emmaus, Thomas, the shore, the commission and the ascension,
  * and now moves through all five instead of sitting on one "Jerusalem" pin.
  */
-export default function GospelReader({ theme = 'dark', lens = 'All', initialDay = null, onExit }) {
+export default function GospelReader({ theme = 'dark', lens = 'All', initialDay = null }) {
   const startIdx = useMemo(() => {
     const i = DAYS.findIndex(d => d.day === initialDay)
     return i >= 0 ? i : 0
@@ -280,7 +281,7 @@ export default function GospelReader({ theme = 'dark', lens = 'All', initialDay 
       <div className="rd-scroll" ref={scrollerRef}>
         <div className="rd-col">
           <header className="gr-dayhead">
-            <button className="rd-exit" onClick={onExit} type="button">← The Atlas</button>
+            <NavTabs current="reader" />
             <div className="gr-dayhead-row">
               <span className="rd-kicker">
                 Day {dayIdx + 1} of {DAYS.length}

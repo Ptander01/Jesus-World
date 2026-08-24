@@ -64,7 +64,6 @@ export default function Root() {
           theme={theme}
           lens={lens}
           initialDay={day}
-          onExit={() => { window.location.hash = '' }}
         />
       </Suspense>
     )
