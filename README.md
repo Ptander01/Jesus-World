@@ -61,28 +61,28 @@ before it is anything else.
 
 ```mermaid
 flowchart TD
-    DEM[Terrarium DEM z10]:::src
-    OSM[OpenStreetMap]:::src
-    ATLAS[world-atlas 10m]:::src
-    PLAN[ESV Chronological Bible<br/>Daily Reading Index]:::src
-    JOS[Josephus · Bookman et al.]:::src
+    DEM["Terrarium DEM z10"]:::src
+    OSM["OpenStreetMap"]:::src
+    ATLAS["world-atlas 10m"]:::src
+    PLAN["ESV Chronological Bible<br/>Daily Reading Index"]:::src
+    JOS["Josephus, Bookman et al."]:::src
 
-    T[build-terrain.mjs]
-    W[build-water.mjs]
-    L[build-landmarks.mjs]
-    S[build-site-plans.mjs]
-    C[crop-basemap.mjs]
-    R[build-reading-plan.mjs]
+    T["build-terrain.mjs"]
+    W["build-water.mjs"]
+    L["build-landmarks.mjs"]
+    S["build-site-plans.mjs"]
+    C["crop-basemap.mjs"]
+    R["build-reading-plan.mjs"]
 
-    TD[terrain-levant.json]:::gen
-    WD[water-levant.json]:::gen
-    LD[landmarks-levant.json]:::gen
-    SD[site-plans.json]:::gen
-    BD[basemap-levant.json]:::gen
-    RP[reading-plan/day-286..324.json]:::gen
-    GD[gospels-data.json<br/>compiled by hand]:::auth
+    TD["terrain-levant.json"]:::gen
+    WD["water-levant.json"]:::gen
+    LD["landmarks-levant.json"]:::gen
+    SD["site-plans.json"]:::gen
+    BD["basemap-levant.json"]:::gen
+    RP["reading-plan/day-286..324.json"]:::gen
+    GD["gospels-data.json<br/>compiled by hand"]:::auth
 
-    CLOCK{{fractional-year clock<br/>+ Gospel Lens filter<br/>shared state}}
+    CLOCK{{"fractional-year clock<br/>+ Gospel Lens filter<br/>shared state"}}
 
     DEM --> T
     OSM --> W
@@ -106,10 +106,10 @@ flowchart TD
     RP --> CLOCK
     GD --> CLOCK
 
-    CLOCK <--> MAP[MapView]
-    CLOCK <--> TL[TimelineBar]
-    CLOCK <--> RD[GospelReader]
-    CLOCK <--> CH[Charts pane]
+    CLOCK <--> MAP["MapView"]
+    CLOCK <--> TL["TimelineBar"]
+    CLOCK <--> RD["GospelReader"]
+    CLOCK <--> CH["Charts pane"]
 
     classDef src fill:#1f2933,stroke:#7ecfb2,color:#e6edf3
     classDef gen fill:#22272e,stroke:#f0c96e,color:#e6edf3
