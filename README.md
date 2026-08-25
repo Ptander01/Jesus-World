@@ -31,7 +31,7 @@ before it is anything else.
 | **Periods** | 6 | Ministry phases spanning AD 29 – 33.4 |
 | **Landmark events** | 16 | The progressive-disclosure tier between period and full detail |
 | **Located events** | 55 | 34 miracles · 9 encounters · 7 teachings · 5 turning points |
-| **Parables** | 34 | Classified by topic across seven themes |
+| **Parables** | 34 | Classified across seven themes. Deliberately *not* placed on the map — see below |
 | **Reader** | 39 days · 89 chapters · 3,754 verses | All four Gospels, sequenced chronologically |
 
 **The details that would have made it wrong:**
@@ -48,6 +48,12 @@ before it is anything else.
 - **Routes are styled differently over land and over sea**, because a straight
   line across the Sea of Galilee and a road through Samaria are not the same
   claim about how someone travelled.
+- **Parables are charted but never mapped.** Most have no firm location, and
+  putting them on the map would manufacture a precision the text does not
+  support. They live in a separate thematic array for that reason.
+- **Time is stored as a fractional year**, with a day at ≈0.00274 yr. That is
+  what lets Passion Week and the Resurrection carry day-level positions on the
+  same axis as a four-year ministry, without a second time model.
 
 ---
 
@@ -55,50 +61,63 @@ before it is anything else.
 
 ```mermaid
 flowchart TD
-    subgraph sources[Public sources]
-        DEM[Terrarium DEM z10]
-        OSM[OpenStreetMap]
-        ATLAS[world-atlas 10m]
-        PLAN[ESV Chronological Bible<br/>Daily Reading Index]
-    end
+    DEM[Terrarium DEM z10]:::src
+    OSM[OpenStreetMap]:::src
+    ATLAS[world-atlas 10m]:::src
+    PLAN[ESV Chronological Bible<br/>Daily Reading Index]:::src
+    JOS[Josephus · Bookman et al.]:::src
 
-    subgraph build[Build scripts — run offline, output committed]
-        T[build-terrain.mjs]
-        W[build-water.mjs]
-        L[build-landmarks.mjs]
-        S[build-site-plans.mjs]
-        C[crop-basemap.mjs]
-        R[build-reading-plan.mjs]
-    end
+    T[build-terrain.mjs]
+    W[build-water.mjs]
+    L[build-landmarks.mjs]
+    S[build-site-plans.mjs]
+    C[crop-basemap.mjs]
+    R[build-reading-plan.mjs]
 
-    subgraph data[src/data — generated, never hand-edited]
-        GD[gospels-data.json]
-        TD[terrain-levant.json]
-        WD[water-levant.json]
-        RP[reading-plan/day-*.json]
-    end
+    TD[terrain-levant.json]:::gen
+    WD[water-levant.json]:::gen
+    LD[landmarks-levant.json]:::gen
+    SD[site-plans.json]:::gen
+    BD[basemap-levant.json]:::gen
+    RP[reading-plan/day-286..324.json]:::gen
+    GD[gospels-data.json<br/>compiled by hand]:::auth
 
-    CLOCK{{fractional-year clock<br/>single shared state}}
+    CLOCK{{fractional-year clock<br/>+ Gospel Lens filter<br/>shared state}}
 
-    MAP[MapView]
-    TL[TimelineBar]
-    RD[GospelReader]
-
-    DEM --> T & C
-    OSM --> W & L
+    DEM --> T
+    OSM --> W
+    OSM --> L
     ATLAS --> C
     PLAN --> R
-    T & W & L & S & C --> TD & WD
+    JOS -.validates.-> T
+
+    T --> TD
+    W --> WD
+    L --> LD
+    S --> SD
+    C --> BD
     R --> RP
-    TD & WD & GD & RP --> CLOCK
-    CLOCK --> MAP & TL & RD
-    MAP <--> CLOCK
-    TL <--> CLOCK
-    RD <--> CLOCK
+
+    TD --> CLOCK
+    WD --> CLOCK
+    LD --> CLOCK
+    SD --> CLOCK
+    BD --> CLOCK
+    RP --> CLOCK
+    GD --> CLOCK
+
+    CLOCK <--> MAP[MapView]
+    CLOCK <--> TL[TimelineBar]
+    CLOCK <--> RD[GospelReader]
+    CLOCK <--> CH[Charts pane]
+
+    classDef src fill:#1f2933,stroke:#7ecfb2,color:#e6edf3
+    classDef gen fill:#22272e,stroke:#f0c96e,color:#e6edf3
+    classDef auth fill:#22272e,stroke:#6eb8f0,color:#e6edf3
 ```
 
-The important edge is the one pointing **both ways**. The map, timeline and reader
-do not talk to each other — each reads and writes the same fractional-year value,
+The important edge is the one pointing **both ways**. The map, timeline, reader and
+charts do not talk to each other — each reads and writes the same fractional-year value,
 so adding a fourth surface costs one subscription rather than three new pairwise
 syncs. The Gospel Lens source filter works the same way: it is global state, so
 switching to John on the map filters the charts without either component knowing
@@ -176,6 +195,13 @@ Events carry `category` (`miracle` · `encounter` · `teaching` · `event`),
 `miracleType` where it applies, a `gospels` attestation array, and a `cityId`
 joining them to the map.
 
+**The key names are inherited, and the file says so.** This app shares a rendering
+engine with its sister project *Paul's World*, so `journeys` means ministry
+periods, `books` means landmark events, and `churchEvents` means per-site event
+tracks. The names were kept rather than renamed so the data stays drop-in for that
+engine — a deliberate trade of schema elegance for one less divergence to
+maintain. `gospels-data.json` carries the mapping in its own `_readme`.
+
 The reader is split per day under `src/data/reading-plan/day-286.json` …
 `day-324.json`, each holding sections with a citation, a `cityId`, a `year`, and
 the verse text itself.
@@ -210,8 +236,14 @@ pw-test.mjs              Playwright screenshot capture, not a test suite
 is days 286–324 of the printed Daily Reading Index in Crossway's *ESV Chronological
 Bible*. Harmonising four accounts into one order requires judgement calls that
 serious scholars make differently; this app commits to one published harmony and
-does not pretend it is settled. The AD 29–33 span is likewise a defensible dating,
-not a fact.
+does not pretend it is settled.
+
+The AD 29–33 span is likewise a position, not a fact. It follows a common
+reconstruction: baptism around AD 29, four Passovers (John 2:13; 5:1; 6:4; 11:55),
+and the crucifixion on Friday 14 Nisan = 3 April AD 33. Read the Passovers
+differently and the ministry is shorter; the map and timeline would both change
+shape. The reconstruction is stated in the data file rather than buried in the
+rendering.
 
 **Where the plan and the canon disagree, the plan wins — visibly.** It brackets
 Mark 16:9–20 and John 7:53–8:11 as additional reading and skips Mark 11:26 in
