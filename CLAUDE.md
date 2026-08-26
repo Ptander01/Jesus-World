@@ -35,7 +35,8 @@ Key dependencies: `d3` v7, `topojson-client`, `world-atlas` (Natural Earth 50m l
 
 ```
 Root.jsx                    — hash router + shared state above the routes:
-                              lens (Gospel Lens), theme, hero-seen + tour-seen flags
+                              lens (Gospel Lens), theme, hero-seen + tour-seen flags,
+                              and the single <Analytics> (see below)
 ├── HeroLanding.jsx         — pinned depth-glide parallax; once per session
 ├── Tour.jsx                — first-run walkthrough; once ever, reopenable from ?
 ├── App.jsx           (#)   — the Atlas
@@ -66,6 +67,38 @@ Shared:  TimelineDefs.jsx (SVG material) · ScriptureReveal.jsx (click-to-read v
 Unused:  ReadingMode.jsx, BookTrack.jsx — out of the bundle, still on disk
          (see PROJECT-STATUS; Patrick has been asked twice and not decided)
 ```
+### Analytics (`Root.jsx`)
+
+Vercel Web Analytics, and **the one thing about it that is load-bearing here:
+its script only sees History-API navigation.** It patches `pushState` and
+listens for `popstate`, and carries no `hashchange` handler at all — verified by
+reading the shipped script and by driving the running app. This atlas routes
+entirely on `window.location.hash`, so left to auto-track it recorded **one view
+per full page load and nothing after**: five hash navigations produced zero
+events, while a single `pushState` produced one immediately. Every surface would
+have collapsed into `/`.
+
+Passing `route` switches auto-tracking off (`disableAutoTrack`) and reports a
+pageview whenever `route`/`path` change instead. Two details:
+
+- **`route` is the grouping key, `path` the concrete URL.** `/gospels/286` is
+  reported as `dp: "/gospels/:day"`, so the 39 reading days are one dashboard row
+  rather than 39.
+- **The empty hash must become `/`.** The component's effect is
+  `if (props.route && props.path)`, so an empty-string route silently reports
+  nothing — and that is the atlas, the most visited surface.
+
+There is **one** `<Analytics>`, rendered as a sibling of the route body rather
+than inside each branch. Three would also work — `inject()` guards on
+`document.head.querySelector` and never cleans up on unmount — but only one
+branch is mounted at a time, so the other two are noise.
+
+In dev the package loads `script.debug.js` (logs, sends nothing) and StrictMode
+double-invokes the effect, so **the doubled pageview you see locally is not a
+bug**. Production resolves to `/_vercel/insights/script.js`, which only exists
+once Web Analytics is enabled for the project in the Vercel dashboard — the
+package alone does not turn it on.
+
 ### The first-run tour (`Tour.jsx`)
 
 Nine steps pointing at the atlas's chrome in turn: the nav tabs, the Gospel

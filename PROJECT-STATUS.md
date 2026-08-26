@@ -1,6 +1,6 @@
 # Project Status — Jesus's World
 
-**Last updated:** 2026-08-23, at `HEAD` (main, committed, not pushed).
+**Last updated:** 2026-08-26, at `HEAD` (main, rebased onto origin, not pushed).
 **For:** picking this project back up in a fresh context. Pairs with `CLAUDE.md`
 (the maintained architecture reference — read that first; it is current as of this
 commit). `HANDOFF.md` carries a
@@ -81,7 +81,7 @@ than emitting a plausible wrong shape. Both still open:
   the same height the lake did, so the contour returns the valley, not the lake.
   Wants a hydrological constraint or the pre-drainage survey mapping.
 
-## This session — five small fixes
+## This session — five small fixes, plus analytics
 
 Former next-steps 7, 8 and 9, plus two mobile defects on the Charts page. All
 verified on localhost:
@@ -114,22 +114,35 @@ verified on localhost:
   the Charts header fits down to 320px. **The Atlas header still overflows** —
   see next-steps 10.
 
+- **Vercel Web Analytics, wired to the hash router.** Vercel's automated install
+  PR was closed: it was mechanically correct (and its three `<Analytics>` copies
+  were harmless), but its script only sees History-API navigation — it patches
+  `pushState`, listens for `popstate`, and has no `hashchange` handler. On this
+  app that meant one view per page load and nothing after, with the atlas, charts
+  and reader all collapsing into `/`. Verified by reading the shipped script and
+  by driving the running app: five hash navigations, zero events. Now one
+  `<Analytics route path>` in `Root.jsx`, auto-track off, `/gospels/286` grouped
+  as `/gospels/:day`. See CLAUDE.md's Analytics section for the two traps.
+
 Also corrected in CLAUDE.md: `bookState` defaults to **0** ("Periods"), not 1.
 
 ## Current state
 
-- **Deployed:** Vercel is still on `4d75b9b`. The five fixes above are committed
-  to local `main` but **not pushed** — Patrick reviews on localhost first.
+- **Deployed:** Vercel is still on `1a1e9e8`. The work above is committed to local
+  `main`, rebased onto `origin/main`, but **not pushed** — Patrick reviews on
+  localhost first.
+- **Web Analytics still needs enabling in the Vercel dashboard.** The package
+  does not turn it on, and `/_vercel/insights/script.js` only exists once it is.
 - **Lint:** 3 errors + 2 warnings. Down one from the long-standing four —
   wiring the town plans gave `MapView`'s `onCityClick` a use at last. The rest
   are pre-existing: `setState` in an effect (`App.jsx`, `SearchBar.jsx`), an
   unused `subY` in `PaulEventTrack.jsx`, and two intentional `exhaustive-deps`.
 - **Build:** clean.
-- **Weight:** main chunk 1.22 MB / **388 kB gzipped** — that is what blocks first
+- **Weight:** main chunk 1.23 MB / **391 kB gzipped** — that is what blocks first
   paint. Geography is code-split and idle-loaded, so it does not: basemap 90 kB
   gz, water 54 kB, terrain 73 kB, hillshade 223 kB (posterised to 32 greys, down
   from 524). d3 tree-shakes correctly — every unused package is shaken out, so
-  submodule imports would buy nothing.
+  submodule imports would buy nothing. `@vercel/analytics` costs +1.1 kB gz.
 - **Dev port:** `.claude/launch.json` pins 5199. Untracked.
 
 ## Next steps

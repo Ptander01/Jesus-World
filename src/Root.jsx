@@ -1,4 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import App from './App.jsx'
 import HeroLanding from './components/HeroLanding.jsx'
 import Tour from './components/Tour.jsx'
@@ -45,20 +46,35 @@ export default function Root() {
     localStorage.setItem('pw-theme', theme)
   }, [theme])
 
-  if (route === '/visuals') {
-    return (
-      <Suspense fallback={null}>
-        <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
-      </Suspense>
-    )
-  }
+  // Vercel Web Analytics only sees History-API navigation — its script patches
+  // `pushState` and listens for `popstate`, and carries no `hashchange` handler
+  // at all. Left to auto-track on a hash router it records one view per full page
+  // load and nothing after, so the atlas, the charts and the reader all collapse
+  // into `/`. Passing `route` turns auto-tracking off and reports a pageview
+  // whenever these two change instead.
+  //
+  // `route` is the grouping key and `path` the concrete URL, so the 39 reading
+  // days report as one row rather than 39. The empty hash has to become `/`:
+  // the component skips the pageview when either value is falsy, which would
+  // leave the atlas — the most visited surface — recording nothing at all.
+  const vaPath  = route || '/'
+  const vaRoute = /^\/gospels\/\d+$/.test(route) ? '/gospels/:day' : vaPath
+
   // The reader: the whole plan, with the curated Passion Week scenes folded into
   // the days they belong to. `/read` was that material's own route before the
   // merge; it now lands on the day the week opens so old links still work.
   const gospels = /^\/(?:gospels(?:\/(\d+))?|read)$/.exec(route)
-  if (gospels) {
+
+  let body
+  if (route === '/visuals') {
+    body = (
+      <Suspense fallback={null}>
+        <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
+      </Suspense>
+    )
+  } else if (gospels) {
     const day = gospels[1] ? Number(gospels[1]) : (route === '/read' ? 311 : null)
-    return (
+    body = (
       <Suspense fallback={null}>
         <GospelReader
           theme={theme}
@@ -67,20 +83,28 @@ export default function Root() {
         />
       </Suspense>
     )
+  } else {
+    body = (
+      <>
+        <App
+          lens={lens}
+          onLensChange={setLens}
+          theme={theme}
+          onThemeChange={setTheme}
+          onShowTour={() => setTourOpen(true)}
+        />
+        {!entered && (
+          <HeroLanding onEnter={() => { setEntered(true); sessionStorage.setItem('jw-entered', '1') }} />
+        )}
+        {tourOpen && entered && <Tour onClose={() => setTourOpen(false)} />}
+      </>
+    )
   }
+
   return (
     <>
-      <App
-        lens={lens}
-        onLensChange={setLens}
-        theme={theme}
-        onThemeChange={setTheme}
-        onShowTour={() => setTourOpen(true)}
-      />
-      {!entered && (
-        <HeroLanding onEnter={() => { setEntered(true); sessionStorage.setItem('jw-entered', '1') }} />
-      )}
-      {tourOpen && entered && <Tour onClose={() => setTourOpen(false)} />}
+      {body}
+      <Analytics route={vaRoute} path={vaPath} />
     </>
   )
 }
