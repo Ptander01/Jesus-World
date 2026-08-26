@@ -1,4 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import App from './App.jsx'
 import HeroLanding from './components/HeroLanding.jsx'
 import Tour from './components/Tour.jsx'
@@ -47,9 +48,12 @@ export default function Root() {
 
   if (route === '/visuals') {
     return (
-      <Suspense fallback={null}>
-        <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
-      </Suspense>
+      <>
+        <Suspense fallback={null}>
+          <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
+        </Suspense>
+        <Analytics />
+      </>
     )
   }
   // The reader: the whole plan, with the curated Passion Week scenes folded into
@@ -59,14 +63,17 @@ export default function Root() {
   if (gospels) {
     const day = gospels[1] ? Number(gospels[1]) : (route === '/read' ? 311 : null)
     return (
-      <Suspense fallback={null}>
-        <GospelReader
-          theme={theme}
-          lens={lens}
-          initialDay={day}
-          onExit={() => { window.location.hash = '' }}
-        />
-      </Suspense>
+      <>
+        <Suspense fallback={null}>
+          <GospelReader
+            theme={theme}
+            lens={lens}
+            initialDay={day}
+            onExit={() => { window.location.hash = '' }}
+          />
+        </Suspense>
+        <Analytics />
+      </>
     )
   }
   return (
@@ -82,6 +89,7 @@ export default function Root() {
         <HeroLanding onEnter={() => { setEntered(true); sessionStorage.setItem('jw-entered', '1') }} />
       )}
       {tourOpen && entered && <Tour onClose={() => setTourOpen(false)} />}
+      <Analytics />
     </>
   )
 }
