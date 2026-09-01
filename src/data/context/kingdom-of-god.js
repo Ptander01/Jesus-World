@@ -31,6 +31,30 @@ export default {
       ],
     },
     {
+      id: 'a-word-borrowed-from-caesar',
+      heading: 'A Word Borrowed From Caesar',
+      sub: 'Why "gospel" was already a political word',
+      blocks: [
+        {
+          type: 'p',
+          text: 'The word the Evangelists chose — _euangelion_, "good news," "gospel" — was not coined for the church. Rome already used it. When a new Caesar took power, heralds went out with his _euangelion_: the good news that a new king reigns, that a new order and its peace have arrived. To announce a gospel was to announce a kingdom.',
+        },
+        {
+          type: 'p',
+          text: 'An inscription from Priene, in what is now Turkey, honours Caesar Augustus in exactly these terms decades before the Gospels were written — hailing him as a "savior," saying he "put an end to war," and dating the calendar itself from "the day of the god’s birth," which it calls the beginning of the **good news** for the world.',
+        },
+        {
+          type: 'callout',
+          label: 'So the claim is pointed',
+          text: 'When Mark opens "The beginning of the good news of Jesus the Messiah," a first-century ear hears the challenge: there is another king, and it is not Caesar. The kingdom of God is a rival announcement, not a private comfort.',
+        },
+        {
+          type: 'p',
+          text: 'This is why "the gospel" is bigger than a single transaction. On the reading N. T. Wright helped recover — **kingdom theology** — the gospel is first the announcement that God has become king in Jesus. The cross and resurrection are the hinge on which that reign turns, the climax of the story rather than the whole of it. It is the news John the Baptist, Jesus, the Twelve, the Seventy, and the apostles in Acts all go out preaching: the kingdom of God is here.',
+        },
+      ],
+    },
+    {
       id: 'already-and-not-yet',
       heading: 'Already and Not Yet',
       sub: 'The tension the parables keep circling',
@@ -88,11 +112,11 @@ export default {
             },
             {
               tag: 'BEMA',
-              text: '**BEMA Podcast** — the sessions that press the kingdom as a present, this-world reality rather than a destination after death.',
+              text: '**BEMA Podcast**, ep. 83 (Gospel Narrative) — _euangelion_ as an imperial announcement, the Priene inscription, and the kingdom as a present, this-world reality rather than a destination after death.',
             },
             {
               tag: 'Further',
-              text: 'George Eldon Ladd, **The Presence of the Future** and **The Gospel of the Kingdom** — the standard "already / not yet" treatment.',
+              text: 'George Eldon Ladd, **The Presence of the Future** — the standard "already / not yet" treatment; N. T. Wright, **How God Became King** — the gospel as the announcement of God’s reign.',
             },
           ],
         },

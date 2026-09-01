@@ -1,14 +1,17 @@
-// Second Temple Judaism. Draws on BEMA's Session 3 arc — ep. 73 (intro), ep. 74
-// (Silent Years: Synagogue), ep. 75 (Welcome to Hellenism) — plus the standard
-// primary sources. Synthesis in the app's voice; the episodes are cited in the
-// closing section, not reproduced.
+// Second Temple Judaism. The spine — five responses to Hellenism, each with a
+// gift and a danger, and the reflective turn — follows the BEMA project's
+// Session 3 "Silent Years" arc: ep. 73 (intro), 74 (Synagogue), 75 (Hellenism),
+// 76 (Sadducees), 77 (Herodians), 78 (Essenes), 79 (Zealots), 80 (Pharisees),
+// 81 (Association). Synthesis in the app's voice; the episodes are cited in the
+// closing section, not reproduced. Josephus and 1–2 Maccabees stand behind the
+// history. Scripture is the World English Bible.
 
 export default {
   slug: 'second-temple-judaism',
   eyebrow: 'Context · The World Behind the Text',
   title: ['Second Temple ', 'Judaism'],
   standfirst:
-    'The four centuries between Malachi and Matthew are not silent. They are where the words Jesus will use — Messiah, kingdom, the people of God — get their first-century meaning.',
+    'The four centuries between Malachi and Matthew are not silent. They are where one question — how do you stay God’s people under a foreign empire? — gets answered five different ways, and those five answers are the room Jesus walks into.',
   sections: [
     {
       id: 'after-the-exile',
@@ -22,7 +25,7 @@ export default {
         {
           type: 'callout',
           label: 'The question underneath everything',
-          text: 'How do you stay faithful to God’s covenant when someone else’s empire runs your land, taxes your crops, and garrisons your capital? Every party, every movement, and every revolt in this period is an answer to that one question.',
+          text: 'How do you stay faithful to God’s covenant when someone else’s empire runs your land, taxes your crops, and garrisons your capital? Every party and every revolt in this period is an answer to that one question.',
         },
         {
           type: 'p',
@@ -37,15 +40,11 @@ export default {
       blocks: [
         {
           type: 'p',
-          text: 'The institution that holds Jewish life together through this period barely appears in the Old Testament: the **synagogue**. A local gathering — ten households were enough — for reading Torah, prayer, and teaching. Portable, un-centralised, and present everywhere Jews lived.',
+          text: 'The institution that holds Jewish life together through this period barely appears in the Old Testament: the **synagogue**. A local gathering for reading Torah, prayer, and teaching — portable, un-centralised, and present everywhere Jews lived. At its centre stood the **bema**, the raised platform the Scriptures were read from; the Text sat, literally, in the middle of the room.',
         },
         {
           type: 'p',
           text: 'It is also the room most of Jesus’ recorded teaching happens in. "He entered, as was his custom, into the synagogue on the Sabbath day" is Luke’s shorthand for a pattern. When the Gospels show him handed a scroll, standing to read and sitting to comment, that is ordinary synagogue practice — and the argument that follows is a synagogue argument.',
-        },
-        {
-          type: 'p',
-          text: 'BEMA 74, "Silent Years: Synagogue," walks through how the institution formed and what it assumed about the people in the room.',
         },
       ],
     },
@@ -56,51 +55,81 @@ export default {
       blocks: [
         {
           type: 'p',
-          text: 'Alexander the Great died in 323 BC having conquered from Greece to India, and the longer conquest was cultural. **Hellenism** — the Greek language, the gymnasium, the Greek way of framing a question — became the water everyone swam in. For Jews it forced a running argument: how much of this do we take on, and where is the line?',
+          text: 'Alexander the Great died in 323 BC having conquered from Greece to India, and the longer conquest was cultural. **Hellenism** was not just Greek rule; it was a whole way of seeing, captured in one line — "man is the measure of all things." It moved the gods out of the centre and put the human being there, and built a world to serve him: the gymnasium, the theatre, the arena, the physician’s temple. Its promise was comfort, leisure, security, beauty.',
         },
         {
           type: 'p',
-          text: 'The crisis came under Antiochus IV, who in 167 BC banned circumcision and the Sabbath and set up a pagan altar in the Temple itself. The **Maccabean revolt** that followed won a rare stretch of independence — the memory behind Hanukkah, and behind the hope, still alive in Jesus’ day, that God would again drive out an occupier.',
+          text: 'For Jews this forced a running argument: how much of this do we take on, and where is the line? The crisis came under Antiochus IV, who in 167 BC banned circumcision and the Sabbath and set a pagan altar in the Temple itself. The **Maccabean revolt** that followed won a rare stretch of independence — the memory behind Hanukkah, and behind the hope, still alive in Jesus’ day, that God would again drive out an occupier.',
         },
         {
-          type: 'p',
-          text: 'BEMA 75, "Welcome to Hellenism," covers the pressure to assimilate and the fault line it opened inside the nation.',
+          type: 'callout',
+          label: 'The thing itself is not the danger',
+          text: 'Plumbing, theatre, art, wealth — none of it is sin. The danger is the **story** underneath: that the world exists for your comfort, and you are its measure. That is why the responses below divide not over the objects of Hellenism but over what to do with the worldview inside them.',
         },
       ],
     },
     {
-      id: 'four-parties-one-question',
-      heading: 'Four Parties, One Question',
-      sub: 'Pharisees, Sadducees, Essenes, Zealots',
+      id: 'five-responses',
+      heading: 'Five Responses to Hellenism',
+      sub: 'One pressure, five answers — each with a gift and a danger',
       blocks: [
         {
           type: 'p',
-          text: 'By the first century the answers had hardened into groups. Josephus lists them; the Gospels assume you already know them.',
+          text: 'By the first century the answers had hardened into groups. The BEMA project frames them as **five responses to Hellenism**, and reads each with the same double question: what does this group bring that God can use, and where does it break down? Jesus confronts all five — and calls people out of every one.',
         },
         {
           type: 'compare',
           items: [
             {
-              label: 'Pharisees',
-              text: 'Take the Temple’s holiness home with you. Extend priestly purity to the ordinary table and the ordinary day, through careful application of Torah. Popular, lay-led — and the group Jesus argues with most, often because they are closest.',
+              label: 'Sadducees',
+              text: 'Descendants of Zadok — the priestly aristocracy who ran the Temple and cut the deal with Rome. Embrace Hellenism where it pays. **Gift:** a real, God-ordained priestly office. **Danger:** the "chief priests" had made that office a corrupt machine — it is this group, not the Pharisees, that engineers Jesus’ death.',
             },
             {
-              label: 'Sadducees',
-              text: 'Work the system from inside. The priestly aristocracy who ran the Temple and dealt with Rome. Conservative on the text, sceptical of resurrection and angels, invested in the arrangement that kept them in place.',
+              label: 'Herodians',
+              text: 'Not priests — ordinary Jews who loved what Rome brought and saw no conflict with worshipping God. **Gift:** perfectly placed to engage and redeem the wider culture, because they live inside it. **Danger:** idolatry by comfort — letting luxury and security quietly become the real god.',
             },
             {
               label: 'Essenes',
-              text: 'Withdraw and wait. Judge the Temple establishment corrupt, pull back to the desert, keep themselves pure, and expect God to settle accounts soon.',
+              text: 'Priests who judged the Temple corrupt beyond saving and withdrew to the desert (Qumran, the Dead Sea Scrolls) to "know the path and walk the path." **Gift:** total devotion to the Text. **Danger:** they talk to no one — holiness sealed off from the mission.',
             },
             {
               label: 'Zealots',
-              text: 'Drive them out. God alone is king, so tribute to Caesar is treason against God. The armed-resistance answer — which gets its war in AD 66 and its ending at Masada.',
+              text: 'The armed wing of the pious ones (the _Kanaim_, from _qanah_, zeal) — Phinehas and Elijah their models. Drive Rome out by force. **Gift:** the zeal that actually gets things done; God needs Zealots. **Danger:** the myth of redemptive violence — the wrong weapons.',
+            },
+            {
+              label: 'Pharisees',
+              text: 'The other pious ones: channel that same zeal into total obedience to Torah, and let God deal with Rome in his own time. **Gift:** devotion, obedience, love of the Text. **Danger:** the one piece they lack — compassion (Matthew 11: Jesus faults them not for unbelief but for not repenting).',
             },
           ],
         },
         {
           type: 'p',
-          text: 'Jesus fits none of the four cleanly, and that is part of why he is heard as dangerous. He shares the Pharisees’ seriousness about Torah and their hope of resurrection, keeps company the Essenes would never touch, threatens the Sadducees’ Temple directly, and talks about a kingdom without picking up the Zealots’ sword.',
+          text: 'Jesus fits none of the five cleanly, and that is part of why he is heard as dangerous. He shares the Pharisees’ seriousness about Torah and their hope of resurrection, keeps company the Essenes would never touch, threatens the Sadducees’ Temple directly, calls Zealots to lay down the sword — and spends three years teaching among the Pharisees, the group he critiques most because they are closest to the mark.',
+        },
+      ],
+    },
+    {
+      id: 'which-are-you',
+      heading: 'Which One Are You?',
+      sub: 'Why the "silent years" are not only history',
+      blocks: [
+        {
+          type: 'p',
+          text: 'BEMA presses these five as a mirror, not just a map. Every group brings a genuine gift and carries a genuine danger, and most people find their own heart in one of them — a Pharisee’s love of getting it right, a Zealot’s fire, an Essene’s longing to withdraw and study, a Herodian’s ease with the culture.',
+        },
+        {
+          type: 'callout',
+          label: 'The warning worth keeping',
+          text: 'Marty Solomon’s recurring line: the modern danger is to become **cultural Herodians and religious Pharisees** — the comfort-love of the one bolted to the compassion-lack of the other. The worst of two responses instead of the gift of any.',
+        },
+        {
+          type: 'verse',
+          text: 'But when the fullness of the time came, God sent out his Son, born to a woman, born under the law.',
+          ref: 'Galatians 4:4',
+        },
+        {
+          type: 'p',
+          text: '"The fullness of time" is often read as a claim about culture: this exact moment — Judaism straining against Hellenism, five answers in open argument, a common Greek tongue and Roman roads — was the room the incarnation was staged in. Knowing the five is knowing what the first hearers brought to every scene in the Gospels.',
         },
       ],
     },
@@ -114,7 +143,7 @@ export default {
           items: [
             {
               tag: 'BEMA',
-              text: '**BEMA Podcast**, Session 3 — ep. 73 (intro), ep. 74 ("Silent Years: Synagogue"), ep. 75 ("Welcome to Hellenism"). Transcripts and slides are linked from each episode page.',
+              text: '**BEMA Podcast**, Session 3 — the "Silent Years" arc: ep. 73 (intro), 74 (Synagogue), 75 (Hellenism), then a study apiece on the five responses — 76 (Sadducees), 77 (Herodians), 78 (Essenes), 79 (Zealots), 80 (Pharisees) — and 81 (Association), the reflective wrap. Transcripts and slides are linked from each episode page.',
             },
             {
               tag: 'Primary',
@@ -129,8 +158,8 @@ export default {
         {
           type: 'honesty',
           text: [
-            'BEMA reads the first century through a strongly Hebraic, Second-Temple lens, drawing on teachers like Ray Vander Laan. It is a rich frame, and it is _one_ frame — some of its specific claims are contested by other scholars. Hold it alongside the primary sources, not above them.',
-            'The four-party sketch is a simplification too. Most first-century Jews belonged to no party at all, and the lines between the groups were blurrier than a list makes them look.',
+            'The "five responses to Hellenism" is BEMA’s teaching frame, and a deliberately simplified one — Marty Solomon says as much. Josephus’ classic list is different: he names Pharisees, Sadducees, Essenes, and a "fourth philosophy" (the Zealots), and treats the Herodians as a loosely-defined Gospel-era faction rather than a philosophy. Most first-century Jews belonged to no party at all.',
+            'BEMA also reads the first century through a strongly Hebraic, Second-Temple lens (drawing on teachers like Ray Vander Laan). It is a rich frame and _one_ frame; hold its specific claims alongside the primary sources, not above them.',
           ],
         },
       ],

@@ -94,7 +94,7 @@ export const TOPICS = [
     group: 'world-behind',
     kind: 'Context · First century',
     name: 'Second Temple Judaism',
-    hook: 'Pharisees, Sadducees, Essenes, Zealots — four answers to one occupied-nation question.',
+    hook: 'Sadducees, Herodians, Essenes, Zealots, Pharisees — five ways to answer one occupied-nation question.',
     format: 'guide',
     accent: '#6797C2',
     sources: ['bema'],

@@ -78,6 +78,43 @@ export default {
       ],
     },
     {
+      id: 'audience-is-everything',
+      tab: 'study',
+      heading: 'Audience Is Everything',
+      sub: 'The BEMA project’s one-word name for each Gospel',
+      blocks: [
+        {
+          type: 'p',
+          text: 'The Greek word behind "gospel," _euangelion_, was already in use before the Evangelists borrowed it: a royal announcement that a new king and a new kingdom had arrived. To write "a gospel," then, is to make a claim. And each writer makes it to a different room. The BEMA project gives each Gospel a one-word handle keyed to its audience — a useful, memorable way to hear four distinct voices.',
+        },
+        {
+          type: 'compare',
+          items: [
+            {
+              label: 'Matthew · Mumzer',
+              text: 'A Jew writing to Jews. _Mumzer_ means outsider — and Matthew opens with a genealogy that names Tamar, Rahab, Ruth and "Uriah’s wife," the people a pedigree would hide. His agenda: in this kingdom the insiders may be out and the outsiders in. (A former tax collector would know.)',
+            },
+            {
+              label: 'Mark · Roman',
+              text: 'A Jew writing to Romans, who want it fast and want the point. Hence the breathless "immediately," and a Jesus shown as teacher, healer, and wonder-worker — the euangelion pitched to a Roman ear.',
+            },
+            {
+              label: 'Luke · Ordered',
+              text: 'A convert (likely a former physician) writing a "sequenced" account — on one reading, a companion to the synagogue’s yearly Torah cycle. Deeply Jewish underneath, with Jesus as a second Moses and chiasm upon chiasm.',
+            },
+            {
+              label: 'John · Grafted',
+              text: 'The pastor to Asia, writing for a grafted Jewish-and-Greek world at Ephesus. His opening "In the beginning was the _logos_" speaks to both at once — Torah/Wisdom to the Jew, the Greek _logos_ to the Gentile — until "the Word became flesh" stops both short.',
+            },
+          ],
+        },
+        {
+          type: 'p',
+          text: 'These handles are BEMA’s framing, and some of the claims behind them (that Matthew was written first, or first in Hebrew; that Luke is a synagogue companion reading) are minority positions — see the note in _Go Deeper_. The durable point needs none of them: know a Gospel’s audience and its choices stop looking like errors and start looking like aim.',
+        },
+      ],
+    },
+    {
       id: 'the-lens-as-an-emphasis-map',
       tab: 'atlas',
       heading: 'The Lens as an Emphasis Map',
@@ -118,7 +155,7 @@ export default {
             },
             {
               tag: 'BEMA',
-              text: '**BEMA Podcast** — the Gospel sessions on each writer’s audience and aim.',
+              text: '**BEMA Podcast**, Session 3 — ep. 83 (Gospel Narrative, on _euangelion_) and one study per Gospel: 84 (Matthew — Mumzer), 85 (Mark — Roman Gospel), 86 (Luke — Ordered), 87 (John — Grafted).',
             },
             {
               tag: 'Tool',
@@ -130,6 +167,7 @@ export default {
           type: 'honesty',
           text: [
             'How far a writer _shaped_ his material, and how freely, is a live scholarly question — from "he arranged eyewitness memory carefully" to "he composed with considerable freedom." This study stays on the modest end: real events, purposefully told.',
+            'BEMA’s one-word handles are a fine teaching aid, but a few of the positions behind them are minority views — mainstream scholarship generally holds that Mark was written first and that all four Gospels reached us in Greek. Take the framing; hold the disputed claims loosely.',
             'Either way the rule holds: emphasis is not contradiction. Read each Gospel for its own point before you make the four agree.',
           ],
         },
