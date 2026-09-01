@@ -50,12 +50,34 @@
   color: var(--cream-dim);
   max-width: 64ch;
 }
-.ctx-section h3 {
+.ctx-section h3,
+.ctx-sub {
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
   color: var(--cream);
-  margin: 24px 0 10px;
+  margin: 26px 0 10px;
+}
+.ctx-list {
+  margin: 16px 0;
+  padding-left: 20px;
+  max-width: 64ch;
+}
+.ctx-list li {
+  color: var(--cream-dim);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.ctx-list li:last-child {
+  margin-bottom: 0;
+}
+.ctx-p strong,
+.ctx-list strong,
+.ctx-callout strong,
+.ctx-compare strong,
+.ctx-honesty strong {
+  color: var(--cream);
+  font-weight: 600;
 }
 
 /* ---------- back link ---------- */

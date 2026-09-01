@@ -1,4 +1,7 @@
-// The Kingdom of God — scaffold. Section outlines only.
+// The Kingdom of God. The "already / not yet" framing and "the presence of the
+// future" phrase are Fee & Stuart (ch. 8) and the Ladd tradition behind them;
+// the this-worldly reading of "kingdom" is a theme BEMA presses hard. Both
+// credited at the end. Scripture is the World English Bible.
 
 export default {
   slug: 'kingdom-of-god',
@@ -13,12 +16,17 @@ export default {
       sub: 'What "kingdom" meant to a first-century Jewish hearer',
       blocks: [
         {
-          type: 'draft',
-          points: [
-            'Kingdom = reign, rule, kingship — an activity, not a location',
-            'The Jewish hope: God restoring his rule over a world in the wrong hands',
-            'Why "kingdom of heaven" in Matthew is the same thing, said reverently',
-          ],
+          type: 'p',
+          text: 'The phrase Jesus preaches more than any other is the one a modern reader is most likely to mishear. "Kingdom of God" does not mean _the place you go when you die_. The word is closer to **reign** or **rule** — an activity: God actively being king.',
+        },
+        {
+          type: 'p',
+          text: 'For a first-century Jew the hope was concrete. The world is in the wrong hands — Rome’s, and behind Rome, worse powers — and God is going to take the throne back, put things right, and reign over a restored people in a restored world. When Jesus says that reign has arrived, he is answering the deepest expectation his hearers carry.',
+        },
+        {
+          type: 'callout',
+          label: 'One phrase, two framings',
+          text: 'Matthew writes "kingdom of heaven" not to point upward but to avoid saying "God" aloud — an ordinary Jewish reverence for the Name. Mark and Luke, writing for wider audiences, simply say "kingdom of God." Same reality.',
         },
       ],
     },
@@ -28,26 +36,40 @@ export default {
       sub: 'The tension the parables keep circling',
       blocks: [
         {
-          type: 'draft',
-          points: [
-            'Inaugurated in Jesus’ ministry — healings and exorcisms as the reign breaking in',
-            'Consummated later — the harvest, the wedding feast, the return',
-            "Fee & Stuart's phrase: \"the presence of the future\"",
+          type: 'p',
+          text: 'The tension the parables keep returning to is this: the kingdom is somehow **here already** and **not yet finished**.',
+        },
+        {
+          type: 'list',
+          items: [
+            '**Already** — when Jesus heals and drives out demons, he says the kingdom "has come upon you." The reign is breaking in, in person, in his ministry.',
+            '**Not yet** — he also teaches his followers to _pray_ "may your Kingdom come," and tells of a harvest still to come, a master who returns, a feast not yet begun.',
           ],
+        },
+        {
+          type: 'p',
+          text: 'Fee & Stuart put it in three words: "the presence of the future." The age to come has arrived ahead of schedule in Jesus, while the old age keeps running until he returns. Most of the kingdom parables — the seed growing secretly, the yeast, the weeds left in the field — are ways of holding those two facts together.',
         },
       ],
     },
     {
       id: 'what-citizenship-looks-like',
       heading: 'What Citizenship Looks Like',
-      sub: 'The Sermon on the Mount as kingdom ethics',
+      sub: 'The Sermon on the Mount as kingdom life',
       blocks: [
         {
-          type: 'draft',
-          points: [
-            'Enemies, money, anxiety, forgiveness, status — reordered under God’s reign',
-            'Not entry requirements but the shape of life inside the kingdom',
-            'Cross-links: Atlas · Sermon on the Mount',
+          type: 'p',
+          text: 'If the kingdom is a reign, the Sermon on the Mount is its constitution — not a list of entry requirements, but the shape of life for people already living under God’s rule.',
+        },
+        {
+          type: 'p',
+          text: 'Enemies get love instead of retaliation. Money stops being a master. Anxiety is met with the Father’s provision. Forgiveness is extended because it was first received. Status is inverted — the poor, the mourning and the meek are named as the blessed ones. None of it holds together as free-standing ethics; all of it follows from taking seriously that God is now king.',
+        },
+        {
+          type: 'xlinks',
+          items: [
+            { label: 'Open the Atlas — the Sermon on the Mount', href: '#/' },
+            { label: 'Context · Parable Structure', href: '#/context/parable-structure' },
           ],
         },
       ],
@@ -58,12 +80,27 @@ export default {
       sub: 'Where this study comes from',
       blocks: [
         {
-          type: 'draft',
-          points: [
-            'Fee & Stuart, ch. 8 — the kingdom and the parables',
-            'BEMA Podcast — the kingdom-of-God episodes',
-            'George Eldon Ladd, The Presence of the Future — for going deeper',
-            'Honesty note: the timing of the "not yet" is genuinely debated; lay out the options rather than picking one silently',
+          type: 'sources',
+          items: [
+            {
+              tag: 'Fee & Stuart',
+              text: '**How to Read the Bible for All Its Worth**, ch. 8 — the kingdom as the key to the parables, and "the presence of the future."',
+            },
+            {
+              tag: 'BEMA',
+              text: '**BEMA Podcast** — the sessions that press the kingdom as a present, this-world reality rather than a destination after death.',
+            },
+            {
+              tag: 'Further',
+              text: 'George Eldon Ladd, **The Presence of the Future** and **The Gospel of the Kingdom** — the standard "already / not yet" treatment.',
+            },
+          ],
+        },
+        {
+          type: 'honesty',
+          text: [
+            'How much is "already" and how much "not yet" is a genuine fault line. Older liberal readings made the kingdom a purely present moral ideal; some popular readings make it purely future and other-worldly. The "inaugurated" view this study follows holds both — but it is a position among positions.',
+            'And the timing and manner of the "not yet" — what the return actually involves — is debated hard across traditions. This study describes the shape of the hope, not a schedule.',
           ],
         },
       ],
