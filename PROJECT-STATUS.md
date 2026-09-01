@@ -1,6 +1,6 @@
 # Project Status — Jesus's World
 
-**Last updated:** 2026-08-26, at `HEAD` (main, rebased onto origin, not pushed).
+**Last updated:** 2026-08-27, at `aa1b40f` (main, pushed, deployed, verified live).
 **For:** picking this project back up in a fresh context. Pairs with `CLAUDE.md`
 (the maintained architecture reference — read that first; it is current as of this
 commit). `HANDOFF.md` carries a
@@ -26,7 +26,7 @@ running it and looking.
 **It began as an atlas of Paul's journeys and was reskinned.** Most of the recent
 work has been finding inherited assumptions that were quietly wrong. Expect more.
 
-## What shipped in the session before that
+## Earlier — the physical-geography session
 
 Fourteen commits, `e0e1408..2a184ea`. Grouped:
 
@@ -81,7 +81,7 @@ than emitting a plausible wrong shape. Both still open:
   the same height the lake did, so the contour returns the valley, not the lake.
   Wants a hydrological constraint or the pre-drainage survey mapping.
 
-## This session — five small fixes, plus analytics
+## What shipped in the last session
 
 Former next-steps 7, 8 and 9, plus two mobile defects on the Charts page. All
 verified on localhost:
@@ -128,11 +128,15 @@ Also corrected in CLAUDE.md: `bookState` defaults to **0** ("Periods"), not 1.
 
 ## Current state
 
-- **Deployed:** Vercel is still on `1a1e9e8`. The work above is committed to local
-  `main`, rebased onto `origin/main`, but **not pushed** — Patrick reviews on
-  localhost first.
-- **Web Analytics still needs enabling in the Vercel dashboard.** The package
-  does not turn it on, and `/_vercel/insights/script.js` only exists once it is.
+- **Deployed:** `main` == `aa1b40f`, pushed, live on `jesus-world.vercel.app`.
+  The three commits were rebased onto `origin/main` first — the remote had three
+  commits (README, architecture diagram, mermaid labels) that local did not.
+- **Web Analytics is on and confirmed collecting.** Verified against production,
+  not inferred: `/_vercel/insights/script.js` returns 200, and three hash
+  navigations produced three `POST /_vercel/insights/view` → 200, reporting
+  `dp: "/gospels/:day"`. The deployed bundle is byte-identical to the local
+  build. Production fires once per navigation — the doubled pageview is dev-only
+  (StrictMode).
 - **Lint:** 3 errors + 2 warnings. Down one from the long-standing four —
   wiring the town plans gave `MapView`'s `onCityClick` a use at last. The rest
   are pre-existing: `setState` in an effect (`App.jsx`, `SearchBar.jsx`), an
@@ -144,6 +148,17 @@ Also corrected in CLAUDE.md: `bookState` defaults to **0** ("Periods"), not 1.
   from 524). d3 tree-shakes correctly — every unused package is shaken out, so
   submodule imports would buy nothing. `@vercel/analytics` costs +1.1 kB gz.
 - **Dev port:** `.claude/launch.json` pins 5199. Untracked.
+
+**Outside this repo, still open.** Patrick used Vercel's automated installer to
+add Web Analytics across all his projects, and several of those PRs were closed
+without merging — so those sites have analytics enabled in the dashboard and no
+analytics code deployed, which reports nothing. His portfolio tests `404` on
+`/_vercel/insights/script.js`. A runbook for auditing every project was written
+and handed off; the one-line check is
+`curl -s -o /dev/null -w '%{http_code}\n' https://SITE/_vercel/insights/script.js`
+(200 = collecting, 404 = not, and the 404 does not say why). Only fragment-routed
+sites need this repo's `route`/`path` treatment; for Next.js and `BrowserRouter`
+sites the generated PR is correct as written.
 
 ## Next steps
 
@@ -191,14 +206,25 @@ Debt and unfinished business:
 
 - **Patrick reviews on localhost, then says "merge"/"deploy" explicitly.** He did
   authorise pushing this session; that authorisation was per-request, not standing.
-- **Verification through the Claude Code browser pane has a trap.** It runs with
-  `document.hidden === true`, so `requestAnimationFrame` never fires and d3
-  transitions never complete. Missing animation there is *not* evidence of a bug —
-  this produced one wrong bug report and a retraction this session. Inspect CSS and
-  attribute state freely; to check transition-driven behaviour, assert on the
-  inputs or bypass the animation.
-- **Generated data is never hand-edited.** Three generators, listed in CLAUDE.md's
+- **Verification through the Claude Code browser pane has three traps**, all of
+  which have produced a wrong conclusion at least once.
+  1. It runs with `document.hidden === true`, so `requestAnimationFrame` never
+     fires and d3 transitions never complete. Missing animation there is *not*
+     evidence of a bug — that produced one wrong bug report and a retraction.
+     Note the corollary: a value set *before* `.transition()` in a d3 chain lands
+     immediately and is safe to assert on; anything inside the chain is not.
+  2. **The pane opens at a 0×0 viewport.** Every `getBoundingClientRect()` comes
+     back zero and the layout is meaningless until `resize_window` is called.
+  3. **Screenshots can fail to paint elements that are provably present.** A
+     heatmap photographed as empty while all 30 cells measured `opacity: 1`,
+     `scale(1)`, 74×46px. Assert on computed styles and attributes; use
+     screenshots for composition, never as evidence something is missing.
+- **Generated data is never hand-edited.** Six generators, listed in CLAUDE.md's
   Commands block. Re-run them; don't patch their output.
+- **Measure before trusting a description — including these docs.** Two bugs last
+  session were materially worse than recorded here (the resize handle blocked the
+  whole upper flag row, not 1px of it), and CLAUDE.md stated a default that was
+  wrong (`bookState` is 0, not 1). Verify against the code, then fix the doc.
 - **Check the data before trusting a label.** Several bugs this session were fields
   whose names lied — a "LETTERS" row rendering events, a legend keyed to a
   vestigial taxonomy. `gospels-data.json` still carries Paul's-World field names.
