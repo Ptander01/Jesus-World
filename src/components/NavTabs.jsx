@@ -9,6 +9,7 @@ const MODES = [
   { key: 'atlas', label: 'Atlas', hash: '' },
   { key: 'charts', label: 'Charts', hash: '/visuals' },
   { key: 'reader', label: 'Reader', hash: '/gospels' },
+  { key: 'context', label: 'Context', hash: '/context' },
 ]
 
 export default function NavTabs({ current }) {

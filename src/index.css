@@ -2353,18 +2353,29 @@ body {
    below ~484px the theme toggle — `margin-left: auto` and `flex-shrink: 0` —
    was pushed clean off the right edge. At 375px it began 1px past the viewport
    and could not be reached at all, on the Atlas and the Charts page alike. The
-   nav tabs are the bulk of that width, so they are what gives. */
+   nav tabs are the bulk of that width, so they are what gives — and the fourth
+   tab (Context) tightened the budget again, hence the smaller type/padding here
+   and the extra 400px step below. */
 @media (max-width: 520px) {
-  .app-header { padding: 8px 12px; gap: 10px; }
+  .app-header { padding: 8px 10px; gap: 8px; }
+  .app-header h1 { font-size: 13px; letter-spacing: 0.1em; }
   .nav-tabs { padding: 3px; gap: 2px; }
-  .nav-tab { font-size: 10px; letter-spacing: 0.08em; padding: 6px 10px; }
+  .nav-tab { font-size: 10px; letter-spacing: 0.06em; padding: 6px 9px; }
+}
+
+/* 400px: four tabs no longer fit at the 520 sizing without shoving the toggle
+   off, so step the tabs down once more. */
+@media (max-width: 400px) {
+  .app-header h1 { font-size: 12px; }
+  .nav-tabs { gap: 1px; }
+  .nav-tab { font-size: 9px; letter-spacing: 0.04em; padding: 6px 7px; }
 }
 
 /* 320px (iPhone SE 1) needs one more step or the toggle goes off again. */
 @media (max-width: 340px) {
-  .app-header { padding: 8px 10px; gap: 8px; }
-  .app-header h1 { font-size: 11px; letter-spacing: 0.1em; }
-  .nav-tab { font-size: 9px; padding: 6px 7px; }
+  .app-header { padding: 8px 8px; gap: 6px; }
+  .app-header h1 { font-size: 11px; letter-spacing: 0.08em; }
+  .nav-tab { font-size: 8px; padding: 5px 5px; letter-spacing: 0.02em; }
 }
 
 @media (max-width: 480px) {

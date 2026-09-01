@@ -9,6 +9,7 @@ import Tour from './components/Tour.jsx'
 // main map bundle.
 const VisualsDemo = lazy(() => import('./components/VisualsDemo.jsx'))
 const GospelReader = lazy(() => import('./components/GospelReader.jsx'))
+const ContextPane = lazy(() => import('./components/ContextPane.jsx'))
 
 const routeOf = () => window.location.hash.replace(/^#/, '')
 
@@ -58,18 +59,29 @@ export default function Root() {
   // the component skips the pageview when either value is falsy, which would
   // leave the atlas — the most visited surface — recording nothing at all.
   const vaPath  = route || '/'
-  const vaRoute = /^\/gospels\/\d+$/.test(route) ? '/gospels/:day' : vaPath
+  const vaRoute = /^\/gospels\/\d+$/.test(route)
+    ? '/gospels/:day'
+    : /^\/context\/[a-z0-9-]+$/.test(route)
+      ? '/context/:topic'
+      : vaPath
 
   // The reader: the whole plan, with the curated Passion Week scenes folded into
   // the days they belong to. `/read` was that material's own route before the
   // merge; it now lands on the day the week opens so old links still work.
   const gospels = /^\/(?:gospels(?:\/(\d+))?|read)$/.exec(route)
+  const context = /^\/context(?:\/([a-z0-9-]+))?$/.exec(route)
 
   let body
   if (route === '/visuals') {
     body = (
       <Suspense fallback={null}>
         <VisualsDemo lens={lens} onLensChange={setLens} theme={theme} onThemeChange={setTheme} />
+      </Suspense>
+    )
+  } else if (context) {
+    body = (
+      <Suspense fallback={null}>
+        <ContextPane slug={context[1] || null} theme={theme} onThemeChange={setTheme} />
       </Suspense>
     )
   } else if (gospels) {
