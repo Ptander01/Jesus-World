@@ -70,6 +70,16 @@ export const TOPICS = [
     sources: ['feeStuart', 'bema'],
   },
   {
+    slug: 'how-we-got-the-gospels',
+    group: 'how-to-read',
+    kind: 'Study · Text',
+    name: 'How We Got the Gospels',
+    hook: 'Event to oral tradition to written text. Why the gap makes the Gospels sturdier, not shakier.',
+    format: 'study',
+    accent: '#B27FA5',
+    sources: ['feeStuart', 'bema'],
+  },
+  {
     slug: 'parable-structure',
     group: 'how-to-read',
     kind: 'Study · Hermeneutics',

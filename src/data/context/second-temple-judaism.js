@@ -109,6 +109,37 @@ export default {
       ],
     },
     {
+      id: 'the-five-around-one-sea',
+      heading: 'The Five, Around One Sea',
+      sub: 'The worldviews were not abstract — they had addresses',
+      blocks: [
+        {
+          type: 'p',
+          text: 'The remarkable thing is how physically close these worlds sat. From Mount Arbel on the west shore of the Sea of Galilee you can see most of them at once — and the Gospels say Jesus did the large majority of his ministry inside that one view.',
+        },
+        {
+          type: 'list',
+          items: [
+            '**Tiberias**, on the western shore, was Herod Antipas’ Hellenistic capital — the **Herodian** world, comfortable and Roman-flavoured.',
+            'The **triangle** just north — Chorazin, Capernaum, Bethsaida — was the **Pharisees’** world: no marble, no mosaics, synagogues and study. Jesus made Capernaum his base, in the heart of it.',
+            '**Gamla**, east of the sea, was a **Zealot** stronghold — later one of their last stands against Rome.',
+            'The **Decapolis** across the water (Hippos/Susita and its sister cities) was pagan ground — so unclean, a Pharisee reckoned, that merely naming it defiled you. When Jesus crosses the sea "to the other side," this is the other side.',
+          ],
+        },
+        {
+          type: 'p',
+          text: 'Only the two Judean parties — the Sadducees and the Essenes — sit off this map, centred on the Temple and the desert to the south. So a boat ride across the Sea of Galilee is not just travel; it is crossing from one response to Hellenism into another. The atlas lets you see those distances for yourself.',
+        },
+        {
+          type: 'xlinks',
+          items: [
+            { label: 'Open the Atlas', href: '#/' },
+            { label: 'Context · The Kingdom of God', href: '#/context/kingdom-of-god' },
+          ],
+        },
+      ],
+    },
+    {
       id: 'which-are-you',
       heading: 'Which One Are You?',
       sub: 'Why the "silent years" are not only history',
@@ -143,7 +174,7 @@ export default {
           items: [
             {
               tag: 'BEMA',
-              text: '**BEMA Podcast**, Session 3 — the "Silent Years" arc: ep. 73 (intro), 74 (Synagogue), 75 (Hellenism), then a study apiece on the five responses — 76 (Sadducees), 77 (Herodians), 78 (Essenes), 79 (Zealots), 80 (Pharisees) — and 81 (Association), the reflective wrap. Transcripts and slides are linked from each episode page.',
+              text: '**BEMA Podcast**, Session 3 — the "Silent Years" arc: ep. 73 (intro), 74 (Synagogue), 75 (Hellenism), then a study apiece on the five responses — 76 (Sadducees), 77 (Herodians), 78 (Essenes), 79 (Zealots), 80 (Pharisees) — 81 (Association), the reflective wrap, and 88 (Setting the Stage) on the geography around the Sea of Galilee. Transcripts and slides are linked from each episode page.',
             },
             {
               tag: 'Primary',
