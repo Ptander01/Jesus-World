@@ -129,7 +129,7 @@ export default {
         {
           type: 'xlinks',
           items: [
-            { label: 'Open the Atlas — Gospel Lens', href: '#/' },
+            { label: 'Set the Gospel Lens to John', href: '#/?lens=John' },
             { label: 'Charts · Gospel Signature', href: '#/visuals' },
           ],
         },

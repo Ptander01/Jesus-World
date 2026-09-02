@@ -76,10 +76,14 @@ export default function BookDetailPanel({ book, onClose }) {
           )}
 
           <div className="bdp-study-sep" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button className="bdp-study-btn bdp-study-btn--disabled" disabled>
-              Study Guide — coming soon
-            </button>
+          <div className="bdp-ctx">
+            <div className="bdp-ctx-label">Reading Context</div>
+            <a className="bdp-ctx-link" href="#/context/parallel-accounts">
+              Why the four accounts differ
+            </a>
+            <a className="bdp-ctx-link" href="#/context/authorial-emphasis">
+              What each writer emphasises
+            </a>
           </div>
         </>
       )}

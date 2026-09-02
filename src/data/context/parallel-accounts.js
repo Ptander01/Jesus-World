@@ -110,7 +110,7 @@ export default {
         {
           type: 'xlinks',
           items: [
-            { label: 'Open the Atlas — set the Gospel Lens', href: '#/' },
+            { label: 'Set the Gospel Lens to John', href: '#/?lens=John' },
             { label: 'Reader · plan day 324', href: '#/gospels/324' },
           ],
         },

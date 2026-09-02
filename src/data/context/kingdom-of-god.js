@@ -80,7 +80,7 @@ export default {
           type: 'xlinks',
           items: [
             { label: 'Context · Reading Like a Rabbi', href: '#/context/reading-like-a-rabbi' },
-            { label: 'Open the Atlas — the Sermon on the Mount', href: '#/' },
+            { label: 'Open the Atlas', href: '#/' },
           ],
         },
       ],
@@ -123,7 +123,7 @@ export default {
         {
           type: 'xlinks',
           items: [
-            { label: 'Open the Atlas — the Sermon on the Mount', href: '#/' },
+            { label: 'Open the Atlas', href: '#/' },
             { label: 'Context · Parable Structure', href: '#/context/parable-structure' },
           ],
         },

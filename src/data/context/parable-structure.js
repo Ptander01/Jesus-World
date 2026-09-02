@@ -144,7 +144,7 @@ export default {
         {
           type: 'xlinks',
           items: [
-            { label: 'Open the Atlas — Parables list', href: '#/' },
+            { label: 'Open the Atlas — Parables list', href: '#/?view=parables' },
             { label: 'Context · The Kingdom of God', href: '#/context/kingdom-of-god' },
           ],
         },

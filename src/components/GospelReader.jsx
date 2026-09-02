@@ -300,6 +300,9 @@ export default function GospelReader({ theme = 'dark', lens = 'All', initialDay 
               {meta.cityIds.length > 0 && <> · {meta.cityIds.map(cityName).join(' · ')}</>}
               {sceneCount > 0 && <> · {sceneCount} annotated {sceneCount === 1 ? 'scene' : 'scenes'}</>}
             </p>
+            <a className="gr-ctx-link" href="#/context">
+              How to read a Gospel · Context
+            </a>
           </header>
 
           {indexOpen && (

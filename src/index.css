@@ -1344,6 +1344,47 @@ body {
   background: transparent;
 }
 
+/* Inbound links to the Context pane — every marquee event is told across some
+   set of Gospels, so the two "how to read the accounts" studies are relevant to
+   all of them. */
+.bdp-ctx {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bdp-ctx-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 2px;
+}
+.bdp-ctx-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--border-lt);
+  border-radius: 3px;
+  padding: 9px 12px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.bdp-ctx-link::after {
+  content: '\2192';
+  margin-left: auto;
+  font-family: var(--font-body);
+}
+.bdp-ctx-link:hover {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: var(--accent);
+}
+
 /* mode tabs */
 /* ── Gospel Lens ── the one control that governs map + timeline + every tab */
 .fp-lens {

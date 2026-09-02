@@ -37,10 +37,20 @@ const SECONDS_PER_YEAR = 6
 // the reset described in MapView's detail-zoom effect was wiping this on mount.
 const INITIAL_FOCUS = { lon: 35.42, lat: 32.33, scale: 2 }
 
+// A Context chip may deep-link the atlas with a filter view preselected, e.g.
+// `#/?view=parables`. App re-mounts when Root switches to the atlas branch, so a
+// lazy initializer picks this up on arrival without an effect.
+const VIEW_VALUES = ['journeys', 'books', 'parables']
+const viewFromHash = () => {
+  const q = window.location.hash.split('?')[1]
+  const v = q && new URLSearchParams(q).get('view')
+  return v && VIEW_VALUES.includes(v) ? v : null
+}
+
 export default function App({ lens = 'All', onLensChange, theme = 'dark', onThemeChange, onShowTour }) {
   const [activeJourneys, setActiveJourneys] = useState(() => new Set(['period-1']))
   const [selectedBookId, setSelectedBookId] = useState(null)
-  const [viewMode, setViewMode]             = useState('journeys')
+  const [viewMode, setViewMode]             = useState(() => viewFromHash() ?? 'journeys')
   const [timelineYear, setTimelineYear]     = useState(null)
   const [hoveredCityId, setHoveredCityId]   = useState(null)
   const [provincesGeo, setProvincesGeo]     = useState(null)

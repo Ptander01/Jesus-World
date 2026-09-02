@@ -11,13 +11,25 @@ const VisualsDemo = lazy(() => import('./components/VisualsDemo.jsx'))
 const GospelReader = lazy(() => import('./components/GospelReader.jsx'))
 const ContextPane = lazy(() => import('./components/ContextPane.jsx'))
 
-const routeOf = () => window.location.hash.replace(/^#/, '')
+// The route is the hash minus any `?query` — a chip may deep-link the atlas as
+// `#/?lens=John`, and the query must not leak into route matching or analytics.
+const routeOf = () => window.location.hash.replace(/^#/, '').split('?')[0]
+
+// Deep-linkable Gospel Lens: `#/?lens=John` opens the atlas with that lens set.
+// Read from the hash rather than stored so a shared link and an in-app chip both
+// work. Returns a valid lens name or null.
+const LENS_VALUES = ['All', 'Synoptics', 'Matthew', 'Mark', 'Luke', 'John']
+const lensFromHash = () => {
+  const q = window.location.hash.split('?')[1]
+  const l = q && new URLSearchParams(q).get('lens')
+  return l && LENS_VALUES.includes(l) ? l : null
+}
 
 export default function Root() {
   const [route, setRoute] = useState(routeOf)
   // The Gospel Lens lives here, above the routes, so the atlas and the visuals share
   // one selection — flipping to John on the map keeps John on the charts.
-  const [lens, setLens] = useState('All')
+  const [lens, setLens] = useState(() => lensFromHash() ?? 'All')
   // The reader is a different mode, not a different app — it shares the atlas's theme
   // so crossing between them doesn't flash.
   const [theme, setTheme] = useState(() => localStorage.getItem('pw-theme') || 'dark')
@@ -30,7 +42,14 @@ export default function Root() {
   const [tourOpen, setTourOpen] = useState(false)
 
   useEffect(() => {
-    const onHash = () => setRoute(routeOf())
+    const onHash = () => {
+      setRoute(routeOf())
+      // A `?lens=` deep-link sets the shared lens on navigation. Runs inside the
+      // event callback, not the effect body, so it doesn't trip
+      // react-hooks/set-state-in-effect.
+      const l = lensFromHash()
+      if (l) setLens(l)
+    }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
