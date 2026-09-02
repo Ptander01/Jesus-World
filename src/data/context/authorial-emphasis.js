@@ -25,6 +25,11 @@ export default {
           text: 'If the four Gospels differ because each writer is making a point, the next question is the obvious one: what is each writer’s point? Read a Gospel _vertically_ — straight through, on its own terms — and a distinct portrait comes into focus. None of the four is the "plain" version that the others decorate.',
         },
         {
+          type: 'callout',
+          label: 'Two historical contexts, always',
+          text: 'Fee & Stuart’s foundational move: every Gospel scene sits in _two_ settings at once — **the context of Jesus** (the first-century moment he originally spoke and acted in) and **the context of the Evangelist** (the writer’s own audience and purpose, decades later, which shaped how he selected and placed the material). Authorial emphasis is what happens in that second context.',
+        },
+        {
           type: 'compare',
           items: [
             {

@@ -29,6 +29,32 @@ export default {
           label: 'What a parable is',
           text: 'A short fictional story drawn from ordinary life, told to a specific audience on a specific occasion, that turns on a single comparison — and often on a reversal the hearer does not see coming.',
         },
+        { type: 'h', text: 'Not everything called a parable is a story' },
+        {
+          type: 'p',
+          text: 'Fee & Stuart point out that the word covers several forms of figurative speech, and reading them the same way is the first mistake. Four kinds:',
+        },
+        {
+          type: 'compare',
+          items: [
+            {
+              label: 'True parable',
+              text: 'A story with a beginning, middle, and turn — the Good Samaritan, the Prodigal Son. These are the ones most at risk of being over-allegorised.',
+            },
+            {
+              label: 'Similitude',
+              text: 'A picture from everyday life stated as a general truth — the mustard seed, yeast worked through dough. One vivid comparison, not a plot.',
+            },
+            {
+              label: 'Metaphor / simile',
+              text: 'A direct figure: "you are the salt of the earth," "the light of the world." A single image, doing its work in one line.',
+            },
+            {
+              label: 'Epigram',
+              text: 'A pointed, often paradoxical saying — "can the blind lead the blind?" Provocation compressed to a sentence.',
+            },
+          ],
+        },
         { type: 'h', text: 'Audience and occasion are half the meaning' },
         {
           type: 'p',
@@ -80,6 +106,32 @@ export default {
       ],
     },
     {
+      id: 'getting-the-point',
+      tab: 'study',
+      heading: 'Getting the Point',
+      sub: 'Fee & Stuart’s method for a parable',
+      blocks: [
+        {
+          type: 'p',
+          text: 'Fee & Stuart reduce the work to a short, repeatable set of questions — built to recover the "punch" the first hearer felt:',
+        },
+        {
+          type: 'list',
+          items: [
+            '**Find the points of reference** — the parts of the story the original audience would instantly recognise and identify with (the vineyard owner, the debtor, the wedding guest, the Samaritan). These are the anchors; miss them and the modern reading drifts.',
+            '**Locate the turn** — the moment the story breaks the hearer’s expectation and forces a verdict. That reversal is usually where the point lives.',
+            '**Name the audience** — disciples, crowds, or opponents? The same story cuts differently depending on who is being addressed.',
+            '**Carry the response over** — a parable is not an information dump; it was meant to _provoke_ something. The last question is not only "what does it mean?" but "what did it ask of them — and what does it ask of me?"',
+          ],
+        },
+        {
+          type: 'callout',
+          label: 'Points of reference, then and now',
+          text: 'The gap to close is cultural: a first-century hearer knew what a tax collector, a shepherd, or a hated Samaritan meant on sight. Recover that, and the reversal lands with its original force instead of a flattened moral.',
+        },
+      ],
+    },
+    {
       id: 'parables-on-the-map',
       tab: 'atlas',
       heading: 'Parables on the Map',
@@ -113,7 +165,7 @@ export default {
           items: [
             {
               tag: 'Fee & Stuart',
-              text: '**How to Read the Bible for All Its Worth**, ch. 8 — "The Parables: Do You Get the Point?"',
+              text: '**How to Read the Bible for All Its Worth**, ch. 8 — "The Parables: Do You Get the Point?" The four forms, the "points of reference," and the method here are theirs.',
             },
             {
               tag: 'Further',
