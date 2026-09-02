@@ -70,6 +70,16 @@ export const TOPICS = [
     sources: ['feeStuart', 'bema'],
   },
   {
+    slug: 'reading-like-a-rabbi',
+    group: 'how-to-read',
+    kind: 'Study · Hermeneutics',
+    name: 'Reading Like a Rabbi',
+    hook: 'Parables are puzzles set for the willing. The four levels of a Hebraic reading — p’shat to sod.',
+    format: 'study',
+    accent: '#5F7EA8',
+    sources: ['bema', 'feeStuart'],
+  },
+  {
     slug: 'how-we-got-the-gospels',
     group: 'how-to-read',
     kind: 'Study · Text',

@@ -52,6 +52,37 @@ export default {
           type: 'p',
           text: 'This is why "the gospel" is bigger than a single transaction. On the reading N. T. Wright helped recover — **kingdom theology** — the gospel is first the announcement that God has become king in Jesus. The cross and resurrection are the hinge on which that reign turns, the climax of the story rather than the whole of it. It is the news John the Baptist, Jesus, the Twelve, the Seventy, and the apostles in Acts all go out preaching: the kingdom of God is here.',
         },
+        {
+          type: 'p',
+          text: 'The nativity already stages the collision. Matthew sets the newborn king against **Herod** — the richest and most paranoid man of his age, who answers a rumour of a rival by slaughtering the children of Bethlehem. Two kings, two kingdoms: Herod’s built on wealth, fear, and the sword; Jesus’ on the pattern Scripture calls **shalom**. The whole ministry runs along that fault line.',
+        },
+      ],
+    },
+    {
+      id: 'fulfill-not-abolish',
+      heading: 'Fulfill, Not Abolish',
+      sub: 'What the Sermon on the Mount is doing with the Law',
+      blocks: [
+        {
+          type: 'verse',
+          text: 'Don’t think that I came to destroy the law or the prophets. I didn’t come to destroy, but to fulfill.',
+          ref: 'Matthew 5:17',
+        },
+        {
+          type: 'p',
+          text: 'It is easy to hear "fulfill" as "complete, so we can set it aside" — as if Jesus kept the Law perfectly on our behalf so no one need bother with it again. In a rabbi’s mouth the words meant something more ordinary and more demanding. To **fulfill** Torah was to interpret it rightly _and live it out_; to **abolish** it was to misread it or fail to walk it. Jesus is saying: watch me read the Scriptures correctly, with my mind and my life.',
+        },
+        {
+          type: 'p',
+          text: 'That is why the "but I say to you" sayings that follow are **not** raising the bar to something new. When Jesus ties "do not murder" to contempt and "do not commit adultery" to the lustful glance, he is not adding rules — he is exposing what the command was always reaching for. The Law aims past the outward act at the heart: not merely _don’t kill_ but _be reconciled_; not merely _don’t betray_ but _honour the whole person_. Kingdom life is Torah read all the way down.',
+        },
+        {
+          type: 'xlinks',
+          items: [
+            { label: 'Context · Reading Like a Rabbi', href: '#/context/reading-like-a-rabbi' },
+            { label: 'Open the Atlas — the Sermon on the Mount', href: '#/' },
+          ],
+        },
       ],
     },
     {
@@ -112,7 +143,7 @@ export default {
             },
             {
               tag: 'BEMA',
-              text: '**BEMA Podcast**, ep. 83 (Gospel Narrative) — _euangelion_ as an imperial announcement, the Priene inscription, and the kingdom as a present, this-world reality rather than a destination after death.',
+              text: '**BEMA Podcast**, Session 3 — ep. 83 (Gospel Narrative) on _euangelion_ and the Priene inscription; ep. 90 (A Gospel of Two Kingdoms) on Herod vs. Jesus; and the Sermon on the Mount run, ep. 93 (Blessed), 95 (Abolish or Fulfill), 96 (But I Say Unto You).',
             },
             {
               tag: 'Further',
@@ -124,6 +155,7 @@ export default {
           type: 'honesty',
           text: [
             'How much is "already" and how much "not yet" is a genuine fault line. Older liberal readings made the kingdom a purely present moral ideal; some popular readings make it purely future and other-worldly. The "inaugurated" view this study follows holds both — but it is a position among positions.',
+            'The "fulfill = interpret and live out" reading of Matthew 5:17 is the Hebraic-context one BEMA presses, and it is illuminating — but the older Christian reading (Jesus as the _telos_ the Law pointed toward, its promises brought to completion in him) is widely held and not wrong. The two need not exclude each other.',
             'And the timing and manner of the "not yet" — what the return actually involves — is debated hard across traditions. This study describes the shape of the hope, not a schedule.',
           ],
         },
